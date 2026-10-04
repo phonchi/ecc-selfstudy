@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ECC 自學站的參考書目與閱讀順序">
+<title>參考文獻 — 橢圓曲線密碼：從曲線到模乘法</title>
+<script>
+  try { const t = localStorage.getItem('ecc-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (_) {}
+  MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+             options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] },
+             chtml: { scale: 0.98 } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ecc.css?v=20261004">
+</head>
+<body>
+<header class="hero small" id="top">
+  <div class="hero-grid"></div>
+  <a class="home-link" href="index.html">← 總覽</a>
+  <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
+  <div class="hero-content"><div class="eyebrow">REFERENCES</div><h1>參考文獻</h1>
+  <div class="subtitle">教科書、標準與原始論文</div></div>
+</header>
+<main class="container"><section id="books" data-nav="書目">
+<h2>參考文獻</h2>
+<p>各章結尾列出該章對應的章節。下面是全部書目；附連結的是出版者或標準組織的官方頁面。</p>
+<ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">（<a href="01_finite_field.html">第 1 章</a>、<a href="05_scalar.html">第 5 章</a>、<a href="06_multiprecision.html">第 6 章</a>、<a href="07_special.html">第 7 章</a>、<a href="08_barrett.html">第 8 章</a>、<a href="09_montgomery.html">第 9 章</a>、<a href="10_synthesis.html">第 10 章</a>）</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">（<a href="00_why_ecc.html">第 0 章</a>、<a href="01_finite_field.html">第 1 章</a>、<a href="02_group_law.html">第 2 章</a>、<a href="03_ecdlp.html">第 3 章</a>、<a href="04_coordinates.html">第 4 章</a>、<a href="05_scalar.html">第 5 章</a>、<a href="06_multiprecision.html">第 6 章</a>、<a href="07_special.html">第 7 章</a>、<a href="08_barrett.html">第 8 章</a>、<a href="09_montgomery.html">第 9 章</a>、<a href="10_synthesis.html">第 10 章</a>）</span></li><li>L. C. Washington, <cite>Elliptic Curves: Number Theory and Cryptography</cite>, 2nd ed., CRC Press, 2008. <span class="where">（<a href="02_group_law.html">第 2 章</a>、<a href="03_ecdlp.html">第 3 章</a>、<a href="04_coordinates.html">第 4 章</a>、<a href="05_scalar.html">第 5 章</a>）</span></li><li>J. Hoffstein, J. Pipher, J. H. Silverman, <cite>An Introduction to Mathematical Cryptography</cite>, 2nd ed., Springer, 2014. <span class="where">（<a href="01_finite_field.html">第 1 章</a>、<a href="02_group_law.html">第 2 章</a>、<a href="03_ecdlp.html">第 3 章</a>）</span></li><li>C. Paar, J. Pelzl, <cite>Understanding Cryptography</cite>, Springer, 2010. <span class="where">（<a href="00_why_ecc.html">第 0 章</a>、<a href="01_finite_field.html">第 1 章</a>）</span></li><li>H. Cohen, G. Frey (eds.), <cite>Handbook of Elliptic and Hyperelliptic Curve Cryptography</cite>, CRC Press, 2006.</li><li>NIST, <a href="https://doi.org/10.6028/NIST.SP.800-186" target="_blank" rel="noopener"><cite>SP 800-186: Recommendations for Discrete Logarithm-based Cryptography: Elliptic Curve Domain Parameters</cite></a>, 2023. <span class="where">（<a href="02_group_law.html">第 2 章</a>、<a href="03_ecdlp.html">第 3 章</a>、<a href="07_special.html">第 7 章</a>、<a href="10_synthesis.html">第 10 章</a>）</span></li><li>NIST, <a href="https://doi.org/10.6028/NIST.SP.800-57pt1r5" target="_blank" rel="noopener"><cite>SP 800-57 Part 1 Rev. 5: Recommendation for Key Management</cite></a>, 2020. <span class="where">（<a href="00_why_ecc.html">第 0 章</a>）</span></li><li>A. Langley, M. Hamburg, S. Turner, <a href="https://www.rfc-editor.org/rfc/rfc7748" target="_blank" rel="noopener"><cite>RFC 7748: Elliptic Curves for Security</cite></a>, IETF, 2016. <span class="where">（<a href="00_why_ecc.html">第 0 章</a>、<a href="05_scalar.html">第 5 章</a>）</span></li><li>Certicom Research, <a href="https://www.secg.org/sec2-v2.pdf" target="_blank" rel="noopener"><cite>SEC 2: Recommended Elliptic Curve Domain Parameters</cite></a>, v2.0, 2010.</li><li>D. J. Bernstein, T. Lange, <a href="https://hyperelliptic.org/EFD/" target="_blank" rel="noopener"><cite>Explicit-Formulas Database</cite></a>. <span class="where">（<a href="04_coordinates.html">第 4 章</a>）</span></li><li>P. L. Montgomery, <a href="https://doi.org/10.1090/S0025-5718-1985-0777282-X" target="_blank" rel="noopener"><cite>Modular multiplication without trial division</cite></a>, Mathematics of Computation 44 (1985), 519–521. <span class="where">（<a href="09_montgomery.html">第 9 章</a>）</span></li><li>P. Barrett, <a href="https://doi.org/10.1007/3-540-47721-7_24" target="_blank" rel="noopener"><cite>Implementing the Rivest Shamir and Adleman public key encryption algorithm on a standard digital signal processor</cite></a>, CRYPTO '86, LNCS 263, 311–323.</li><li>J. A. Solinas, <cite>Generalized Mersenne numbers</cite>, Technical Report CORR 99-39, University of Waterloo, 1999.</li></ul>
+<h3>建議閱讀順序</h3>
+<ol>
+<li>想先看全貌：Paar–Pelzl 第 9 章，或 Hoffstein–Pipher–Silverman 第 6 章。</li>
+<li>曲線的數學：Washington 第 2、4 章。</li>
+<li>實作與演算法：Hankerson–Menezes–Vanstone 第 2、3 章；模乘法另看 HAC 第 14 章（官方網站可免費下載）。</li>
+<li>標準參數與快速化簡：NIST SP 800-186（P-256、P-521 參數在 §3.2.1，化簡公式在附錄 G）。</li>
+<li>點運算公式的成本：Explicit-Formulas Database。</li>
+</ol>
+</section></main>
+<footer>橢圓曲線密碼：從曲線到模乘法・<a href="https://github.com/phonchi/ecc-selfstudy">原始碼</a></footer>
+<script src="assets/ecc-ui.js?v=20261004"></script>
+</body>
+</html>

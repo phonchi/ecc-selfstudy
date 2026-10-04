@@ -1,0 +1,76 @@
+<section id="why" data-nav="動機">
+<h2>當模數沒有好看的形狀</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>第 7 章的折疊只對特殊的 $p$ 有效。可是很多模數是別人給的：ECDSA 簽章要在<strong>群階 $n$</strong> 下做運算，而 P-256 的 $n$ 是一串看不出規律的 256 位元數；RSA 的模數更是兩個隨機質數的乘積。這時我們仍然想避開長除法。</p>
+<p>Barrett（1986）的想法是：<strong>除法很貴，但「除以同一個數」可以預先準備。</strong>同一個模數 $m$ 會被用上幾千次，那就先花一次功夫算出 $1/m$ 的近似值，之後每一次化簡都只用乘法和移位。</p>
+</div>
+<p>先看實數的版本。$x \bmod m = x - m\lfloor x/m\rfloor$，問題只在商 $Q=\lfloor x/m\rfloor$。若事先知道 $1/m$ 的近似值，商就能用一次乘法估出來。在電腦上，「近似 $1/m$」要寫成整數：取基底 $b$（實作上 $b=2^{32}$ 或 $2^{64}$，手算用 $b=10$），令 $m$ 有 $k$ 位（$b^{k-1}\le m&lt;b^k$），預先算</p>
+$$\mu = \left\lfloor \frac{b^{2k}}{m} \right\rfloor .$$
+<p>$\mu/b^{2k}$ 就是 $1/m$ 的定點近似。除以 $b^{j}$ 只是丟掉最低 $j$ 位（字組），不必真的做除法。</p>
+</section>
+
+<section id="algo" data-nav="演算法">
+<h2>估商、相減、修正</h2>
+<p>對 $0\le x&lt;b^{2k}$（兩個小於 $m$ 的數相乘一定符合），HAC 演算法 14.42 是：</p>
+<ol>
+<li><strong>估商</strong>：$q_1=\lfloor x/b^{k-1}\rfloor$，$q_2=q_1\mu$，$q_3=\lfloor q_2/b^{k+1}\rfloor$。</li>
+<li><strong>相減</strong>：$r = (x \bmod b^{k+1}) - (q_3 m \bmod b^{k+1})$；若 $r&lt;0$ 就加上 $b^{k+1}$。</li>
+<li><strong>修正</strong>：當 $r\ge m$ 時減去 $m$，重複。</li>
+</ol>
+<p>第一步的兩個「除以 $b$ 的冪」都是丟掉低位字組，乘法 $q_1\mu$ 是一次 $(k+1)\times(k+1)$ 字組的乘法。第二步只需要低 $k+1$ 個字組。整個過程沒有除法。</p>
+<div class="info-box green"><span class="info-label">為什麼最多修正兩次</span>
+<p>$q_3$ 是 $Q=\lfloor x/m\rfloor$ 的估計值。它有兩個誤差來源：丟掉 $x$ 的低 $k-1$ 位，以及 $\mu$ 本身是取整過的。每個來源讓估計值少不到 1，所以</p>
+$$Q-2 \le q_3 \le Q \qquad\text{(HAC Fact 14.43)}.$$
+<p>於是 $x - q_3m$ 落在 $[0,3m)$，最多減兩次 $m$。真實大小的模數下，大多數情形一次都不必減（下面的互動元件有統計）。</p>
+<p>第二步只取低 $k+1$ 位的理由：真正的差 $x-q_3m$ 小於 $3m$，而 $3m&lt;b^{k+1}$（因為 $b&gt;3$），所以只看低 $k+1$ 位就能還原它。</p>
+</div>
+<div class="example"><div class="ex-label">手算小例：最多的兩次修正真的會發生</div>
+<p>取 $m=241$，基底 $b=4$。$241$ 在 4 進位有 $k=4$ 位（$4^3=64\le241&lt;256=4^4$），所以 $\mu=\lfloor 4^8/241\rfloor=\lfloor 65536/241\rfloor = 271$。對 $x=57855$：</p>
+$$q_1=\lfloor 57855/4^3\rfloor = 903,\quad q_2 = 903\cdot271=244713,\quad q_3=\lfloor 244713/4^5\rfloor = 238 .$$
+<p>真正的商是 $Q=\lfloor 57855/241\rfloor=240$，所以 $q_3=Q-2$。相減得 $r=57855-238\cdot241=497$，再減兩次 241：$497\to256\to15$。驗算：$57855=240\cdot241+15$。</p>
+</div>
+<!-- code: barrett Barrett 化簡（HAC 演算法 14.42） -->
+</section>
+
+<section id="lab" data-nav="逐步演示">
+<h2>互動：Barrett 逐步演示</h2>
+<p>選一個模數與基底。上方是每一步的數值；下方的數線以 $m$ 為單位，標出 $q_3m$、真正的 $Qm$ 和 $x$：箭頭的長度就是 $r=x-q_3m$，它最多跨過兩格。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">BARRETT</div>
+    <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
+      <label>模數 <select id="w08mod">
+        <option value="t241">m = 241，b = 4（兩次修正的例子）</option>
+        <option value="t4567">m = 4567，b = 10（十進位）</option>
+        <option value="n256">P-256 的群階 n，b = 2^64</option>
+        <option value="p256">P-256 的 p，b = 2^64</option>
+        <option value="p521">P-521 的 p，b = 2^64</option>
+      </select></label>
+      <button class="btn btn-ghost" id="w08rand" type="button">隨機 x = a·b</button>
+    </div>
+    <div class="stage pad" id="w08steps"></div>
+    <div class="stage" style="margin-top:.6rem"><svg id="w08line" role="img" aria-label="Barrett 數線"></svg></div>
+    <div class="status-banner" id="w08status"></div>
+    <div class="controls-bar">
+      <button class="btn btn-play" id="w08play" type="button">▶ 播放</button>
+      <button class="btn btn-step" id="w08step" type="button">下一步</button>
+      <button class="btn btn-reset" id="w08reset" type="button">重來</button>
+    </div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">預先算好的常數</div><div id="w08pre"></div></div>
+    <div class="info-card"><div class="ic-title" id="w08statTitle">修正次數</div><div id="w08stats"></div>
+      <div class="ic-note" style="margin-top:.4rem">兩次修正很少見，但確實會發生，所以演算法必須保留這一步。真實大小的模數下，隨機抽樣通常看不到兩次修正。</div></div>
+  </div>
+</div>
+</section>
+
+<section id="cost" data-nav="成本">
+<h2>成本與取捨</h2>
+<ul>
+<li><strong>預計算</strong>：每個模數算一次 $\mu$（一次長除法）。之後幾千次化簡都共用它。</li>
+<li><strong>每次化簡</strong>：大約兩次 $k$ 字組等級的乘法（$q_1\mu$ 與 $q_3m$），其中有不少部分積可以省略（只需要高位或低位），再加上至多兩次減法。</li>
+<li><strong>輸出就是普通的 $x\bmod m$</strong>：不像第 9 章的 Montgomery 需要先換表示法。這讓 Barrett 適合只做少數幾次乘法、或模數經常更換的情形。</li>
+<li><strong>修正步驟與資料有關</strong>：減 0、1 或 2 次取決於輸入，會造成時間差。常數時間的實作會固定做兩次「條件減法」，用遮罩選結果而不是用分支。</li>
+</ul>
+</section>

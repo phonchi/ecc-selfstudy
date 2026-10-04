@@ -1,0 +1,5 @@
+__pycache__/
+.pytest_cache/
+tests/_vectors.json
+tools/_shots/
+node_modules/
