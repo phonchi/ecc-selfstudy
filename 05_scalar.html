@@ -37,7 +37,7 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">5.1</span>把 $k$ 個 $P$ 加起來，但不能真的加 $k$ 次</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 4 章算出了單次倍點與加點的成本（Jacobian 座標下約 $7\mathbf M$ 與 $10\mathbf M$），但留下一個問題：一次 $kP$ 要做<strong>幾次</strong>倍點與加點，又要按什麼順序做？ECC 的公開金鑰是 $Q_A=d_AG$，ECDH 的共同祕密是 $d_A(d_BG)$：所有協定的核心都是這個運算。$k$ 是 256 位元左右的整數，一個一個加要 $2^{256}$ 步，顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法。</p>
+<p>第 4 章算出了單次倍點與加點的成本（公式見 <a class="xref" href="02_group_law.html#c2-thm-formulas">定理 2.5</a> 與 <a class="xref" href="04_coordinates.html#c4-thm-formulas">定理 4.3</a>；Jacobian 座標下約 $7\mathbf M$ 與 $10\mathbf M$），但留下一個問題：一次 $kP$ 要做<strong>幾次</strong>倍點與加點，又要按什麼順序做？ECC 的公開金鑰是 $Q_A=d_AG$，ECDH 的共同祕密是 $d_A(d_BG)$：所有協定的核心都是這個運算。$k$ 是 256 位元左右的整數，一個一個加要 $2^{256}$ 步，顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法。</p>
 <p>本章有兩條主線。第一條是<strong>速度</strong>：double-and-add 與 NAF（一種帶負號數字的二進位表示，§5.4 定義），最後把一次 $kP$ 的成本換算成 $\mathbb F_p$ 乘法的次數。第二條是<strong>安全</strong>：運算的順序本身可能洩漏 $k$，Montgomery 階梯把每一位的動作做成一樣。</p>
 </div>
 </section>
@@ -67,7 +67,7 @@ $$k=(\cdots((k_{\ell-1})\,2+k_{\ell-2})\,2+\cdots)\,2+k_0 .$$
 </ol>
 <p>處理完 $k_{\ell-1},\dots,k_i$ 之後，$R=jP$，其中 $j=(k_{\ell-1}\cdots k_i)_2$ 是已讀的位元所代表的整數。第一輪的 $2\mathcal O$ 與 $\mathcal O+P$ 不必真的算，所以實際成本是 $\ell-1$ 次倍點，以及（$k$ 中 1 的個數減 1）次加點。隨機的 $k$ 約一半位元是 1，平均約 $\ell/2$ 次加點。</p>
 </div>
-<p>加上的點永遠是同一個 $P$，所以 $P$ 可以保持仿射形式，用第 4 章的混合加點（<a class="xref" href="04_coordinates.html#c4-alg-madd">演算法 4.4</a>）；$R$ 用 Jacobian 座標，倍點用 <a class="xref" href="04_coordinates.html#c4-alg-dbl">演算法 4.3</a>。</p>
+<p>加上的點永遠是同一個 $P$，所以 $P$ 可以保持仿射形式，用第 4 章的混合加點（<a class="xref" href="04_coordinates.html#c4-alg-madd">演算法 4.5</a>）；$R$ 用 Jacobian 座標，倍點用 <a class="xref" href="04_coordinates.html#c4-alg-dbl">演算法 4.4</a>。</p>
 <details class="code-fold"><summary>Python 參考實作（選讀）：三種純量乘法</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">scalar_mult</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;由左而右的 double-and-add：每讀一位先倍點，位元為 1 再加 P。&quot;&quot;&quot;</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">O</span>

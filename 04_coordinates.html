@@ -36,7 +36,7 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">4.1</span>每一次加點都要付一次反元素</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 3 章回答了「怎樣的曲線才安全」：基點的階 $n$ 是大質數，約 256 位元。接下來的問題是成本。第 2 章的加點與倍點公式（<a class="xref" href="02_group_law.html#c2-alg-add">演算法 2.5</a>）裡，斜率 $\lambda$ 是一個分數，所以每一次加點或倍點都要算一次 $\mathbb F_p$ 的反元素。第 1 章說過，一次反元素 $\mathbf I$ 大約等於 80 到 100 次乘法 $\mathbf M$（<a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）。一次 256 位元的純量乘法 $kP$（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）要做約 255 次倍點與 128 次加點（第 5 章），光是反元素就要將近四萬次乘法。</p>
+<p>第 3 章回答了「怎樣的曲線才安全」：基點的階 $n$ 是大質數，約 256 位元。接下來的問題是成本。第 2 章的加點與倍點公式（<a class="xref" href="02_group_law.html#c2-alg-add">演算法 2.6</a>）裡，斜率 $\lambda$ 是一個分數，所以每一次加點或倍點都要算一次 $\mathbb F_p$ 的反元素。第 1 章說過，一次反元素 $\mathbf I$ 大約等於 80 到 100 次乘法 $\mathbf M$（<a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）。一次 256 位元的純量乘法 $kP$（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）要做約 255 次倍點與 128 次加點（第 5 章），光是反元素就要將近四萬次乘法。</p>
 <p>解法很像分數運算：<strong>先不要約分</strong>。把分母另外存成第三個座標，一路只做乘法；整個純量乘法做完，最後才做一次除法。第 2 章為了描述無窮遠點已經用過這個想法（射影座標，<a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）；本章把它換成對倍點更省的版本，並逐項計算成本。</p>
 </div>
 </section>
@@ -70,7 +70,15 @@ $$X_1Z_2^2=X_2Z_1^2\quad\text{且}\quad Y_1Z_2^3=Y_2Z_1^3 .$$
 <section id="formulas" data-nav="倍點與加點">
 <h2><span class="secno">4.3</span>只用乘法的倍點與加點</h2>
 <p>把第 2 章公式中的 $x_i=X_i/Z_i^2$、$y_i=Y_i/Z_i^3$ 代進去、通分，分母全部收進新的 $Z_3$，就得到只有乘法的公式。下面兩個演算法是 HMV 針對 $a=-3$ 的曲線（P-256 與 P-521 都是）寫出的版本。倍點的中間量 $A,B,C,D$ 沿用 HMV 註解中的名稱；加點的部分中間量改了名，避免與曲線 $E$、基點 $G$、成本 $\mathbf I$ 混淆。</p>
-<div class="box algo" id="c4-alg-dbl"><div class="box-head"><span class="box-label">演算法 4.3</span><span class="box-title">Jacobian 倍點（a = −3）</span><span class="box-ref">HMV Alg. 3.21</span></div>
+<div class="box thm" id="c4-thm-formulas"><div class="box-head"><span class="box-label">定理 4.3</span><span class="box-title">Jacobian 座標的倍點與混合加點公式（a = −3）</span><span class="box-ref">HMV Alg. 3.21, 3.22；EFD</span></div>
+<p>設 $P=(X_1:Y_1:Z_1)$ 是 Jacobian 點（<a class="xref" href="04_coordinates.html#c4-def-jac">定義 4.1</a>），曲線 $E:y^2=x^3-3x+b$。</p>
+<p><strong>倍點</strong>（$P\ne\mathcal O$）：令 $A=3(X_1-Z_1^2)(X_1+Z_1^2)$，則 $2P=(X_3:Y_3:Z_3)$，</p>
+$$X_3=A^2-8X_1Y_1^2,\qquad Y_3=A\,(4X_1Y_1^2-X_3)-8Y_1^4,\qquad Z_3=2Y_1Z_1 .$$
+<p><strong>混合加點</strong>（$Q=(x_2,y_2)$ 是仿射點，$P\ne\pm Q$）：令 $H=x_2Z_1^2-X_1$、$r=y_2Z_1^3-Y_1$，則 $P+Q=(X_3:Y_3:Z_3)$，</p>
+$$X_3=r^2-H^3-2X_1H^2,\qquad Y_3=r\,(X_1H^2-X_3)-Y_1H^3,\qquad Z_3=Z_1H .$$
+<p>這兩組式子就是 <a class="xref" href="02_group_law.html#c2-thm-formulas">定理 2.5</a> 把 $x=X/Z^2$、$y=Y/Z^3$ 代入後通分的結果：倍點的切線斜率是 $\lambda=A/Z_3$，加點的割線斜率是 $\lambda=r/Z_3$，分母全部收進 $Z_3$，所以沒有除法。下面兩個演算法把它們拆成逐步計算，並標出每一步的乘法與平方。</p>
+</div>
+<div class="box algo" id="c4-alg-dbl"><div class="box-head"><span class="box-label">演算法 4.4</span><span class="box-title">Jacobian 倍點（a = −3）</span><span class="box-ref">HMV Alg. 3.21</span></div>
 <div class="io"><b>輸入</b>$P=(X_1:Y_1:Z_1)$，在 $E:y^2=x^3-3x+b$ 上。</div>
 <div class="io"><b>輸出</b>$2P=(X_3:Y_3:Z_3)$。</div>
 <ol class="steps">
@@ -84,14 +92,14 @@ $$X_1Z_2^2=X_2Z_1^2\quad\text{且}\quad Y_1Z_2^3=Y_2Z_1^3 .$$
 </ol>
 <p>它對應仿射的切線斜率 $\lambda=A/(2Y_1Z_1)=A/Z_3$。成本：平方 $Z_1^2$、$B^2$、$A^2$、$C^2$，乘法 $(X_1-Z_1^2)(X_1+Z_1^2)$、$BZ_1$、$CX_1$、$(D-X_3)A$，共 $4\mathbf M+4\mathbf S$。「$/2$」是乘上 $2^{-1}\bmod p$，只要一次移位（必要時先加 $p$），不是一次反元素。$Y_1=0$ 時 $Z_3=0$，結果自動是 $\mathcal O$。</p>
 </div>
-<div class="box algo" id="c4-alg-madd"><div class="box-head"><span class="box-label">演算法 4.4</span><span class="box-title">仿射–Jacobian 混合加點（a = −3）</span><span class="box-ref">HMV Alg. 3.22</span></div>
+<div class="box algo" id="c4-alg-madd"><div class="box-head"><span class="box-label">演算法 4.5</span><span class="box-title">仿射–Jacobian 混合加點（a = −3）</span><span class="box-ref">HMV Alg. 3.22</span></div>
 <div class="io"><b>輸入</b>Jacobian 點 $P=(X_1:Y_1:Z_1)$，仿射點 $Q=(x_2,y_2)$，在 $E:y^2=x^3-3x+b$ 上。</div>
 <div class="io"><b>輸出</b>$P+Q=(X_3:Y_3:Z_3)$。</div>
 <ol class="steps">
 <li>若 $Q=\mathcal O$，回傳 $P$；若 $P=\mathcal O$，回傳 $(x_2:y_2:1)$。</li>
 <li>$A\leftarrow Z_1^2$，$B\leftarrow Z_1\cdot A$，$C\leftarrow x_2\cdot A$，$D\leftarrow y_2\cdot B$。（把 $Q$ 寫成與 $P$ 同一個分母。）</li>
 <li>$H\leftarrow C-X_1$，$r\leftarrow D-Y_1$。</li>
-<li>若 $H=0$：$r=0$ 表示 $P=Q$，改用 <a class="xref" href="04_coordinates.html#c4-alg-dbl">演算法 4.3</a> 計算 $2(x_2:y_2:1)$ 並回傳；否則 $P=-Q$，回傳 $\mathcal O$。</li>
+<li>若 $H=0$：$r=0$ 表示 $P=Q$，改用 <a class="xref" href="04_coordinates.html#c4-alg-dbl">演算法 4.4</a> 計算 $2(x_2:y_2:1)$ 並回傳；否則 $P=-Q$，回傳 $\mathcal O$。</li>
 <li>$Z_3\leftarrow Z_1\cdot H$。</li>
 <li>$H_2\leftarrow H^2$，$H_3\leftarrow H_2\cdot H$，$V\leftarrow X_1\cdot H_2$。</li>
 <li>$X_3\leftarrow r^2-(H_3+2V)$，$Y_3\leftarrow r\cdot(V-X_3)-Y_1\cdot H_3$。</li>
@@ -174,7 +182,7 @@ $$X_1Z_2^2=X_2Z_1^2\quad\text{且}\quad Y_1Z_2^3=Y_2Z_1^3 .$$
 <p>對照之下，HMV 表 3.3 中普通射影座標（<a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）的倍點是 $7\mathbf M+3\mathbf S$、加點 $12\mathbf M+2\mathbf S$；Jacobian 座標的倍點明顯較省，而純量乘法中倍點佔了大多數（第 5 章），所以本站選用 Jacobian 座標。EFD 與 HMV 的數字略有不同，是因為公式在乘法與平方之間的取捨不同，總量差不多。</p>
 <p>兩個常見的技巧：</p>
 <ul>
-<li><strong>混合加點</strong>（mixed addition）：第 5 章的演算法裡，加上的永遠是同一個已知點 $P$，它可以一直保持仿射形式（$Z=1$）。<a class="xref" href="04_coordinates.html#c4-alg-madd">演算法 4.4</a> 中所有乘 $Z_2$ 的步驟因此消失，比兩點都是 Jacobian 的加點省約 $4\mathbf M+1\mathbf S$。</li>
+<li><strong>混合加點</strong>（mixed addition）：第 5 章的演算法裡，加上的永遠是同一個已知點 $P$，它可以一直保持仿射形式（$Z=1$）。<a class="xref" href="04_coordinates.html#c4-alg-madd">演算法 4.5</a> 中所有乘 $Z_2$ 的步驟因此消失，比兩點都是 Jacobian 的加點省約 $4\mathbf M+1\mathbf S$。</li>
 <li><strong>$a=-3$</strong>：倍點的分子是 $3X^2+aZ^4$。一般的 $a$ 要先算 $X^2$ 與 $Z^4=(Z^2)^2$ 兩次平方，再乘一次 $a$；dbl-2007-bl 的總成本是 $1\mathbf M+8\mathbf S+$（一次乘 $a$）。當 $a=-3$ 時，$3X^2-3Z^4=3(X-Z^2)(X+Z^2)$，用一次乘法取代這兩次平方與乘 $a$；連帶地，原本借用 $X^2$ 來省乘法的另一步也改成直接相乘，最後得到 dbl-2001-b 的 $3\mathbf M+5\mathbf S$（以 $\mathbf S=0.8\mathbf M$ 估算，約 $7\mathbf M$ 對 $7.4\mathbf M$ 再加乘 $a$）。HMV Alg. 3.21 用同一個恆等式，取捨不同，得到 $4\mathbf M+4\mathbf S$。NIST 曲線都取 $a=-3$，理由就在這裡。</li>
 </ul>
 </section>

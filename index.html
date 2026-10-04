@@ -36,7 +36,7 @@
 </div>
 <section id="about" data-nav="這個網站在講什麼">
 <h2>這個網站在講什麼</h2>
-<p>橢圓曲線密碼（elliptic curve cryptography，ECC）的數學核心，數論背景的讀者多半已經熟悉：有限體（<a class="xref" href="01_finite_field.html#def-fp">定義 1.11</a>）上的三次曲線（<a class="xref" href="02_group_law.html#c2-def-curve">定義 2.1</a>）、它的群律（<a class="xref" href="02_group_law.html#c2-thm-grouplaw">定理 2.6</a>）、Hasse 定理（<a class="xref" href="03_ecdlp.html#c3-thm-hasse">定理 3.4</a>）。比較陌生的是另一半：這些運算在電腦上怎麼算、要花多少成本，以及實作者為什麼那麼在意模數 $p$ 的形狀。</p>
+<p>橢圓曲線密碼（elliptic curve cryptography，ECC）的數學核心，數論背景的讀者多半已經熟悉：有限體（<a class="xref" href="01_finite_field.html#def-fp">定義 1.11</a>）上的三次曲線（<a class="xref" href="02_group_law.html#c2-def-curve">定義 2.1</a>）、它的群律（<a class="xref" href="02_group_law.html#c2-thm-grouplaw">定理 2.7</a>）、Hasse 定理（<a class="xref" href="03_ecdlp.html#c3-thm-hasse">定理 3.4</a>）。比較陌生的是另一半：這些運算在電腦上怎麼算、要花多少成本，以及實作者為什麼那麼在意模數 $p$ 的形狀。</p>
 <p>本站把這兩半接起來。先說明為什麼需要 ECC、為什麼它的金鑰比 RSA 這類以大數分解為基礎的系統短；接著整理底層數學，包括有限體、群律、群結構與離散對數問題 ECDLP（<a class="xref" href="00_why_ecc.html#c0-def-ecdlp">定義 0.3</a>）；最後一路拆到一次純量乘法裡要執行幾千次的模乘法。每個記號與術語第一次出現時都有定義；定理只寫敘述、直覺與出處，不寫證明。</p>
 <h3>怎麼讀</h3>
 <ul>

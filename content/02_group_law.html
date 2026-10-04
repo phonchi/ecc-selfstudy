@@ -43,15 +43,31 @@ $$Y^2Z=X^3+aXZ^2+bZ^3 .$$
 $$P+Q=-R',\qquad\text{其中}\ -(x,y)=(x,-y),\ -\mathcal O=\mathcal O .$$
 <p>等價的說法：$P,Q,R$ 共線（計入重數）時，$P+Q+R=\mathcal O$。</p>
 </div>
-<p>把直線 $y=\lambda(x-x_1)+y_1$ 代入曲線，得到首項為 $x^3$ 的三次方程，它的 $x^2$ 項係數是 $-\lambda^2$，所以三個根的和等於 $\lambda^2$。已知兩個根 $x_1,x_2$，第三個根就是 $\lambda^2-x_1-x_2$，完全不用解方程。整理成公式：</p>
+<p>把直線 $y=\lambda(x-x_1)+y_1$ 代入曲線，得到首項為 $x^3$ 的三次方程，它的 $x^2$ 項係數是 $-\lambda^2$，所以三個根的和等於 $\lambda^2$。已知兩個根 $x_1,x_2$，第三個根就是 $\lambda^2-x_1-x_2$，完全不用解方程。整理成下面兩組公式。</p>
+<div class="box thm" id="c2-thm-formulas" data-title="加點公式與倍點公式（仿射座標）" data-ref="Washington §2.2；HMV §3.1.2">
+<p>設 $P=(x_1,y_1)$、$Q=(x_2,y_2)$ 是 $E:y^2=x^3+ax+b$ 上的點（都不是 $\mathcal O$）。</p>
+<p><strong>加點</strong>（$x_1\ne x_2$，也就是 $Q\ne\pm P$）：</p>
+$$\lambda=\frac{y_2-y_1}{x_2-x_1},\qquad x_3=\lambda^2-x_1-x_2,\qquad y_3=\lambda(x_1-x_3)-y_1,\qquad P+Q=(x_3,y_3).$$
+<p><strong>倍點</strong>（$Q=P$，而且 $y_1\ne0$）：</p>
+$$\lambda=\frac{3x_1^2+a}{2y_1},\qquad x_3=\lambda^2-2x_1,\qquad y_3=\lambda(x_1-x_3)-y_1,\qquad 2P=(x_3,y_3).$$
+<p><strong>其餘情形</strong>：$P+\mathcal O=P$；$x_1=x_2$ 而 $y_2=-y_1$ 時 $P+Q=\mathcal O$（包括 $y_1=0$ 時 $2P=\mathcal O$）。</p>
+<p>兩組公式只差在斜率 $\lambda$：加點用割線斜率；倍點用切線斜率，由 $y^2=x^3+ax+b$ 兩邊對 $x$ 微分得 $2y\,y'=3x^2+a$。$x_3$ 都是「三個交點的 $x$ 座標和等於 $\lambda^2$」；$y_3$ 先算直線上的第三點，再對 $x$ 軸鏡射。</p>
+</div>
+<div class="example"><div class="ex-label">手算小例：$E_A:y^2=x^3+2x+3$，$\mathbb F_{97}$</div>
+<p>取 $P=(3,6)$、$Q=(10,21)$（$3^3+2\cdot3+3=36=6^2$，$10^3+2\cdot10+3=1023\equiv53\equiv21^2$）。</p>
+<p><strong>加點</strong>：$\lambda=\dfrac{21-6}{10-3}=15\cdot7^{-1}=15\cdot14\equiv16$，$x_3=16^2-3-10\equiv49$，$y_3=16(3-49)-6\equiv34$，所以 $P+Q=(49,34)$。</p>
+<p><strong>倍點</strong>：$\lambda=\dfrac{3\cdot3^2+2}{2\cdot6}=29\cdot12^{-1}=29\cdot89\equiv59$，$x_3=59^2-2\cdot3\equiv80$，$y_3=59(3-80)-6\equiv10$，所以 $2P=(80,10)$。</p>
+<p>其中 $7^{-1}\equiv14$、$12^{-1}\equiv89$ 是用 [[ref:alg-egcd]] 算出的反元素（$7\cdot14=98$、$12\cdot89=1068$，模 97 都是 1）。</p>
+</div>
+<p>把兩組公式連同特殊情形寫成一個程序：</p>
 <div class="box algo" id="c2-alg-add" data-title="仿射座標的加點與倍點" data-ref="Washington §2.2；HMV §3.1.2">
 <div class="io"><b>輸入</b>$P=(x_1,y_1)$、$Q=(x_2,y_2)\in E(K)$，或其中之一為 $\mathcal O$。</div>
 <div class="io"><b>輸出</b>$P+Q$。</div>
 <ol class="steps">
 <li>若 $P=\mathcal O$，回傳 $Q$；若 $Q=\mathcal O$，回傳 $P$。</li>
 <li>若 $x_1=x_2$ 且 $y_1=-y_2$（含 $P=Q$、$y_1=0$ 的情形），回傳 $\mathcal O$。</li>
-<li>斜率：若 $x_1\ne x_2$，$\lambda\leftarrow\dfrac{y_2-y_1}{x_2-x_1}$（割線）；若 $P=Q$，$\lambda\leftarrow\dfrac{3x_1^2+a}{2y_1}$（切線，由隱函數微分得到）。</li>
-<li>$x_3\leftarrow\lambda^2-x_1-x_2$，$y_3\leftarrow\lambda(x_1-x_3)-y_1$，回傳 $(x_3,y_3)$。</li>
+<li>依 [[ref:c2-thm-formulas]] 算斜率 $\lambda$：$x_1\ne x_2$ 用割線斜率，$P=Q$ 用切線斜率。</li>
+<li>$x_3\leftarrow\lambda^2-x_1-x_2$（倍點時 $x_2=x_1$），$y_3\leftarrow\lambda(x_1-x_3)-y_1$，回傳 $(x_3,y_3)$。</li>
 </ol>
 <p>成本：加點 $1\mathbf I+2\mathbf M+1\mathbf S$，倍點 $1\mathbf I+2\mathbf M+2\mathbf S$（HMV Table 3.3；$\mathbf M,\mathbf S,\mathbf I$ 見 [[ref:def-cost]]）。</p>
 </div>

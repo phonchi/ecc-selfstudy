@@ -35,6 +35,14 @@ $$X_1Z_2^2=X_2Z_1^2\quad\text{且}\quad Y_1Z_2^3=Y_2Z_1^3 .$$
 <section id="formulas" data-nav="倍點與加點">
 <h2>只用乘法的倍點與加點</h2>
 <p>把第 2 章公式中的 $x_i=X_i/Z_i^2$、$y_i=Y_i/Z_i^3$ 代進去、通分，分母全部收進新的 $Z_3$，就得到只有乘法的公式。下面兩個演算法是 HMV 針對 $a=-3$ 的曲線（P-256 與 P-521 都是）寫出的版本。倍點的中間量 $A,B,C,D$ 沿用 HMV 註解中的名稱；加點的部分中間量改了名，避免與曲線 $E$、基點 $G$、成本 $\mathbf I$ 混淆。</p>
+<div class="box thm" id="c4-thm-formulas" data-title="Jacobian 座標的倍點與混合加點公式（a = −3）" data-ref="HMV Alg. 3.21, 3.22；EFD">
+<p>設 $P=(X_1:Y_1:Z_1)$ 是 Jacobian 點（[[ref:c4-def-jac]]），曲線 $E:y^2=x^3-3x+b$。</p>
+<p><strong>倍點</strong>（$P\ne\mathcal O$）：令 $A=3(X_1-Z_1^2)(X_1+Z_1^2)$，則 $2P=(X_3:Y_3:Z_3)$，</p>
+$$X_3=A^2-8X_1Y_1^2,\qquad Y_3=A\,(4X_1Y_1^2-X_3)-8Y_1^4,\qquad Z_3=2Y_1Z_1 .$$
+<p><strong>混合加點</strong>（$Q=(x_2,y_2)$ 是仿射點，$P\ne\pm Q$）：令 $H=x_2Z_1^2-X_1$、$r=y_2Z_1^3-Y_1$，則 $P+Q=(X_3:Y_3:Z_3)$，</p>
+$$X_3=r^2-H^3-2X_1H^2,\qquad Y_3=r\,(X_1H^2-X_3)-Y_1H^3,\qquad Z_3=Z_1H .$$
+<p>這兩組式子就是 [[ref:c2-thm-formulas]] 把 $x=X/Z^2$、$y=Y/Z^3$ 代入後通分的結果：倍點的切線斜率是 $\lambda=A/Z_3$，加點的割線斜率是 $\lambda=r/Z_3$，分母全部收進 $Z_3$，所以沒有除法。下面兩個演算法把它們拆成逐步計算，並標出每一步的乘法與平方。</p>
+</div>
 <div class="box algo" id="c4-alg-dbl" data-title="Jacobian 倍點（a = −3）" data-ref="HMV Alg. 3.21">
 <div class="io"><b>輸入</b>$P=(X_1:Y_1:Z_1)$，在 $E:y^2=x^3-3x+b$ 上。</div>
 <div class="io"><b>輸出</b>$2P=(X_3:Y_3:Z_3)$。</div>

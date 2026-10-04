@@ -37,7 +37,7 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">3.1</span>安全性取決於一個大質數 $n$</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 2 章的群律（<a class="xref" href="02_group_law.html#c2-thm-grouplaw">定理 2.6</a>）告訴我們，$\mathbb F_p$ 上的曲線點構成一個有限交換群。第 0 章的 ECDH（<a class="xref" href="00_why_ecc.html#c0-def-ecdh">定義 0.6</a>）就在這個群裡運作：大家共用一個點 $G$，Alice 公開 $Q_A=d_AG$，Bob 公開 $Q_B=d_BG$。協定要安全，必須做到「已知 $G$ 與 $Q_A$，求不出 $d_A$」。</p>
+<p>第 2 章的群律（<a class="xref" href="02_group_law.html#c2-thm-grouplaw">定理 2.7</a>）告訴我們，$\mathbb F_p$ 上的曲線點構成一個有限交換群。第 0 章的 ECDH（<a class="xref" href="00_why_ecc.html#c0-def-ecdh">定義 0.6</a>）就在這個群裡運作：大家共用一個點 $G$，Alice 公開 $Q_A=d_AG$，Bob 公開 $Q_B=d_BG$。協定要安全，必須做到「已知 $G$ 與 $Q_A$，求不出 $d_A$」。</p>
 <p>本章會看到，對任何有限群都適用的攻擊，所需時間大約是 $\sqrt q$，其中 $q$ 是 $G$ 的階的<strong>最大質因數</strong>。所以 $G$ 的階至少要有一個很大的質因數；為了避開小因數、也讓協定簡單，實務上直接讓 $G$ 的階 $n$ 是一個大質數；要 128 位元的安全，$n$ 大約要 256 位元。這引出三個問題，也是本章的骨架：</p>
 <ol>
 <li>曲線上一共有幾個點？（3.2 節：Hasse 定理）</li>
@@ -308,7 +308,7 @@ $$c'G+d'Q=c''G+d''Q .$$
     <div class="info-card"><div class="ic-title">統計</div><div id="w03hinfo"></div></div>
   </div>
 </div>
-<p>下一章轉向成本：第 2 章的加點公式（<a class="xref" href="02_group_law.html#c2-alg-add">演算法 2.5</a>）每一步都要除一次，在安全的曲線上做幾百次加點，要怎麼避開這些除法？</p>
+<p>下一章轉向成本：第 2 章的加點公式（<a class="xref" href="02_group_law.html#c2-alg-add">演算法 2.6</a>）每一步都要除一次，在安全的曲線上做幾百次加點，要怎麼避開這些除法？</p>
 </section>
 
 <section id="refs" data-nav="本章文獻">

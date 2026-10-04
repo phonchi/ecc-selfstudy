@@ -122,7 +122,7 @@ $$23\,Q_B = 61\,Q_A = (72,49) = 12\,G ,$$
 <ol class="w00-chain">
 <li><span class="lv">協定</span><strong>ECDH</strong>：每一方一到兩次純量乘法。<span class="where">本章</span></li>
 <li><span class="lv">純量乘法</span><strong>$kP$</strong>：$k$ 有幾百位元，要做幾百次「點加點」；換算下來是<strong>幾千次 $\mathbb F_p$ 乘法</strong>。<span class="where"><a href="05_scalar.html">第 5 章</a>；為什麼難以倒推見 <a href="03_ecdlp.html">第 3 章</a></span></li>
-<li><span class="lv">點運算</span><strong>加點與倍點</strong>：每一次都是十幾次 $\mathbb F_p$ 的加減乘除；怎麼避開昂貴的除法是第 4 章的主題。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
+<li><span class="lv">點運算</span><strong>加點與倍點</strong>：公式見 [[ref:c2-thm-formulas]]，每一次都是十幾次 $\mathbb F_p$ 的加減乘除；怎麼避開昂貴的除法是第 4 章的主題。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
 <li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：先得到兩倍長的整數乘積，再化簡回 $[0,p)$。<span class="where"><a href="01_finite_field.html">第 1 章</a>、<a href="07_special.html">第 7–9 章</a></span></li>
 <li><span class="lv">字組乘法</span><strong>大整數相乘</strong>：電腦一次只能乘 64 位元，256 位元的數要拆成好幾段（字組，第 6 章定義）來乘。<span class="where"><a href="06_multiprecision.html">第 6 章</a></span></li>
 </ol>

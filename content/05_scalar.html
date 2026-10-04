@@ -1,7 +1,7 @@
 <section id="why" data-nav="動機">
 <h2>把 $k$ 個 $P$ 加起來，但不能真的加 $k$ 次</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 4 章算出了單次倍點與加點的成本（Jacobian 座標下約 $7\mathbf M$ 與 $10\mathbf M$），但留下一個問題：一次 $kP$ 要做<strong>幾次</strong>倍點與加點，又要按什麼順序做？ECC 的公開金鑰是 $Q_A=d_AG$，ECDH 的共同祕密是 $d_A(d_BG)$：所有協定的核心都是這個運算。$k$ 是 256 位元左右的整數，一個一個加要 $2^{256}$ 步，顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法。</p>
+<p>第 4 章算出了單次倍點與加點的成本（公式見 [[ref:c2-thm-formulas]] 與 [[ref:c4-thm-formulas]]；Jacobian 座標下約 $7\mathbf M$ 與 $10\mathbf M$），但留下一個問題：一次 $kP$ 要做<strong>幾次</strong>倍點與加點，又要按什麼順序做？ECC 的公開金鑰是 $Q_A=d_AG$，ECDH 的共同祕密是 $d_A(d_BG)$：所有協定的核心都是這個運算。$k$ 是 256 位元左右的整數，一個一個加要 $2^{256}$ 步，顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法。</p>
 <p>本章有兩條主線。第一條是<strong>速度</strong>：double-and-add 與 NAF（一種帶負號數字的二進位表示，§5.4 定義），最後把一次 $kP$ 的成本換算成 $\mathbb F_p$ 乘法的次數。第二條是<strong>安全</strong>：運算的順序本身可能洩漏 $k$，Montgomery 階梯把每一位的動作做成一樣。</p>
 </div>
 </section>

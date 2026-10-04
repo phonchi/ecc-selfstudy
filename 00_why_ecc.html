@@ -46,7 +46,7 @@
 <li><strong>群</strong>：一個集合加上一種運算，有單位元、每個元素有反元素、滿足結合律。正式定義見 <a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>。</li>
 <li><strong>元素的階、循環群、生成元</strong>：$g$ 重複運算幾次會回到單位元，就是 $g$ 的階；若某個 $g$ 重複運算能走遍整個群，這個群叫循環群，$g$ 叫生成元。見 <a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>。</li>
 <li><strong>$\mathbb F_p$</strong>：$p$ 是質數，整數模 $p$ 的加減乘除都能精確地做，這樣的數系叫質數體。見 <a class="xref" href="01_finite_field.html#def-fp">定義 1.11</a>。</li>
-<li><strong>橢圓曲線的點群 $E(\mathbb F_p)$</strong>：滿足 $y^2=x^3+ax+b$ 的點 $(x,y)$（$x,y\in\mathbb F_p$），再加上一個「無窮遠點」$\mathcal O$，可以定義「點加點」，成為一個群，$\mathcal O$ 是單位元。見 <a class="xref" href="02_group_law.html#c2-def-curve">定義 2.1</a> 與 <a class="xref" href="02_group_law.html#c2-thm-grouplaw">定理 2.6</a>。</li>
+<li><strong>橢圓曲線的點群 $E(\mathbb F_p)$</strong>：滿足 $y^2=x^3+ax+b$ 的點 $(x,y)$（$x,y\in\mathbb F_p$），再加上一個「無窮遠點」$\mathcal O$，可以定義「點加點」，成為一個群，$\mathcal O$ 是單位元。見 <a class="xref" href="02_group_law.html#c2-def-curve">定義 2.1</a> 與 <a class="xref" href="02_group_law.html#c2-thm-grouplaw">定理 2.7</a>。</li>
 <li><strong>純量乘法 $kP$</strong>：點 $P$ 自己加 $k$ 次。群用加法寫法時，$kP$ 就是乘法寫法裡的 $g^k$（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）。</li>
 </ul>
 </div>
@@ -205,7 +205,7 @@ $$23\,Q_B = 61\,Q_A = (72,49) = 12\,G ,$$
 <ol class="w00-chain">
 <li><span class="lv">協定</span><strong>ECDH</strong>：每一方一到兩次純量乘法。<span class="where">本章</span></li>
 <li><span class="lv">純量乘法</span><strong>$kP$</strong>：$k$ 有幾百位元，要做幾百次「點加點」；換算下來是<strong>幾千次 $\mathbb F_p$ 乘法</strong>。<span class="where"><a href="05_scalar.html">第 5 章</a>；為什麼難以倒推見 <a href="03_ecdlp.html">第 3 章</a></span></li>
-<li><span class="lv">點運算</span><strong>加點與倍點</strong>：每一次都是十幾次 $\mathbb F_p$ 的加減乘除；怎麼避開昂貴的除法是第 4 章的主題。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
+<li><span class="lv">點運算</span><strong>加點與倍點</strong>：公式見 <a class="xref" href="02_group_law.html#c2-thm-formulas">定理 2.5</a>，每一次都是十幾次 $\mathbb F_p$ 的加減乘除；怎麼避開昂貴的除法是第 4 章的主題。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
 <li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：先得到兩倍長的整數乘積，再化簡回 $[0,p)$。<span class="where"><a href="01_finite_field.html">第 1 章</a>、<a href="07_special.html">第 7–9 章</a></span></li>
 <li><span class="lv">字組乘法</span><strong>大整數相乘</strong>：電腦一次只能乘 64 位元，256 位元的數要拆成好幾段（字組，第 6 章定義）來乘。<span class="where"><a href="06_multiprecision.html">第 6 章</a></span></li>
 </ol>
