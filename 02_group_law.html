@@ -26,7 +26,7 @@
   <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
 </header>
 <div class="book">
-<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch on" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a><ul class="sb-secs"><li><a href="#why" data-target="why">2.1 動機</a></li><li><a href="#curve" data-target="curve">2.2 曲線</a></li><li><a href="#chord" data-target="chord">2.3 割線與切線</a></li><li><a href="#real" data-target="real">2.4 實數圖</a></li><li><a href="#group" data-target="group">2.5 群公理</a></li><li><a href="#fp" data-target="fp">2.6 搬到 F_p</a></li></ul></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
+<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch on" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a><ul class="sb-secs"><li><a href="#why" data-target="why">2.1 動機</a></li><li><a href="#curve" data-target="curve">2.2 曲線</a></li><li><a href="#proj" data-target="proj">2.3 無窮遠點</a></li><li><a href="#chord" data-target="chord">2.4 割線與切線</a></li><li><a href="#real" data-target="real">2.5 實數圖</a></li><li><a href="#group" data-target="group">2.6 群公理</a></li><li><a href="#fp" data-target="fp">2.7 搬到 F_p</a></li></ul></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
 <main class="content" id="top">
 <div class="ch-head">
   <div class="eyebrow">第 2 章 · Curves and the Group Law</div>
@@ -37,36 +37,66 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">2.1</span>從一條三次曲線造出一個群</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>公開金鑰需要一個群，在裡面「重複做同一個運算」很容易，反推卻很難（第 0、3 章）。整數模 $p$ 的乘法群可以用，但第 3 章會看到它有比較快的攻擊。橢圓曲線提供另一種群，它的運算來自一個幾何事實：<strong>一條直線與三次曲線相交，恰有三個交點</strong>（重根要重複計算，另外要把無窮遠點算進去）。於是給定兩個點，連線就決定第三個點，這就是加法的來源。</p>
+<p>第 0 章說，公開金鑰需要一個群，在裡面「重複做同一個運算」很容易，反推卻很難；第 1 章給了群與體的定義。$\mathbb F_p^*$ 是一個現成的群，但它有次指數的攻擊。橢圓曲線提供另一種群：它的元素是曲線上的點，運算來自一個幾何事實，<strong>一條直線與三次曲線恰有三個交點</strong>（要在適當的意義下計算，見 <a class="xref" href="02_group_law.html#c2-thm-bezout">定理 2.3</a>）。給定兩個點，連線就決定第三個點，這就是加法的來源。</p>
+<p>本章依序回答：曲線要長什麼樣子（§2.2）、那個「多出來的點」$\mathcal O$ 是什麼（§2.3）、加法怎麼定義與計算（§2.4），以及為什麼這樣真的得到一個群（§2.6）。</p>
 </div>
 </section>
 
 <section id="curve" data-nav="曲線">
-<h2><span class="secno">2.2</span>短 Weierstrass 形式</h2>
-<p>本站的曲線都寫成</p>
-$$E:\ y^2 = x^3 + ax + b ,\qquad 4a^3+27b^2 \ne 0 .$$
-<p>只要體的特徵不是 2 或 3（$\mathbb F_p$ 中 $p&gt;3$），任何橢圓曲線都能換成這個形式。條件 $4a^3+27b^2\ne0$ 是說右邊的三次式沒有重根，曲線因此是光滑的（nonsingular）：每一點都有唯一的切線。若條件不成立，曲線會出現尖點或自交點，下面的加法就定義不好。下面的互動元件可以把 $a,b$ 調到奇異的位置看看。</p>
-<p>NIST 的曲線 P-256 與 P-521 都取 $a=-3$，原因是倍點公式在 $a=-3$ 時可以省掉乘 $a$ 的一步，並少算幾次平方（第 4 章）。</p>
+<h2><span class="secno">2.2</span>短 Weierstrass 形式與非奇異條件</h2>
+<p>為什麼只看 $y^2=x^3+ax+b$ 這一種形式？一般的三次曲線有很多種寫法，但只要體的特徵（<a class="xref" href="01_finite_field.html#def-char">定義 1.9</a>）不是 2 或 3，經過座標變換都能化成這個最簡單的形式（Washington §2.1）。本站的 $\mathbb F_p$ 都有 $p&gt;3$，所以只用這一種。</p>
+<div class="box defn" id="c2-def-curve"><div class="box-head"><span class="box-label">定義 2.1</span><span class="box-title">橢圓曲線、短 Weierstrass 形式、判別式</span><span class="box-ref">Washington §2.1；HMV §3.1</span></div>
+<p>設 $K$ 是特徵不為 2、3 的體，$a,b\in K$。方程式</p>
+$$E:\ y^2=x^3+ax+b$$
+<p>若其<strong>判別式</strong> $\Delta=-16(4a^3+27b^2)$ 不為 0，稱為 $K$ 上的<strong>橢圓曲線</strong>（短 Weierstrass 形式）。對 $K$ 的擴張體 $L$（例如 $L=K$），記</p>
+$$E(L)=\{(x,y)\in L^2:\ y^2=x^3+ax+b\}\cup\{\mathcal O\},$$
+<p>其中 $\mathcal O$ 是下一節定義的無窮遠點。</p>
+</div>
+<p>$\Delta\ne0$ 的意思是右邊的三次式 $x^3+ax+b$ 沒有重根，這等價於曲線是<strong>光滑的</strong>（nonsingular）：每一點都有唯一的切線。若 $\Delta=0$，曲線會出現尖點或自交點，在那一點「切線」沒有定義，下面的加法也就無法定義。§2.5 的互動元件可以把 $a,b$ 調到 $\Delta=0$ 看看。</p>
+<p>NIST 的標準曲線 P-256 與 P-521 都取 $a=-3$：倍點公式在 $a=-3$ 時可以省掉乘 $a$ 的一步，並少算幾次平方（第 4 章）。</p>
+</section>
+
+<section id="proj" data-nav="無窮遠點">
+<h2><span class="secno">2.3</span>射影平面與無窮遠點 $\mathcal O$</h2>
+<p>為什麼需要一個「不在平面上」的點？兩個原因。第一，$P$ 與它對 $x$ 軸的鏡射 $(x,-y)$ 的連線是鉛直線，它與曲線只有這兩個交點，「第三個交點」不存在；第二，群需要單位元。射影平面把兩個問題一起解決：補上的那一點同時就是單位元。</p>
+<div class="box defn" id="c2-def-proj"><div class="box-head"><span class="box-label">定義 2.2</span><span class="box-title">射影平面、射影座標、無窮遠點</span><span class="box-ref">Washington §2.3</span></div>
+<p><strong>射影平面</strong> $\mathbb P^2(K)$ 是 $K^3\setminus\{(0,0,0)\}$ 在等價關係 $(X,Y,Z)\sim(cX,cY,cZ)$（$c\in K^*$）下的等價類，類記作 $(X:Y:Z)$。$Z\ne0$ 的點對應到一般平面上的 $(X/Z,\ Y/Z)$；$Z=0$ 的點稱為<strong>無窮遠點</strong>。曲線 $E$ 的<strong>射影化</strong>是</p>
+$$Y^2Z=X^3+aXZ^2+bZ^3 .$$
+<p>代入 $Z=0$ 得 $X^3=0$，所以 $X=0$、$Y\ne0$，曲線上恰好只有一個無窮遠點 $(0:1:0)$，記作 $\mathcal O$。</p>
+</div>
+<p>直觀上，$\mathcal O$ 位在 $y$ 軸方向的盡頭，<strong>每一條鉛直線 $x=c$ 都經過它</strong>（鉛直線的射影化是 $X=cZ$，代入 $Z=0$ 得 $X=0$，正是 $\mathcal O$）。第 4 章會換用另一種加權的射影座標來加速計算，屆時再與這裡的定義對照。</p>
+<div class="box thm" id="c2-thm-bezout"><div class="box-head"><span class="box-label">定理 2.3</span><span class="box-title">直線與曲線的交點</span><span class="box-ref">Washington §2.4（Bézout 定理的特例）</span></div>
+<p>在 $K$ 的代數閉包上，射影平面中的任一直線與 $E$ 恰有三個交點，交點依重數計算（切線的切點算兩次，反曲點算三次）。若其中兩個交點的座標在 $K$ 中，第三個也在 $K$ 中。</p>
+</div>
+<p>最後一句是群律能在 $\mathbb F_p$ 上運作的關鍵：已知兩個交點都在 $\mathbb F_p$ 中，第三個交點可以只用 $\mathbb F_p$ 的四則運算算出來，下一節的公式就是這樣得來的。</p>
 </section>
 
 <section id="chord" data-nav="割線與切線">
-<h2><span class="secno">2.3</span>割線、切線與無窮遠點</h2>
-<p>規則只有一句：<strong>三點共線時，它們的和是 0</strong>。</p>
-$$P+Q+R=\mathcal O \quad\Longleftrightarrow\quad P,Q,R\ \text{在同一條直線上}.$$
-<p>所以要算 $P+Q$：畫過 $P,Q$ 的直線，找出第三個交點 $R'$，再取 $P+Q=-R'$。在 $y^2=\cdots$ 這種曲線上，$-R'$ 就是 $R'$ 對 $x$ 軸的鏡射。$P=Q$ 時用切線。</p>
-<p><strong>無窮遠點</strong> $\mathcal O$ 是群的單位元。把曲線放進射影平面，寫成 $Y^2Z=X^3+aXZ^2+bZ^3$，就會多出一個 $Z=0$ 的點 $(0:1:0)$。直觀上它在 $y$ 軸方向的最遠處，所以<strong>每一條鉛直線都經過它</strong>。於是：</p>
-<ul>
-<li>$P$ 與 $-P$ 在同一條鉛直線上，第三個交點是 $\mathcal O$，所以 $P+(-P)=\mathcal O$。</li>
-<li>$P$ 與 $\mathcal O$ 的連線是過 $P$ 的鉛直線，第三點是 $-P$，鏡射回來得 $P+\mathcal O=P$。</li>
-</ul>
-<p>把直線 $y=\lambda(x-x_1)+y_1$ 代入曲線，得到一個首項為 $x^3$ 的三次方程；三個根的和是 $\lambda^2$（看 $x^2$ 項的係數）。已知兩個根 $x_1,x_2$，第三個根就是 $\lambda^2-x_1-x_2$，完全不用解方程。這就是加法公式：</p>
-$$\lambda=\begin{cases}\dfrac{y_2-y_1}{x_2-x_1}, &amp; x_1\ne x_2,\\[2mm] \dfrac{3x_1^2+a}{2y_1}, &amp; P=Q,\ y_1\ne0,\end{cases}\qquad
-\begin{aligned} x_3&amp;=\lambda^2-x_1-x_2,\\ y_3&amp;=\lambda(x_1-x_3)-y_1 .\end{aligned}$$
-<p>剩下的情形不需要公式：$x_1=x_2$ 而 $Q=-P$ 時，和是 $\mathcal O$；$P=Q$ 且 $y_1=0$ 時（2 階點，切線鉛直），$2P=\mathcal O$。注意 $b$ 沒有出現在公式裡，而<strong>每一次加法都有一次除法</strong>（算 $\lambda$）。</p>
+<h2><span class="secno">2.4</span>群律：割線與切線</h2>
+<p>有了「三個交點」，加法的定義只剩一句話：三個共線的點加起來是單位元。</p>
+<div class="box defn" id="c2-def-add"><div class="box-head"><span class="box-label">定義 2.4</span><span class="box-title">點加法、反點</span><span class="box-ref">Washington §2.2</span></div>
+<p>對 $P,Q\in E(K)$，令 $R'$ 是過 $P,Q$ 的直線（$P=Q$ 時取切線）與 $E$ 的第三個交點，定義</p>
+$$P+Q=-R',\qquad\text{其中}\ -(x,y)=(x,-y),\ -\mathcal O=\mathcal O .$$
+<p>等價的說法：$P,Q,R$ 共線（計入重數）時，$P+Q+R=\mathcal O$。</p>
+</div>
+<p>把直線 $y=\lambda(x-x_1)+y_1$ 代入曲線，得到首項為 $x^3$ 的三次方程，它的 $x^2$ 項係數是 $-\lambda^2$，所以三個根的和等於 $\lambda^2$。已知兩個根 $x_1,x_2$，第三個根就是 $\lambda^2-x_1-x_2$，完全不用解方程。整理成公式：</p>
+<div class="box algo" id="c2-alg-add"><div class="box-head"><span class="box-label">演算法 2.5</span><span class="box-title">仿射座標的加點與倍點</span><span class="box-ref">Washington §2.2；HMV §3.1.2</span></div>
+<div class="io"><b>輸入</b>$P=(x_1,y_1)$、$Q=(x_2,y_2)\in E(K)$，或其中之一為 $\mathcal O$。</div>
+<div class="io"><b>輸出</b>$P+Q$。</div>
+<ol class="steps">
+<li>若 $P=\mathcal O$，回傳 $Q$；若 $Q=\mathcal O$，回傳 $P$。</li>
+<li>若 $x_1=x_2$ 且 $y_1=-y_2$（含 $P=Q$、$y_1=0$ 的情形），回傳 $\mathcal O$。</li>
+<li>斜率：若 $x_1\ne x_2$，$\lambda\leftarrow\dfrac{y_2-y_1}{x_2-x_1}$（割線）；若 $P=Q$，$\lambda\leftarrow\dfrac{3x_1^2+a}{2y_1}$（切線，由隱函數微分得到）。</li>
+<li>$x_3\leftarrow\lambda^2-x_1-x_2$，$y_3\leftarrow\lambda(x_1-x_3)-y_1$，回傳 $(x_3,y_3)$。</li>
+</ol>
+<p>成本：加點 $1\mathbf I+2\mathbf M+1\mathbf S$，倍點 $1\mathbf I+2\mathbf M+2\mathbf S$（HMV Table 3.3；$\mathbf M,\mathbf S,\mathbf I$ 見 <a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）。</p>
+</div>
+<p>兩件事值得記下：$b$ 沒有出現在公式裡；<strong>每一次加點或倍點都要一次除法</strong>（算 $\lambda$）。第 1 章說過除法很貴，這個事實會在第 4 章成為重點。</p>
 </section>
 
 <section id="real" data-nav="實數圖">
-<h2><span class="secno">2.4</span>互動：在實數平面上加點</h2>
+<h2><span class="secno">2.5</span>互動：在實數平面上加點</h2>
+<p>先在實數平面上看幾何直覺。$\mathbb F_p$ 上沒有「圖形」可看，但公式完全相同，所以實數圖是理解群律最好的入口。</p>
 <p>拖曳紅色的 $P$ 與綠色的 $Q$（點會被吸到曲線上）。虛線是 $P,Q$ 的連線，空心圈是第三個交點，橙色點是鏡射後的 $P+Q$。調 $a,b$ 可以看到曲線有一個或兩個分支，以及判別式為 0 時的奇異情形。</p>
 <div class="viz-layout">
   <div class="viz-panel">
@@ -88,15 +118,19 @@ $$\lambda=\begin{cases}\dfrac{y_2-y_1}{x_2-x_1}, &amp; x_1\ne x_2,\\[2mm] \dfrac
 </div>
 </section>
 
+
 <section id="group" data-nav="群公理">
-<h2><span class="secno">2.5</span>為什麼是交換群</h2>
+<h2><span class="secno">2.6</span>為什麼這樣得到一個交換群</h2>
+<p>我們要用這個加法定義 $kP=P+P+\cdots+P$（第 5 章）。「把 $k$ 個 $P$ 加起來」要有意義、而且不管怎麼分組都得到同一個點，靠的正是結合律；ECDH 的 $d_A(d_BG)=d_B(d_AG)$ 也靠交換律與結合律。所以必須確認這個加法真的滿足群公理（<a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>）。</p>
+<div class="box thm" id="c2-thm-grouplaw"><div class="box-head"><span class="box-label">定理 2.6</span><span class="box-title">橢圓曲線的點成交換群</span><span class="box-ref">Washington Thm. 2.1</span></div>
+<p>對任意體 $L\supseteq K$，$E(L)$ 在上述加法下是一個交換群，單位元是 $\mathcal O$，$P$ 的反元素是 $-P$。</p>
+</div>
 <ul>
-<li><strong>單位元</strong>：$\mathcal O$。<strong>反元素</strong>：$-P$ 是鏡射。</li>
+<li><strong>單位元與反元素</strong>：$P$ 與 $\mathcal O$ 的連線是過 $P$ 的鉛直線，第三點是 $-P$，所以 $P+\mathcal O=P$；$P$ 與 $-P$ 的第三點是 $\mathcal O$，所以 $P+(-P)=\mathcal O$。</li>
 <li><strong>交換律</strong>：過 $P,Q$ 的直線與過 $Q,P$ 的是同一條。</li>
-<li><strong>封閉性</strong>：若 $a,b$ 以及 $P,Q$ 的座標都在某個體 $K$ 裡，$\lambda$ 與 $x_3,y_3$ 也在 $K$ 裡。所以 $K$ 上的點自成一個群 $E(K)$。</li>
-<li><strong>結合律</strong>：最不明顯，幾何上看不出來。可以用射影幾何的 Cayley–Bacharach 定理證明，也可以把公式展開，用電腦代數硬算。Washington 第 2.4 節有完整證明。</li>
+<li><strong>封閉性</strong>：由 <a class="xref" href="02_group_law.html#c2-thm-bezout">定理 2.3</a>，$P,Q$ 的座標在 $L$ 中時，$P+Q$ 的座標也在 $L$ 中。</li>
+<li><strong>結合律</strong>：最不明顯，幾何上看不出來。可以用射影幾何的 Cayley–Bacharach 定理證明，也可以把公式展開，用電腦代數硬算（Washington §2.4）。</li>
 </ul>
-<p>本站的程式在測試中對小曲線上隨機的 $P,Q,R$ 檢查過 $(P+Q)+R=P+(Q+R)$。這不是證明，但可以確認公式抄對了。</p>
 <details class="code-fold"><summary>Python 參考實作（選讀）：仿射座標的加法</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="n">O</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 無窮遠點，群的單位元</span>
 
 
@@ -125,9 +159,11 @@ $$\lambda=\begin{cases}\dfrac{y_2-y_1}{x_2-x_1}, &amp; x_1\ne x_2,\\[2mm] \dfrac
 </section>
 
 <section id="fp" data-nav="搬到 F_p">
-<h2><span class="secno">2.6</span>搬到 $\mathbb F_p$：幾何消失，代數留下</h2>
-<p>加法公式只用到四則運算，所以可以原封不動地在 $\mathbb F_p$ 裡計算，只是每一步都取模 $p$、除法換成乘反元素。這時曲線不再是一條線，而是 $p\times p$ 格子上的一堆點；「直線」也變成每碰到邊界就繞回來的一排點。神奇的是，割線的第三個交點仍然恰好落在這排點上。</p>
-<p>右圖是 $E: y^2=x^3+2x+3$ 在 $\mathbb F_{97}$ 上的全部點（加上 $\mathcal O$ 共 100 個）。注意點對 $y=97/2$ 上下對稱，那就是 $\mathbb F_p$ 版的「對 $x$ 軸鏡射」：$-(x,y)=(x,p-y)$。</p>
+<h2><span class="secno">2.7</span>搬到 $\mathbb F_p$：幾何消失，代數留下</h2>
+<p>密碼學要的是有限的群，所以把 $K$ 換成 $\mathbb F_p$。<a class="xref" href="02_group_law.html#c2-alg-add">演算法 2.5</a> 只用到四則運算，可以原封不動地在 $\mathbb F_p$ 裡計算：每一步都取 $\bmod p$，除法換成乘反元素（<a class="xref" href="01_finite_field.html#alg-egcd">演算法 1.14</a> 或 <a class="xref" href="01_finite_field.html#alg-fermat-inv">演算法 1.17</a>）。</p>
+<p>這時曲線不再是一條線，而是 $p\times p$ 格子上的一堆點；「直線」$y=\lambda(x-x_1)+y_1$ 也變成每碰到邊界就繞回來的一排點。割線的第三個交點仍然落在這排點上，這不是巧合：$x_3=\lambda^2-x_1-x_2$ 這個代數恆等式在任何體上都成立（<a class="xref" href="02_group_law.html#c2-thm-bezout">定理 2.3</a>）。</p>
+<p>某個 $x$ 上有沒有點，取決於 $x^3+ax+b$ 是不是 $\mathbb F_p$ 中的平方剩餘（<a class="xref" href="01_finite_field.html#def-qr">定義 1.18</a>）：是的話有兩個點 $(x,\pm y)$，等於 0 時有一個點，否則沒有。</p>
+<p>右圖是 $E_A: y^2=x^3+2x+3$ 在 $\mathbb F_{97}$ 上的全部點（加上 $\mathcal O$ 共 100 個；第 3 章還會用到這條曲線，記作 $E_A$）。注意點對 $y=97/2$ 上下對稱，那就是 $\mathbb F_p$ 版的「對 $x$ 軸鏡射」：$-(x,y)=(x,p-y)$。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">GROUP LAW OVER F₉₇</div>
@@ -154,7 +190,7 @@ $$\lambda=\begin{cases}\dfrac{y_2-y_1}{x_2-x_1}, &amp; x_1\ne x_2,\\[2mm] \dfrac
 <nav class="chapter-nav"><a class="prev" href="01_finite_field.html"><div class="nav-dir">← 上一章</div><div class="nav-title">1. 群、體與 𝔽ₚ</div></a><a class="home" href="index.html"><div class="nav-dir">導讀</div><div class="nav-title">全部章節</div></a><a class="next" href="03_ecdlp.html"><div class="nav-dir">下一章 →</div><div class="nav-title">3. 群結構與 ECDLP</div></a></nav>
 <footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">2.1 從一條三次曲線造出一個群</a></li><li><a href="#curve" data-target="curve">2.2 短 Weierstrass 形式</a></li><li><a href="#chord" data-target="chord">2.3 割線、切線與無窮遠點</a></li><li><a href="#real" data-target="real">2.4 互動：在實數平面上加點</a></li><li><a href="#group" data-target="group">2.5 為什麼是交換群</a></li><li><a href="#fp" data-target="fp">2.6 搬到 F_p：幾何消失，代數留下</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">2.1 從一條三次曲線造出一個群</a></li><li><a href="#curve" data-target="curve">2.2 短 Weierstrass 形式與非奇異條件</a></li><li><a href="#proj" data-target="proj">2.3 射影平面與無窮遠點 O</a></li><li><a href="#chord" data-target="chord">2.4 群律：割線與切線</a></li><li><a href="#real" data-target="real">2.5 互動：在實數平面上加點</a></li><li><a href="#group" data-target="group">2.6 為什麼這樣得到一個交換群</a></li><li><a href="#fp" data-target="fp">2.7 搬到 F_p：幾何消失，代數留下</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
 </div>
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <script src="assets/ecc-core.js?v=20261005"></script>

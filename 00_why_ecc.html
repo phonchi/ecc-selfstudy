@@ -38,34 +38,51 @@
 <h2><span class="secno">0.1</span>在公開的通道上約定一個祕密</h2>
 <div class="info-box why"><span class="info-label">動機</span>
 <p>Alice 和 Bob 從沒見過面，只能透過一條所有人都聽得到的通道說話。他們想約定一把只有兩人知道的<strong>金鑰</strong>（key），之後用它加密大量資料。對稱式加密（例如 AES）本身很快也很安全，難處在於「第一把金鑰怎麼來」。</p>
-<p>這就是<strong>公開金鑰密碼</strong>（public-key cryptography）要解的問題。它需要一種<strong>單向運算</strong>：正著算很容易，倒推回去卻難到不可行。本章說明：在一個循環群裡，「次方」就是這樣的運算；而橢圓曲線上的點群，是目前已知同樣安全強度下<strong>金鑰最短</strong>的選擇。</p>
+<p>這就是<strong>公開金鑰密碼</strong>（public-key cryptography）要解的問題。它需要一種<strong>單向運算</strong>：正著算很容易，倒推回去卻難到不可行。本章說明：在一個群裡，「重複做同一個運算」就是這樣的單向運算；而橢圓曲線（正式定義見 <a class="xref" href="02_group_law.html#c2-def-curve">定義 2.1</a>）上的點所成的群，是目前已知在同樣的安全要求下<strong>金鑰最短</strong>的選擇。</p>
+</div>
+<p>本章是序章，只用白話描述，正式的定義放在第 1、2 章。下面先列出本章會用到的詞，每個都附上正式定義的位置。</p>
+<div class="box rem" id="c0-rem-terms"><div class="box-head"><span class="box-label">注意 0.1</span><span class="box-title">本章用到的詞（白話版）</span></div>
+<ul>
+<li><strong>群</strong>：一個集合加上一種運算，有單位元、每個元素有反元素、滿足結合律。正式定義見 <a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>。</li>
+<li><strong>元素的階、循環群、生成元</strong>：$g$ 重複運算幾次會回到單位元，就是 $g$ 的階；若某個 $g$ 重複運算能走遍整個群，這個群叫循環群，$g$ 叫生成元。見 <a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>。</li>
+<li><strong>$\mathbb F_p$</strong>：$p$ 是質數，整數模 $p$ 的加減乘除都能精確地做，這樣的數系叫質數體。見 <a class="xref" href="01_finite_field.html#def-fp">定義 1.11</a>。</li>
+<li><strong>橢圓曲線的點群 $E(\mathbb F_p)$</strong>：滿足 $y^2=x^3+ax+b$ 的點 $(x,y)$（$x,y\in\mathbb F_p$），再加上一個「無窮遠點」$\mathcal O$，可以定義「點加點」，成為一個群，$\mathcal O$ 是單位元。見 <a class="xref" href="02_group_law.html#c2-def-curve">定義 2.1</a> 與 <a class="xref" href="02_group_law.html#c2-thm-grouplaw">定理 2.6</a>。</li>
+<li><strong>純量乘法 $kP$</strong>：點 $P$ 自己加 $k$ 次。群用加法寫法時，$kP$ 就是乘法寫法裡的 $g^k$（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）。</li>
+</ul>
 </div>
 <p>整個網站圍繞一個問題：這個單向運算在電腦上<strong>到底花多少力氣</strong>。答案一層一層往下拆，最後落在「兩個幾百位元的整數相乘再取模 $p$」。本章最後一節把這條<strong>成本鏈</strong>畫出來，作為全站的地圖。</p>
 </section>
 
 <section id="dlp" data-nav="離散對數">
 <h2><span class="secno">0.2</span>離散對數：容易的方向與困難的方向</h2>
-<p>設 $G$ 是一個循環群，生成元為 $g$，階為 $n$。給定整數 $k$，算</p>
-$$h = g^k$$
-<p>很容易：<strong>平方-乘</strong>（square-and-multiply）（square-and-multiply）依 $k$ 的二進位逐位處理，每一位做一次平方，遇到 1 再乘一次 $g$。$k$ 有 $\ell$ 個位元時，最多 $2\ell$ 次群運算；$k$ 有 256 位元，就是幾百次，而不是 $2^{256}$ 次。</p>
-<p>反方向，給定 $g$ 與 $h$ 求 $k$，叫做<strong>離散對數問題</strong>（discrete logarithm problem，DLP）。若群的階 $n$ 是大質數，而且群元素沒有可以利用的特殊結構，已知最好的通用演算法（Pollard rho、baby-step giant-step）大約要 $\sqrt n$ 次群運算。（$n$ 若是合數，問題可以拆到較小的子群上解，第 3 章會說明。）$n\approx2^{256}$ 時就是約 $2^{128}$ 次，遠超出任何可行的計算量。</p>
+<p>公開金鑰需要一個「正著算容易、反著算困難」的運算。在循環群裡，次方就是這樣的運算。</p>
+<p>設 $G$ 是一個階為 $n$ 的循環群，生成元為 $g$（<a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>、<a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>）。給定整數 $k$，算 $y=g^k$ 很容易：平方-乘（<a class="xref" href="01_finite_field.html#alg-sqmul">演算法 1.16</a>）依 $k$ 的二進位逐位處理，每一位做一次平方，遇到 1 再乘一次 $g$。$k$ 有 $\ell$ 個位元時，最多 $2\ell$ 次群運算；$k$ 有 256 位元，就是幾百次，而不是 $2^{256}$ 次。</p>
+<div class="box defn" id="c0-def-dlp"><div class="box-head"><span class="box-label">定義 0.2</span><span class="box-title">離散對數問題、DLP</span><span class="box-ref">HAC Def. 3.52</span></div>
+<p>設 $G$ 是循環群、$g$ 是生成元。給定 $y\in G$，求整數 $k$（$0\le k&lt;n$）使 $g^k=y$，稱為<strong>離散對數問題</strong>（discrete logarithm problem，DLP），$k$ 記作 $\log_g y$。</p>
+</div>
+<p>若群的階 $n$（<a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>）是大質數，而且群的元素沒有可以利用的特殊結構，已知最好的<strong>通用</strong>演算法（只用群運算、不看元素怎麼表示的演算法，例如 Pollard rho，第 3 章）大約要 $\sqrt n$ 次群運算。（$n$ 若是合數，問題可以拆到較小的子群上解；子群見 <a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>，拆解的方法在第 3 章。）$n\approx2^{256}$ 時就是約 $2^{128}$ 次，遠超出任何可行的計算量。</p>
 <h3>同一個問題，不同的群</h3>
-<p>難度不只取決於 $n$ 的大小，還取決於<strong>群是怎麼表示的</strong>。</p>
+<p>難度不只取決於 $n$ 的大小，還取決於<strong>群的元素是怎麼表示的</strong>。</p>
 <ul>
-<li><strong>$\mathbb F_p^{*}$（乘法群）</strong>：元素是整數，可以談「小質因數」。<strong>指標演算法</strong>（index calculus）利用這一點：先求出一組小質數的離散對數，再把目標元素分解到這組小質數上。它的變形（數域篩法）讓 $\mathbb F_p^{*}$ 上的 DLP 只需<strong>次指數</strong>（subexponential）時間，所以 $p$ 必須取到兩三千位元以上，而且安全需求每提高一級，$p$ 要長得更快。</li>
-<li><strong>橢圓曲線的點群 $E(\mathbb F_p)$</strong>：群運算寫成 $P+Q$，「一個點的 $k$ 倍」記作 $kP$。點沒有「分解成小點」的自然方法，對於挑選得當的曲線，至今沒有已知的指標演算法類比。最好的攻擊仍是通用的 $\sqrt n$ 級演算法（第 3 章）。</li>
+<li><strong>$\mathbb F_p^*$（<a class="xref" href="01_finite_field.html#def-fp">定義 1.11</a>）</strong>：元素是整數，可以談「分解成小質數」。<strong>指標演算法</strong>（index calculus）利用這一點：先求出一組小質數的離散對數，再把目標元素分解到這組小質數上。它的改良（數域篩法）讓 $\mathbb F_p^*$ 上的 DLP 只需<strong>次指數時間</strong>（比 $p$ 的任何多項式都慢、但比 $\sqrt p$ 快得多），所以 $p$ 必須取到兩三千位元以上。</li>
+<li><strong>橢圓曲線的點群 $E(\mathbb F_p)$</strong>：點沒有「分解成小點」的自然方法。對於挑選得當的曲線，至今沒有已知的指標演算法類比，最好的攻擊仍是通用的 $\sqrt n$ 級演算法（第 3 章）。</li>
 </ul>
-<p>對應地，橢圓曲線上的單向運算是<strong>純量乘法</strong>（scalar multiplication）</p>
-$$k \ \longmapsto\ Q = kG ,$$
-<p>反方向的「已知 $G,Q$ 求 $k$」稱為 <strong>ECDLP</strong>。平方-乘在這裡變成 double-and-add：平方換成倍點 $2R$，乘以 $g$ 換成加上 $G$。</p>
-<div class="info-box"><span class="info-label">注意</span>
-<p>「沒有已知的次指數攻擊」是經驗事實，不是定理。有些特殊曲線確實較弱（例如超奇異曲線可以用配對轉到有限體上，異常曲線可以在多項式時間內解）；標準曲線的參數就是為了避開這些情形而選的。第 3 章會列出要避開的條件。另外，上面所有的難度估計都只針對<strong>古典電腦</strong>；大型量子電腦上的 Shor 演算法對 $\mathbb F_p^{*}$ 與橢圓曲線都能在多項式時間內解出離散對數。</p>
+<div class="box defn" id="c0-def-ecdlp"><div class="box-head"><span class="box-label">定義 0.3</span><span class="box-title">ECDLP、基點</span><span class="box-ref">HMV §4.1</span></div>
+<p>設 $E$ 是 $\mathbb F_p$ 上的橢圓曲線，$G\in E(\mathbb F_p)$ 是一個階為 $n$ 的點，稱為<strong>基點</strong>（base point）。給定 $Q\in\langle G\rangle$，求 $k\in[0,n-1]$ 使 $Q=kG$，稱為<strong>橢圓曲線離散對數問題</strong>（ECDLP）。</p>
+</div>
+<p>對應地，橢圓曲線上的單向運算是純量乘法 $k\mapsto kG$。平方-乘在這裡變成 double-and-add：平方換成「點自己加自己」（倍點），乘以 $g$ 換成加上 $G$（第 5 章）。</p>
+<div class="box rem" id="c0-rem-empirical"><div class="box-head"><span class="box-label">注意 0.4</span><span class="box-title">「困難」是經驗事實</span></div>
+<p>「沒有已知的次指數攻擊」是經驗事實，不是定理。有些特殊曲線確實較弱，標準曲線的參數就是為了避開這些情形而選的（第 3 章列出條件）。另外，上面所有的難度估計都只針對<strong>古典電腦</strong>；大型量子電腦上的 Shor 演算法對 $\mathbb F_p^*$ 與橢圓曲線都能在多項式時間內解出離散對數。</p>
 </div>
 </section>
 
 <section id="keysize" data-nav="金鑰長度">
 <h2><span class="secno">0.3</span>同樣的安全強度，金鑰差多少</h2>
-<p>「安全強度 $s$ 位元」的意思是：已知最好的攻擊大約要 $2^{s}$ 次運算。NIST SP 800-57 Part 1 Rev. 5 的 Table 2 把不同演算法族群的參數大小對到同一把尺上：</p>
+<p>既然 $\mathbb F_p^*$ 有次指數攻擊、橢圓曲線沒有，要達到同樣的安全，兩者需要的參數大小就差很多。這是選擇橢圓曲線最直接的理由。</p>
+<div class="box defn" id="c0-def-strength"><div class="box-head"><span class="box-label">定義 0.5</span><span class="box-title">安全強度</span><span class="box-ref">SP 800-57 §5.6.1</span></div>
+<p>一個演算法的<strong>安全強度</strong>為 $s$ 位元，意思是已知最好的攻擊大約需要 $2^s$ 次運算。</p>
+</div>
+<p>NIST SP 800-57 Part 1 Rev. 5 的 Table 2 把不同演算法族群的參數大小對到同一把尺上：</p>
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>安全強度（位元）</th><th>RSA 模數（IFC）</th><th>有限體 DH／DSA（FFC）的 $p$</th><th>橢圓曲線（ECC）的 $n$</th></tr>
 <tr><td>112</td><td class="num">2048</td><td class="num">2048</td><td class="num">224–255</td></tr>
@@ -73,37 +90,35 @@ $$k \ \longmapsto\ Q = kG ,$$
 <tr><td>192</td><td class="num">7680</td><td class="num">7680</td><td class="num">384–511</td></tr>
 <tr><td>256</td><td class="num">15360</td><td class="num">15360</td><td class="num">512 以上</td></tr>
 </table></div>
-<p class="where">資料來源：NIST SP 800-57 Part 1 Rev. 5，§5.6.1.1 Table 2（只考慮古典攻擊）。FFC 一欄另有子群階 $N$ 的大小（224／256／384／512 位元），這裡省略。</p>
-<p>ECC 一欄是基點 $G$ 的階 $n$ 的位元數（餘因子 $h=1$ 的曲線，例如 P-256，$n$ 就等於整個群的點數），大約是安全強度的兩倍，這正是 $\sqrt n$ 攻擊的直接結果。RSA 與 FFC 一欄則因為次指數攻擊而增長得快得多：從 112 位元到 256 位元的強度，ECC 的大小約變為 2.3 倍（224 到 512），RSA 卻變為 7.5 倍（2048 到 15360）。</p>
-<p>所以常聽到的說法「<strong>P-256 約等於 RSA-3072</strong>」就是表中 128 位元那一列：P-256 的群階有 256 位元，落在 256–383 的範圍內。金鑰短，意味著傳輸的公鑰短、儲存小，而且同等安全強度下，點運算的模數也比 RSA 的模數短得多。</p>
+<p class="where">資料來源：NIST SP 800-57 Part 1 Rev. 5，§5.6.1.1 Table 2（只考慮古典攻擊）。RSA 是以大數分解為基礎的公開金鑰系統，這裡只用來比較長度；FFC 一欄另有第二個參數，這裡省略。</p>
+<p>ECC 一欄是基點的階 $n$ 的位元數，大約是安全強度的兩倍，這正是 $\sqrt n$ 攻擊的直接結果。RSA 與 FFC 一欄則因為次指數攻擊而增長得快得多：從 112 位元到 256 位元的強度，ECC 的大小約變為 2.3 倍（224 到 512），RSA 卻變為 7.5 倍（2048 到 15360）。常聽到的「<strong>P-256 約等於 RSA-3072</strong>」就是表中 128 位元那一列（P-256 是 NIST 標準曲線，它的 $n$ 有 256 位元，第 3 章列出完整參數）。</p>
 </section>
 
 <section id="ecdh" data-nav="ECDH">
 <h2><span class="secno">0.4</span>ECDH：兩次純量乘法約出一把金鑰</h2>
-<p><strong>橢圓曲線 Diffie–Hellman</strong>（ECDH）直接把上面的單向運算拿來用。雙方先約定公開的<strong>網域參數</strong>（domain parameters）：曲線 $E$、底體 $\mathbb F_p$、一個階為質數 $n$ 的點 $G$。標準曲線（例如 P-256）把這些參數全部固定公布。</p>
-<div class="tbl-wrap"><table class="cmp-table">
-<tr><th></th><th>Alice</th><th>Bob</th></tr>
-<tr><td>1. 選私鑰</td><td>隨機 $a\in[1,n-1]$</td><td>隨機 $b\in[1,n-1]$</td></tr>
-<tr><td>2. 算公鑰</td><td>$A=aG$</td><td>$B=bG$</td></tr>
-<tr><td>3. 交換</td><td>把 $A$ 送給 Bob</td><td>把 $B$ 送給 Alice</td></tr>
-<tr><td>4. 算共享點</td><td>$aB$</td><td>$bA$</td></tr>
-</table></div>
-<p>因為群是交換的，</p>
-$$aB = a(bG) = (ab)G = b(aG) = bA ,$$
-<p>兩人得到同一個點 $S=(ab)G$。竊聽者看得到 $G,A,B$，要算 $S$ 就得解出 $a$ 或 $b$（或者解所謂的計算 Diffie–Hellman 問題，目前沒有比解 ECDLP 更好的方法）。</p>
-<p>實務上不直接拿 $S$ 當金鑰，而是取它的 <strong>$x$ 座標</strong>，送進<strong>金鑰衍生函數</strong>（key derivation function，KDF）產生固定長度、分布均勻的對稱金鑰。RFC 7748 §6 的 X25519 也是同樣的流程，只是用另一種曲線形式和只算 $x$（在那裡叫 $u$）座標的 Montgomery ladder（第 5 章）。</p>
-<div class="example"><div class="ex-label">小例：曲線 $y^2=x^3-3x+6$，$\mathbb F_{97}$，共 107 個點</div>
-<p>107 是質數，所以除了 $\mathcal O$ 以外每一點都是生成元。取 $G=(0,43)$、$a=23$、$b=61$：</p>
-$$A=23G=(78,73),\qquad B=61G=(35,22),$$
-$$23B = 61A = (72,49) = 12\,G ,$$
-<p>其中 $12 \equiv 23\cdot61 \pmod{107}$。共享的 $x$ 座標是 $72$。（這些值由 <code>python/ecc_ref.py</code> 的 <code>scalar_mult</code> 算出，下一節的互動元件用同樣的預設值。）</p>
+<p>有了單向運算，就能回答本章開頭的問題：兩個人怎麼在公開的通道上約出一個祕密。</p>
+<div class="box defn" id="c0-def-ecdh"><div class="box-head"><span class="box-label">定義 0.6</span><span class="box-title">網域參數、ECDH、私鑰、公鑰</span><span class="box-ref">HMV §4.3, §4.6</span></div>
+<p>雙方先約定公開的<strong>網域參數</strong>（domain parameters）：質數 $p$、曲線 $E:y^2=x^3+ax+b$、基點 $G$ 與它的質數階 $n$。<strong>橢圓曲線 Diffie–Hellman</strong>（ECDH）的步驟：</p>
+<ol class="steps">
+<li>Alice 隨機選<strong>私鑰</strong> $d_A\in[1,n-1]$，算<strong>公鑰</strong> $Q_A=d_AG$；Bob 同樣選 $d_B$，算 $Q_B=d_BG$。</li>
+<li>交換公鑰。</li>
+<li>Alice 算 $d_AQ_B$，Bob 算 $d_BQ_A$。</li>
+</ol>
 </div>
-<h3>ECDH 沒有做到的事</h3>
-<ul>
-<li><strong>身分認證。</strong>裸的 ECDH 不知道對方是誰。中間人（man-in-the-middle）可以分別和 Alice、Bob 各做一次 ECDH，再在中間轉送並讀取所有訊息。實際協定（例如 TLS）會用<strong>數位簽章</strong>（ECDSA、EdDSA）或憑證把公鑰綁到身分上；簽章不在本站範圍內。</li>
-<li><strong>公鑰驗證。</strong>收到的 $B$ 必須先檢查：不是 $\mathcal O$、座標在 $[0,p)$ 內、確實滿足曲線方程式（餘因子不為 1 時還要檢查階）。否則攻擊者可以送一個<strong>不在曲線上</strong>的點，讓對方的計算落在另一條群階很小的曲線上，從回應洩漏私鑰的片段（invalid-curve attack）。HMV §4.3 有完整的驗證步驟。</li>
-</ul>
-<p>從計算的角度，ECDH 每一方只做兩次純量乘法：$aG$（基點固定，可以預先算表加速）與 $aB$（基點每次不同）。如果私鑰長期重複使用，$aG$ 只要算一次，每次交換就只剩一次。下面的程式就是雙方唯一需要的運算。</p>
+<p>因為 $d_A(d_BG)=(d_Ad_B)G=d_B(d_AG)$（純量乘法的性質，第 5 章），兩人得到同一個點 $S=(d_Ad_B)G$。竊聽者看得到 $G,Q_A,Q_B$；要算 $S$，目前沒有比解 ECDLP 更好的方法。</p>
+<p>實務上不直接拿 $S$ 當金鑰，而是取它的 $x$ 座標，送進<strong>金鑰衍生函數</strong>（key derivation function，KDF：把一個數轉成固定長度、分布均勻的對稱金鑰的函數）。</p>
+<div class="example"><div class="ex-label">小例：曲線 $y^2=x^3-3x+6$，$\mathbb F_{97}$，共 107 個點</div>
+<p>107 是質數，由 Lagrange 定理（<a class="xref" href="01_finite_field.html#thm-lagrange">定理 1.7</a>），除了無窮遠點 $\mathcal O$（<a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）以外每一點的階都是 107，都是生成元（<a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>）。取 $G=(0,43)$、$d_A=23$、$d_B=61$：</p>
+$$Q_A=23G=(78,73),\qquad Q_B=61G=(35,22),$$
+$$23\,Q_B = 61\,Q_A = (72,49) = 12\,G ,$$
+<p>其中 $12 \equiv 23\cdot61 \pmod{107}$。共享的 $x$ 座標是 $72$。</p>
+</div>
+<div class="box rem" id="c0-rem-ecdsa"><div class="box-head"><span class="box-label">注意 0.7</span><span class="box-title">另一個用途：ECDSA 簽章，以及模 n 的運算</span></div>
+<p>ECDH 本身不能確認對方的身分：中間人（man-in-the-middle）可以分別和 Alice、Bob 各做一次 ECDH，再在中間轉送訊息。實際協定會用<strong>數位簽章</strong>把公鑰綁到身分上，最常見的是 <strong>ECDSA</strong>（Elliptic Curve Digital Signature Algorithm，HMV §4.4.1）。本站不講簽章的細節，只需要知道一件事：ECDSA 除了純量乘法，還要在<strong>模基點階 $n$</strong> 下做整數運算（例如算 $k^{-1}\bmod n$ 與幾次模 $n$ 的乘法）。$n$ 是由曲線決定的大質數，通常沒有特殊形狀，所以第 8、9 章的一般化簡方法也用得上。</p>
+</div>
+<div class="box rem" id="c0-rem-validate"><div class="box-head"><span class="box-label">注意 0.8</span><span class="box-title">公鑰驗證</span></div>
+<p>收到的 $Q_B$ 必須先檢查：不是 $\mathcal O$、座標在 $[0,p)$ 內、確實滿足曲線方程式。否則攻擊者可以送一個<strong>不在曲線上</strong>的點，讓對方的計算落在另一條群很小的曲線上，從回應洩漏私鑰的片段（invalid-curve attack，HMV §4.3）。</p>
+</div>
 <details class="code-fold"><summary>Python 參考實作（選讀）：純量乘法：ECDH 雙方唯一需要的運算</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">scalar_mult</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;由左而右的 double-and-add：每讀一位先倍點，位元為 1 再加 P。&quot;&quot;&quot;</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">O</span>
@@ -156,17 +171,17 @@ $$23B = 61A = (72,49) = 12\,G ,$$
 
 <section id="lab" data-nav="互動">
 <h2><span class="secno">0.5</span>互動：在 107 個點上做 ECDH</h2>
-<p>選一個生成元 $G$，用滑桿設定 Alice 的私鑰 $a$ 與 Bob 的私鑰 $b$，再逐步播放。點雲是這條曲線的全部 106 個仿射點（另有無窮遠點 $\mathcal O$ 不在圖上）。最後兩邊算出的共享點會重合在同一個位置。</p>
+<p>選一個生成元 $G$（<a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>），用滑桿設定 Alice 的私鑰 $d_A$ 與 Bob 的私鑰 $d_B$，再逐步播放。點雲是這條曲線的全部 106 個仿射點（另有無窮遠點 $\mathcal O$ 不在圖上，見 <a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）。最後兩邊算出的共享點會重合在同一個位置。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">ECDH · y² = x³ − 3x + 6 over F₉₇</div>
     <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
       <label>生成元 G <select id="w00gen"></select></label>
     </div>
-    <div class="slider-row"><span class="sl-label">Alice a</span><input type="range" id="w00a" min="1" max="106" step="1" value="23" aria-label="Alice 的私鑰 a"><span class="sl-val" id="w00av">23</span></div>
-    <div class="slider-row"><span class="sl-label">Bob b</span><input type="range" id="w00b" min="1" max="106" step="1" value="61" aria-label="Bob 的私鑰 b"><span class="sl-val" id="w00bv">61</span></div>
+    <div class="slider-row"><span class="sl-label">Alice d<sub>A</sub></span><input type="range" id="w00a" min="1" max="106" step="1" value="23" aria-label="Alice 的私鑰 d_A"><span class="sl-val" id="w00av">23</span></div>
+    <div class="slider-row"><span class="sl-label">Bob d<sub>B</sub></span><input type="range" id="w00b" min="1" max="106" step="1" value="61" aria-label="Bob 的私鑰 d_B"><span class="sl-val" id="w00bv">61</span></div>
     <div class="stage" style="margin-top:.6rem"><svg id="w00cloud" role="img" aria-label="F_97 上的點雲與 ECDH 的各個點"></svg></div>
-    <div class="w00-legend"><span><i class="lg G"></i>G</span><span><i class="lg A"></i>A = aG</span><span><i class="lg B"></i>B = bG</span><span><i class="lg S"></i>共享點 S</span></div>
+    <div class="w00-legend"><span><i class="lg G"></i>G</span><span><i class="lg A"></i>Q<sub>A</sub> = d<sub>A</sub>G</span><span><i class="lg B"></i>Q<sub>B</sub> = d<sub>B</sub>G</span><span><i class="lg S"></i>共享點 S</span></div>
     <div class="status-banner" id="w00status" aria-live="polite"></div>
     <div class="controls-bar">
       <button class="btn btn-play" id="w00play" type="button">▶ 播放</button>
@@ -181,21 +196,21 @@ $$23B = 61A = (72,49) = 12\,G ,$$
       <div class="ic-note" id="w00evenote" style="margin-top:.4rem"></div></div>
   </div>
 </div>
-<p>側欄的「竊聽者看到的」卡片顯示一個重點：這個玩具群只有 107 個元素，從 $G$ 開始一個一個加，最多試 106 次就能找回 $a$。真實的 P-256 群階約 $2^{256}$，通用攻擊仍需約 $2^{128}$ 次群運算。小質數只是為了能把點畫出來。</p>
+<p>側欄的「竊聽者看到的」卡片顯示一個重點：這個玩具群只有 107 個元素，從 $G$ 開始一個一個加，最多試 106 次就能找回 $d_A$。真實的 P-256 群階約 $2^{256}$，通用攻擊仍需約 $2^{128}$ 次群運算。小質數只是為了能把點畫出來。</p>
 </section>
 
 <section id="chain" data-nav="成本鏈">
 <h2><span class="secno">0.6</span>成本鏈與本站地圖</h2>
-<p>一次 ECDH 的成本，可以沿著下面這條鏈一層一層往下拆。每一層都由下一層的運算組成，也剛好對應本站的章節：</p>
+<p>本站要回答的是：一次 ECDH 到底花多少力氣。這個成本可以沿著下面這條鏈一層一層往下拆，每一層都由下一層的運算組成，也剛好對應本站的章節：</p>
 <ol class="w00-chain">
 <li><span class="lv">協定</span><strong>ECDH</strong>：每一方一到兩次純量乘法。<span class="where">本章</span></li>
-<li><span class="lv">純量乘法</span><strong>$kP$</strong>：$k$ 有幾百位元，double-and-add 要做幾百次倍點與加點；換算下來是<strong>幾千次 $\mathbb F_p$ 乘法</strong>。<span class="where"><a href="05_scalar.html">第 5 章</a>；為什麼難倒推見 <a href="03_ecdlp.html">第 3 章</a></span></li>
-<li><span class="lv">點運算</span><strong>加點／倍點</strong>：仿射公式每步要一次求反元素；換成 Jacobian 座標後只剩十來次乘法。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
-<li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：先得到兩倍長的乘積，再化簡回 $[0,p)$。特殊形狀的 $p$ 用折疊，一般的 $p$ 用 Barrett 或 Montgomery。<span class="where"><a href="01_finite_field.html">第 1 章</a>、<a href="07_special.html">第 7 章</a>、<a href="08_barrett.html">第 8 章</a>、<a href="09_montgomery.html">第 9 章</a></span></li>
-<li><span class="lv">字組</span><strong>字組乘法</strong>：256 位元的數切成 4 個 64 位元字組，逐格相乘並處理進位。<span class="where"><a href="06_multiprecision.html">第 6 章</a></span></li>
+<li><span class="lv">純量乘法</span><strong>$kP$</strong>：$k$ 有幾百位元，要做幾百次「點加點」；換算下來是<strong>幾千次 $\mathbb F_p$ 乘法</strong>。<span class="where"><a href="05_scalar.html">第 5 章</a>；為什麼難以倒推見 <a href="03_ecdlp.html">第 3 章</a></span></li>
+<li><span class="lv">點運算</span><strong>加點與倍點</strong>：每一次都是十幾次 $\mathbb F_p$ 的加減乘除；怎麼避開昂貴的除法是第 4 章的主題。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
+<li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：先得到兩倍長的整數乘積，再化簡回 $[0,p)$。<span class="where"><a href="01_finite_field.html">第 1 章</a>、<a href="07_special.html">第 7–9 章</a></span></li>
+<li><span class="lv">字組乘法</span><strong>大整數相乘</strong>：電腦一次只能乘 64 位元，256 位元的數要拆成好幾段來乘。<span class="where"><a href="06_multiprecision.html">第 6 章</a></span></li>
 </ol>
 <p>讀法有兩種。<strong>由上往下</strong>是「為什麼」：協定需要 $kP$，$kP$ 需要點運算，點運算需要模乘。<strong>由下往上</strong>是「花多少」：字組乘法的次數乘上去，就得到一次 ECDH 的總成本。每章頁首的那條膠囊列就是這條鏈，亮起的那一格是該章所在的層。</p>
-<p>本站的章節順序是先打數學基礎（第 1–3 章：有限體、群律、群結構與 ECDLP），再從曲線走到運算成本（第 4–5 章），然後花四章處理最底層、也最常被執行的模乘法（第 6–9 章），最後在 <a href="10_synthesis.html">第 10 章</a>把各層的選擇放在一起比較。</p>
+<p>章節順序：第一部（第 1–3 章）打數學基礎，第二部（第 4–5 章）從曲線走到運算成本，第三部（第 6–9 章）處理最底層、也最常被執行的模乘法，最後在<a href="10_synthesis.html">第 10 章</a>把各層的選擇放在一起比較。</p>
 </section>
 
 <section id="refs" data-nav="本章文獻">

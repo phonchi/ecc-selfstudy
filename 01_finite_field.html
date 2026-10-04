@@ -45,14 +45,14 @@
 <section id="congruence" data-nav="同餘">
 <h2><span class="secno">1.2</span>同餘與 $\mathbb Z/n\mathbb Z$</h2>
 <p>我們要的是一個有限、而且四則運算封閉的數系。最自然的做法是讓整數「繞圈」：只記住除以 $n$ 的餘數。</p>
-<div class="box defn" id="def-mod"><div class="box-head"><span class="box-label">定義 1.1</span><span class="box-title">帶餘除法、x mod n</span><span class="box-ref">HAC Def. 2.82</span></div>
+<div class="box defn" id="def-mod"><div class="box-head"><span class="box-label">定義 1.1</span><span class="box-title">帶餘除法、取餘</span><span class="box-ref">HAC Def. 2.82</span></div>
 <p>設 $n\ge1$。對任意整數 $x$，存在唯一的一對整數 $q,r$ 使 $x=qn+r$ 且 $0\le r&lt;n$。記 $r=x\bmod n$（餘數），$q=\lfloor x/n\rfloor$（商）。</p>
 </div>
 <div class="box defn" id="def-cong"><div class="box-head"><span class="box-label">定義 1.2</span><span class="box-title">同餘</span><span class="box-ref">HAC Def. 2.110</span></div>
 <p>若 $n\mid x-y$，稱 $x$ 與 $y$ <strong>模 $n$ 同餘</strong>，記作 $x\equiv y\pmod n$。</p>
 </div>
 <p>注意兩個記號的分工：$x\bmod n$ 是一個<em>數</em>（落在 $[0,n)$），$x\equiv y\pmod n$ 是一個<em>關係</em>。同餘是等價關係，而且與加法、乘法相容：若 $x\equiv x'$、$y\equiv y'$，則 $x+y\equiv x'+y'$、$xy\equiv x'y'$。所以運算可以在「同餘類」上進行。</p>
-<div class="box defn" id="def-zn"><div class="box-head"><span class="box-label">定義 1.3</span><span class="box-title">剩餘類環、ℤ/nℤ</span><span class="box-ref">HAC Def. 2.113</span></div>
+<div class="box defn" id="def-zn"><div class="box-head"><span class="box-label">定義 1.3</span><span class="box-title">剩餘類環</span><span class="box-ref">HAC Def. 2.113</span></div>
 <p>模 $n$ 的同餘類全體記作 $\mathbb Z/n\mathbb Z$。它有 $n$ 個元素，通常用代表元 $\{0,1,\dots,n-1\}$ 表示；加法與乘法都是「先做整數運算，再取 $\bmod n$」。</p>
 </div>
 <div class="example"><div class="ex-label">例：時鐘</div>
@@ -73,7 +73,7 @@
 <p>就稱為<strong>群</strong>。若還有 $a\ast b=b\ast a$，稱為<strong>交換群</strong>（abelian group）。$G$ 的元素個數 $|G|$ 稱為群的<strong>階</strong>（order）。</p>
 </div>
 <div class="box rem" id="rem-notation"><div class="box-head"><span class="box-label">注意 1.5</span><span class="box-title">乘法寫法與加法寫法</span></div>
-<p>同一個群可以寫成乘法（$a\cdot b$、單位元 $1$、$a^k$）或加法（$a+b$、單位元 $0$、$ka$）。整數模 $p$ 的乘法群習慣用乘法寫法；橢圓曲線的點群習慣用加法寫法，單位元記作 $\mathcal O$，「$P$ 自己加 $k$ 次」記作 $kP$（第 2 章）。兩者是同一件事的兩種寫法。</p>
+<p>同一個群可以寫成乘法（$a\cdot b$、單位元 $1$、$a^k$）或加法（$a+b$、單位元 $0$、$ka$）。整數模 $p$ 的非零元素在乘法下成的群（§1.4 的 $\mathbb F_p^*$）習慣用乘法寫法；橢圓曲線的點群習慣用加法寫法，單位元記作 $\mathcal O$，「$P$ 自己加 $k$ 次」記作 $kP$（第 2 章）。兩者是同一件事的兩種寫法。</p>
 </div>
 <div class="box defn" id="def-subgroup"><div class="box-head"><span class="box-label">定義 1.6</span><span class="box-title">子群、元素的階、循環群、生成元</span><span class="box-ref">HAC Def. 2.166, 2.167, 2.169</span></div>
 <p>$G$ 的非空子集 $H$ 若在同一個運算下也是群，稱為<strong>子群</strong>。對 $g\in G$，使 $g^t=e$ 的最小正整數 $t$ 稱為 $g$ 的<strong>階</strong>，記作 $\operatorname{ord}(g)$。$g$ 的所有冪次 $\langle g\rangle=\{e,g,g^2,\dots\}$ 是一個子群，大小正好是 $\operatorname{ord}(g)$。若存在 $g$ 使 $\langle g\rangle=G$，稱 $G$ 為<strong>循環群</strong>，$g$ 為它的<strong>生成元</strong>（generator）。</p>
@@ -100,7 +100,7 @@
 <p>$a\in\mathbb Z/n\mathbb Z$ 有乘法反元素，若且唯若 $\gcd(a,n)=1$。因此 $\mathbb Z/n\mathbb Z$ 是體，若且唯若 $n$ 是質數。</p>
 </div>
 <p>直覺：若 $n=uv$ 是合數（$1&lt;u,v&lt;n$），則 $u\cdot v\equiv0$，$u$ 不可能有反元素（否則 $v=u^{-1}uv\equiv0$）。上一節 $\mathbb Z/12\mathbb Z$ 的 $3\cdot4\equiv0$ 就是這樣。</p>
-<div class="box defn" id="def-fp"><div class="box-head"><span class="box-label">定義 1.11</span><span class="box-title">質數體、𝔽_p、乘法群 𝔽_p^*</span><span class="box-ref">HAC Def. 2.208, 2.212</span></div>
+<div class="box defn" id="def-fp"><div class="box-head"><span class="box-label">定義 1.11</span><span class="box-title">質數體、乘法群</span><span class="box-ref">HAC Def. 2.208, 2.212</span></div>
 <p>對質數 $p$，記 $\mathbb F_p:=\mathbb Z/p\mathbb Z$，稱為<strong>質數體</strong>。它的元素通常用代表元 $\{0,1,\dots,p-1\}$ 表示，特徵是 $p$。它的非零元素在乘法下成為一個群，記作 $\mathbb F_p^*$，階是 $p-1$。</p>
 </div>
 <div class="box thm" id="thm-fpstar-cyclic"><div class="box-head"><span class="box-label">定理 1.12</span><span class="box-title">𝔽_p^* 是循環群</span><span class="box-ref">HAC Fact 2.213</span></div>

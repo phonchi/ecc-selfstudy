@@ -49,13 +49,13 @@ HC.ready(() => {
   }
   const frameDefs = [
     { msg: s => `公開參數：曲線 y² = x³ − 3x + 6 over F₉₇，群階 n = ${n}（質數），生成元 G = ${HC.pt(s.G)}。` },
-    { msg: s => `Alice 祕密選 a = ${s.av}，算出公鑰 A = aG = ${HC.pt(s.A)}。` },
-    { msg: s => `Bob 祕密選 b = ${s.bv}，算出公鑰 B = bG = ${HC.pt(s.B)}。` },
-    { msg: s => `交換：Alice 把 A 送給 Bob，Bob 把 B 送給 Alice。通道上只出現 G、A、B。` },
-    { msg: s => `Alice 用自己的 a 乘上收到的 B：aB = ${HC.pt(s.SA)}。` },
+    { msg: s => `Alice 祕密選私鑰 d<sub>A</sub> = ${s.av}，算出公鑰 Q<sub>A</sub> = d<sub>A</sub>G = ${HC.pt(s.A)}。` },
+    { msg: s => `Bob 祕密選私鑰 d<sub>B</sub> = ${s.bv}，算出公鑰 Q<sub>B</sub> = d<sub>B</sub>G = ${HC.pt(s.B)}。` },
+    { msg: s => `交換：Alice 把 Q<sub>A</sub> 送給 Bob，Bob 把 Q<sub>B</sub> 送給 Alice。通道上只出現 G、Q<sub>A</sub>、Q<sub>B</sub>。` },
+    { msg: s => `Alice 用自己的 d<sub>A</sub> 乘上收到的 Q<sub>B</sub>：d<sub>A</sub>Q<sub>B</sub> = ${HC.pt(s.SA)}。` },
     { msg: s => {
       const ok = key(s.SA) === key(s.SB) && key(s.SA) === key(s.Sab);
-      return `Bob 算 bA = ${HC.pt(s.SB)}。兩邊<b>${ok ? '相同 ✓' : '不同 ✗'}</b>，都等於 (ab mod ${n})G = ${s.ab}G。`
+      return `Bob 算 d<sub>B</sub>Q<sub>A</sub> = ${HC.pt(s.SB)}。兩邊<b>${ok ? '相同 ✓' : '不同 ✗'}</b>，都等於 (d<sub>A</sub>d<sub>B</sub> mod ${n})G = ${s.ab}G。`
         + (s.SA ? `共享的 x 座標 ${s.SA[0]} 送進 KDF。` : '');
     } },
   ];
@@ -63,17 +63,17 @@ HC.ready(() => {
   function render(i) {
     const s = state;
     const marks = [['G', 'G', s.G]];
-    if (i >= 1) marks.push(['A', 'A', s.A]);
-    if (i >= 2) marks.push(['B', 'B', s.B]);
-    if (i >= 4 && s.SA) marks.push([i >= 5 ? 'S' : 'aB', 'S', s.SA]);
+    if (i >= 1) marks.push(['QA', 'A', s.A]);
+    if (i >= 2) marks.push(['QB', 'B', s.B]);
+    if (i >= 4 && s.SA) marks.push([i >= 5 ? 'S' : 'dA·QB', 'S', s.SA]);
     drawMarks(marks);
-    $('w00alice').innerHTML = row('私鑰 a', i >= 1 ? s.av : hid) + row('公鑰 A', i >= 1 ? HC.pt(s.A) : hid)
-      + row('收到 B', i >= 3 ? HC.pt(s.B) : hid) + row('aB', i >= 4 ? HC.pt(s.SA) : hid, i >= 4);
-    $('w00bob').innerHTML = row('私鑰 b', i >= 2 ? s.bv : hid) + row('公鑰 B', i >= 2 ? HC.pt(s.B) : hid)
-      + row('收到 A', i >= 3 ? HC.pt(s.A) : hid) + row('bA', i >= 5 ? HC.pt(s.SB) : hid, i >= 5);
-    $('w00eve').innerHTML = row('G', HC.pt(s.G)) + row('A', i >= 3 ? HC.pt(s.A) : hid) + row('B', i >= 3 ? HC.pt(s.B) : hid);
+    $('w00alice').innerHTML = row('私鑰 d<sub>A</sub>', i >= 1 ? s.av : hid) + row('公鑰 Q<sub>A</sub>', i >= 1 ? HC.pt(s.A) : hid)
+      + row('收到 Q<sub>B</sub>', i >= 3 ? HC.pt(s.B) : hid) + row('d<sub>A</sub>Q<sub>B</sub>', i >= 4 ? HC.pt(s.SA) : hid, i >= 4);
+    $('w00bob').innerHTML = row('私鑰 d<sub>B</sub>', i >= 2 ? s.bv : hid) + row('公鑰 Q<sub>B</sub>', i >= 2 ? HC.pt(s.B) : hid)
+      + row('收到 Q<sub>A</sub>', i >= 3 ? HC.pt(s.A) : hid) + row('d<sub>B</sub>Q<sub>A</sub>', i >= 5 ? HC.pt(s.SB) : hid, i >= 5);
+    $('w00eve').innerHTML = row('G', HC.pt(s.G)) + row('Q<sub>A</sub>', i >= 3 ? HC.pt(s.A) : hid) + row('Q<sub>B</sub>', i >= 3 ? HC.pt(s.B) : hid);
     $('w00evenote').textContent = i >= 3
-      ? `暴力搜尋：從 G 起逐一加 G，第 ${s.tries} 次碰到 A，於是知道 a = ${s.tries}。在 107 個元素的群裡這很快；群階約 2^256 時不可行。`
+      ? `暴力搜尋：從 G 起逐一加 G，第 ${s.tries} 次碰到 Q_A，於是知道 d_A = ${s.tries}。在 107 個元素的群裡這很快；群階約 2^256 時不可行。`
       : '交換之前，通道上只有公開參數。';
     status.innerHTML = i < 0 ? '按「下一步」開始。圖上先標出 G。' : frameDefs[i].msg(s);
   }

@@ -339,3 +339,5 @@ details.code-fold .code-block{margin:0 .6rem .6rem;}
 
 .cover h1{font-size:clamp(1.9rem,4.5vw,2.6rem);}
 footer{text-align:left;padding:2rem 0 1rem;font-size:.8rem;color:var(--muted);border-top:1px solid var(--card-border);margin-top:2rem;}
+.cmp-table.notation td:last-child,.cmp-table.notation th:last-child{white-space:nowrap;}
+.cmp-table.notation td:nth-child(3){text-align:left;}

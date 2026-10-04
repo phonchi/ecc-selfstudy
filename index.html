@@ -34,19 +34,20 @@
   <p class="ch-sub">給數學背景讀者的導讀：每一章先說明為什麼需要，再給定義、定理與演算法，最後用互動元件動手算。</p>
   <div class="chain" aria-label="成本鏈"><span class="chain-cap">成本鏈</span><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div>
 </div>
-<section id="about">
+<section id="about" data-nav="這個網站在講什麼">
 <h2>這個網站在講什麼</h2>
 <p>橢圓曲線密碼（elliptic curve cryptography，ECC）的數學核心，數論背景的讀者大多很熟悉：有限體上的三次曲線、它的群律、Hasse 定理。陌生的往往是另一半：這些運算在電腦上<strong>怎麼算、花多少力氣</strong>，以及為什麼實作者會那麼在意模數 $p$ 長什麼樣子。</p>
-<p>本站把兩半接起來：先說明 ECC 的<strong>大觀念</strong>（為什麼需要它、為什麼金鑰比 RSA 短），再整理<strong>底層數學</strong>（有限體、群律、群結構與 ECDLP），最後一路往下拆到真正被執行幾千次的<strong>模乘法</strong>。證明以引用為主，重點放在直覺與可以動手驗算的例子。</p>
+<p>本站把兩半接起來：先說明 ECC 的<strong>大觀念</strong>（為什麼需要它、為什麼金鑰比 RSA 短），再整理<strong>底層數學</strong>（有限體、群律、群結構與 ECDLP），最後一路往下拆到真正被執行幾千次的<strong>模乘法</strong>。每一個記號與術語在第一次出現時都會給出定義；定理只寫敘述、直覺與出處，不寫證明，重點放在動機與可以動手驗算的例子。</p>
 <h3>怎麼讀</h3>
 <ul>
-<li>每一章的順序相同：先問<strong>為什麼</strong>（橘色的「動機」框），再講<strong>數學</strong>，然後是<strong>互動元件</strong>，最後附上 <strong>Python 參考碼</strong>與對應的教科書章節。</li>
+<li>每一章的順序相同：先說明<strong>為什麼需要</strong>（橘色的「動機」框），再給<strong>定義、定理與演算法</strong>（編號的方框，例如「定義 1.3」「演算法 9.2」，可以跨章引用），然後是<strong>例子與互動元件</strong>。Python 參考實作是選讀，預設收合。</li>
+<li>忘了某個記號的意思，可以查附錄的<a href="notation.html">記號與術語</a>：它列出每個記號的意義與第一次定義的位置。</li>
 <li>互動元件多半用<strong>小質數</strong>，讓點雲與每一個位元都畫得出來；第 7–9 章的元件可以切換到 P-256、P-521 等<strong>真實大小的模數</strong>。</li>
 <li>所有互動計算都在瀏覽器裡用 JavaScript 的 BigInt 進行，只供教學，<strong>不是常數時間實作</strong>，不能拿來處理真正的金鑰。</li>
 </ul>
 </section>
 
-<section id="chain">
+<section id="chain" data-nav="成本鏈">
 <h2>成本鏈：從協定到字組</h2>
 <p>全站沿著一條鏈組織：上一層的每一個運算，都由下一層的運算組成。頁首那一列膠囊就是它。</p>
 <ol class="ix-chain">
@@ -58,7 +59,7 @@
 </ol>
 </section>
 
-<section id="chapters">
+<section id="chapters" data-nav="章節">
 <h2>章節</h2>
 <div class="part-title">序章</div>
 <div class="ch-grid"><a class="ch-card" href="00_why_ecc.html"><span class="ch-layer">協定 ECDH</span><div class="ch-num">第 0 章</div><h3>為什麼是橢圓曲線</h3><p>公開金鑰的需求、RSA 與 ECC 的金鑰長度、ECDH 交換，以及整個網站的成本鏈。</p></a></div>
@@ -72,7 +73,7 @@
 <div class="ch-grid"><a class="ch-card" href="10_synthesis.html"><span class="ch-layer">協定 ECDH</span><div class="ch-num">第 10 章</div><h3>總整：何時用哪一種</h3><p>比較表、成本鏈總覽，以及延伸閱讀的順序。</p></a></div>
 </section>
 
-<section id="scope">
+<section id="scope" data-nav="範圍與文獻">
 <h2>範圍與文獻</h2>
 <div class="info-box"><span class="info-label">範圍</span>
 <p>本站只處理質數體 $\mathbb F_p$ 上的短 Weierstrass 曲線與 ECDH。<strong>不涵蓋</strong>：配對（pairings）、二元體 $\mathrm{GF}(2^m)$ 上的曲線、點數計算演算法（例如 Schoof 演算法）、ECDH 以外的協定（簽章、加密、零知識等）。</p>
@@ -82,7 +83,7 @@
 
 <footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<nav class="pagetoc" aria-label="本頁目錄"></nav>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#about" data-target="about">這個網站在講什麼</a></li><li><a href="#chain" data-target="chain">成本鏈</a></li><li><a href="#chapters" data-target="chapters">章節</a></li><li><a href="#scope" data-target="scope">範圍與文獻</a></li></ul></nav>
 </div>
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <script src="assets/ecc-core.js?v=20261005"></script>
