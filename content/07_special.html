@@ -14,6 +14,13 @@
 $$A\equiv A_0+c\,A_1\pmod p .$$
 <p>若 $0&lt;c&lt;2^L$ 且 $A_1&gt;0$，右邊嚴格小於 $A$。</p>
 </div>
+<details class="proof-fold"><summary>證明</summary><div class="proof-body">
+<p>因為 $2^L=p+c\equiv c\pmod p$，所以</p>
+$$A=A_1\cdot2^L+A_0\equiv A_1c+A_0\pmod p .$$
+<p>至於大小，</p>
+$$A-(A_0+c\,A_1)=A_1(2^L-c)=A_1\,p .$$
+<p>若 $0&lt;c&lt;2^L$，則 $p=2^L-c&gt;0$；再加上 $A_1&gt;0$，差 $A_1p$ 是正數，所以 $A_0+cA_1&lt;A$。</p>
+</div></details>
 <p>把 $A$ 的高位部分 $A_1$「折」回低位、乘上 $c$ 再加起來，這個動作稱為<strong>折疊</strong>（folding）。同餘類不變，數值變小。因為電腦裡的整數本來就是二進位，求 $A_1,A_0$ 只是取出位元；若 $L$ 是字組大小 $w$ 的倍數（[[ref:c6-def-radix]]），甚至只是取出某些字組。所以折疊的成本取決於 $c$ 有多「簡單」。依 $c$ 的形狀，常見的特殊模數分成三類。</p>
 <div class="box defn" id="c7-def-mersenne" data-terms="Mersenne 質數|偽 Mersenne 質數|Crandall 質數" data-sym="$p=2^L-1$、$p=2^L-c$" data-gloss="Mersenne：$c=1$；偽 Mersenne：$c$ 是小的正整數" data-ref="HAC §14.3.4；SP 800-186 App. G.1">
 <p>形如 $2^L-1$ 的質數稱為 <strong>Mersenne 質數</strong>。形如 $p=2^L-c$、其中 $c$ 是小的正整數（例如 $c$ 只佔一個字組）的質數，稱為<strong>偽 Mersenne 質數</strong>（pseudo-Mersenne prime），也叫 <strong>Crandall 質數</strong>。</p>
@@ -48,8 +55,13 @@ $$(X_{q-1}\Vert\cdots\Vert X_1\Vert X_0)=\sum_{i=0}^{q-1}X_i\,2^{ti},$$
 <li>若 $r\ge p$，則 $r\leftarrow r-p$。</li>
 <li>回傳 $r$。</li>
 </ol>
-<p>$r\equiv A$ 來自 $2^{521}\equiv1$。因為 $A_0\le p$、$A_1&lt;p$（由 $A&lt;p^2$），所以 $r&lt;2p$，最多減一次。成本是一次 521 位元的加法。</p>
+<p>第 2 步至多減一次 $p$。成本是一次 521 位元的加法。</p>
 </div>
+<details class="proof-fold"><summary>證明</summary><div class="proof-body">
+<p>由 [[ref:c7-thm-fold]]（$c=1$），$A_0+A_1\equiv A\pmod p$。範圍：$A_0&lt;2^{521}$，所以 $A_0\le2^{521}-1=p$；又</p>
+$$A_1=\lfloor A/2^{521}\rfloor\le A/2^{521}&lt;p^2/2^{521}&lt;p .$$
+<p>因此第 1 步後 $0\le r&lt;2p$。若 $r\ge p$，減一次後 $0\le r-p&lt;p$。所以回傳值在 $[0,p)$ 且與 $A$ 同餘，即 $A\bmod p$。</p>
+</div></details>
 <p>521 不是 64 的倍數（$521=8\cdot64+9$），所以在 64 位元機器上，$A_1$ 要從第 9 個字組的中間開始取，需要一次跨字組的移位，這是唯一的麻煩。</p>
 <div class="example"><div class="ex-label">手算小例：$p=2^7-1=127$</div>
 <p>取 $x=100$、$y=113$，$A=11300$。以 7 位元為塊寬，$A=(\underbrace{1011000}_{A_1=88}\Vert\underbrace{0100100}_{A_0=36})$。所以</p>
@@ -70,8 +82,16 @@ $$A\equiv 88+36=124\pmod{127},$$
 <li>若 $r\ge p$，則 $r\leftarrow r-p$。</li>
 <li>回傳 $r$。</li>
 </ol>
-<p>兩步都是 [[ref:c7-thm-fold]]，所以 $r\equiv A$。第 1 步後 $r&lt;2^{255}+19\cdot2^{255}=20\cdot2^{255}&lt;2^{260}$，比 $p$ 大，所以要再折一次；這時 $r_1&lt;20$，第 2 步後 $r&lt;2^{255}+19\cdot19&lt;2p$，最多再減一次。</p>
+<p>第 1 步後的 $r$ 仍可能比 $p$ 大十幾倍，所以要再折一次；第 2 步後 $r&lt;2p$，第 3 步至多減一次。</p>
 </div>
+<details class="proof-fold"><summary>證明</summary><div class="proof-body">
+<p>兩次折疊都是 [[ref:c7-thm-fold]]（$L=255$、$c=19$），所以每一步的 $r$ 都與 $A$ 模 $p$ 同餘。範圍：</p>
+<p>第 1 步。$A_0&lt;2^{255}$，且 $A_1\le A/2^{255}&lt;p^2/2^{255}&lt;2^{255}$。所以</p>
+$$\begin{aligned}r&amp;=A_0+19A_1\\&amp;&lt;2^{255}+19\cdot2^{255}=20\cdot2^{255}.\end{aligned}$$
+<p>第 2 步。由上式 $r_1=\lfloor r/2^{255}\rfloor&lt;20$，即 $r_1\le19$；又 $r_0\le2^{255}-1$。所以新的</p>
+$$\begin{aligned}r&amp;=r_0+19r_1\le2^{255}-1+361\\&amp;&lt;2^{256}-38=2p .\end{aligned}$$
+<p>因此第 3 步之前 $0\le r&lt;2p$，至多減一次 $p$ 就落在 $[0,p)$。</p>
+</div></details>
 <div class="box rem" id="c7-rem-curve25519" data-title="只借用模數">
 <p>Curve25519 這條曲線是 Montgomery 形式 $v^2=u^3+486662u^2+u$（RFC 7748），不是本站其他章用的短 Weierstrass 形式。這裡只借用它的<em>模數</em>來說明折疊，與曲線的形式無關。</p>
 </div>
@@ -91,8 +111,18 @@ $$2^{672}=2^{224}\cdot2^{448}\equiv2^{448}+2^{224}\equiv2^{225}+1\pmod p .$$
 <li>當 $r\ge p$：$r\leftarrow r-p$。</li>
 <li>回傳 $r$。</li>
 </ol>
-<p>上面的兩個同餘式給出 $S_1+S_2+S_3+S_4\equiv A$。四項各小於 $2^{448}$，所以 $r&lt;4\cdot2^{448}$，而 $4\cdot2^{448}-4p=4(2^{224}+1)&lt;p$，第 3 步至多減四次。</p>
+<p>第 3 步至多減四次 $p$。</p>
 </div>
+<details class="proof-fold"><summary>證明</summary><div class="proof-body">
+<p>記 $c=2^{224}+1$，則 $2^{448}=p+c\equiv c$，且</p>
+$$\begin{aligned}2^{672}=2^{224}\cdot2^{448}&amp;\equiv2^{448}+2^{224}\\&amp;\equiv(2^{224}+1)+2^{224}=2^{225}+1\pmod p .\end{aligned}$$
+<p>所以</p>
+$$\begin{aligned}A&amp;=A_0+A_1 2^{224}+A_2 2^{448}+A_3 2^{672}\\&amp;\equiv A_0+A_1 2^{224}+A_2(2^{224}+1)+A_3(2^{225}+1)\pmod p .\end{aligned}$$
+<p>右邊前兩項是 $S_1$，$A_2(2^{224}+1)=S_2$，而</p>
+$$A_3(2^{225}+1)=(A_3 2^{224}+A_3)+A_3 2^{224}=S_3+S_4 .$$
+<p>所以 $S_1+S_2+S_3+S_4\equiv A$。</p>
+<p>範圍：$A&lt;p^2&lt;2^{896}$，所以最高塊 $A_3&lt;2^{224}$，四個 $A_i$ 都是合法的 224 位元塊，四項各在 $[0,2^{448})$。於是 $0\le r&lt;4\cdot2^{448}=4p+4c$，而 $4c=2^{226}+4&lt;p$，所以 $r&lt;5p$。每減一次 $p$，$r$ 落在的區間 $[kp,(k+1)p)$ 的 $k$ 就少 1，至多減四次後落在 $[0,p)$。</p>
+</div></details>
 <p>注意：單獨一項 $S_i$ 與 $A$ 沒有同餘關係；只有<strong>四項全部加完</strong>，總和才與 $A$ 同餘。</p>
 </section>
 
@@ -100,7 +130,7 @@ $$2^{672}=2^{224}\cdot2^{448}\equiv2^{448}+2^{224}\equiv2^{225}+1\pmod p .$$
 <h2>P-256：九項的加減</h2>
 <p>P-256 的模數 $p=2^{256}-2^{224}+2^{192}+2^{96}-1$ 看起來比上面幾個複雜，選這個形狀，是因為<strong>每個次方 $256,224,192,96,0$ 都是 32 的倍數</strong>。由 [[ref:c7-thm-fold]]，</p>
 $$2^{256}\equiv2^{224}-2^{192}-2^{96}+1\pmod p ,$$
-<p>右邊每一項都是 $2^{32i}$ 的形式。所以若以 32 位元字組寫 $A=(A_{15}\Vert\cdots\Vert A_1\Vert A_0)$（每塊 32 位元），把 $2^{256},2^{288},\dots,2^{480}$ 一個個換成 $2^0,2^{32},\dots,2^{224}$ 的組合，每個 $A_j$ 都整塊落到某些字組位置上，不必在字組內部移位，而且係數只有 $0,\pm1,\pm2$。這正是設計者要的：在 32 位元機器上，化簡只剩字組的重排與加減。</p>
+<p>右邊每一項都是 $2^{32i}$ 的形式。所以若以 32 位元字組寫 $A=(A_{15}\Vert\cdots\Vert A_1\Vert A_0)$（每塊 32 位元），把 $2^{256},2^{288},\dots,2^{480}$ 一個個換成 $2^0,2^{32},\dots,2^{224}$ 的組合，每個 $A_j$ 都整塊落到某些字組位置上，不必在字組內部移位：九項的權重只有 $\pm1,\pm2$，每個 $A_j$ 在每個字組位置上的合計係數也只在 $-1$ 到 $3$ 之間。這正是設計者要的：在 32 位元機器上，化簡只剩字組的重排與加減。</p>
 <div class="box algo" id="c7-alg-p256" data-title="化簡模 P-256 的 p" data-ref="HMV Alg. 2.29；SP 800-186 App. G.1.2">
 <div class="io"><b>輸入</b>$p=2^{256}-2^{224}+2^{192}+2^{96}-1$，整數 $0\le A&lt;p^2$，寫成 $A=(A_{15}\Vert A_{14}\Vert\cdots\Vert A_0)$（每塊 32 位元）。</div>
 <div class="io"><b>輸出</b>$A\bmod p$。</div>
@@ -110,8 +140,33 @@ $$2^{256}\equiv2^{224}-2^{192}-2^{96}+1\pmod p ,$$
 <li>當 $U&lt;0$：$U\leftarrow U+p$。當 $U\ge p$：$U\leftarrow U-p$。</li>
 <li>回傳 $U$。</li>
 </ol>
-<p>$U\equiv A\pmod p$ 是把每個 $2^{32j}$（$8\le j\le15$）用 $2^{256}$ 的同餘式反覆換掉後整理的結果。每一項都在 $[0,2^{256})$，所以 $-4\cdot2^{256}&lt;U&lt;7\cdot2^{256}$，第 3 步至多加 5 次或減 7 次 $p$。HMV 把同樣九項記作 $s_1,\dots,s_9$。</p>
+<p>第 3 步至多加 5 次或減 7 次 $p$。HMV 把同樣九項記作 $s_1,\dots,s_9$。</p>
 </div>
+<details class="proof-fold"><summary>證明</summary><div class="proof-body">
+<p>記 $W=2^{32}$，則 $A=\sum_{j=0}^{15}A_jW^j$，$p=W^8-W^7+W^6+W^3-1$，所以</p>
+$$W^8\equiv W^7-W^6-W^3+1\pmod p .$$
+<p>把 $W^j$（$8\le j\le15$）寫成 $W$ 的 7 次以下的多項式：從 $W^8$ 開始，每次乘以 $W$，再把出現的 $W^8$ 用上式換掉。得到下表（每一列都與左邊模 $p$ 同餘）：</p>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>$W^j$</th><th>模 $p$ 同餘的 7 次以下多項式</th></tr>
+<tr><td>$W^{8}$</td><td>$W^7-W^6-W^3+1$</td></tr>
+<tr><td>$W^{9}$</td><td>$-W^6-W^4-W^3+W+1$</td></tr>
+<tr><td>$W^{10}$</td><td>$-W^7-W^5-W^4+W^2+W$</td></tr>
+<tr><td>$W^{11}$</td><td>$-W^7-W^5+2W^3+W^2-1$</td></tr>
+<tr><td>$W^{12}$</td><td>$-W^7+2W^4+2W^3-W-1$</td></tr>
+<tr><td>$W^{13}$</td><td>$-W^7+W^6+2W^5+2W^4+W^3-W^2-W-1$</td></tr>
+<tr><td>$W^{14}$</td><td>$3W^6+2W^5+W^4-W^2-W-1$</td></tr>
+<tr><td>$W^{15}$</td><td>$3W^7+2W^6+W^5-W^3-W^2-W$</td></tr>
+</table></div>
+<p>例如</p>
+$$\begin{aligned}W^9&amp;\equiv W\cdot(W^7-W^6-W^3+1)=W^8-W^7-W^4+W\\&amp;\equiv-W^6-W^4-W^3+W+1 .\end{aligned}$$
+<p>另一方面，看演算法的組合</p>
+$$T+2S_1+2S_2+S_3+S_4-D_1-D_2-D_3-D_4 ,$$
+<p>$A_j$ 出現在某一項的字組 $i$ 上，就貢獻 $\pm A_jW^i$ 或 $\pm2A_jW^i$。把 $A_j$ 的所有貢獻加起來，恰好是 $A_j$ 乘上表中 $W^j$ 那一列的多項式。以 $A_8$ 為例：它出現在 $S_3$ 的字組 0、$S_4$ 的字組 7、$D_1$ 的字組 6、$D_3$ 的字組 3，合計 $A_8(1+W^7-W^6-W^3)$，正是 $W^8$ 那一列。其餘七列可以對照 [[ref:c7-alg-p256]] 的表格逐一核對。$j\le7$ 的 $A_j$ 只出現在 $T$ 的字組 $j$。這些是多項式恆等式，與進位無關。因此</p>
+$$U=\sum_{j=0}^{7}A_jW^j+\sum_{j=8}^{15}A_j\,(\text{表中第 }j\text{ 列})\equiv\sum_{j=0}^{15}A_jW^j=A\pmod p .$$
+<p>範圍：九項各是 8 個字組並排，都在 $[0,W^8)$。正係數合計 $1+2+2+1+1=7$，負係數合計 $4$，所以 $-4W^8&lt;U&lt;7W^8$。記 $c=W^8-p=2^{224}-2^{192}-2^{96}+1$，有 $7c&lt;2^{227}&lt;p$。於是</p>
+$$-5p&lt;-4p-4c&lt;U&lt;7p+7c&lt;8p ,$$
+<p>所以至多加 5 次或減 7 次 $p$ 就進入 $[0,p)$。</p>
+</div></details>
 <p>和 Goldilocks 一樣，<strong>九項必須全部加減完</strong>，總和 $U$ 才與 $A$ 同餘；中間的部分和沒有這個性質。而且 $U$ 可能是負數，也可能比 $p$ 大好幾倍，所以第 3 步的<strong>正規化</strong>（加或減若干次 $p$，把結果拉回 $[0,p)$）不可省略。這一步的次數隨資料而變；常數時間的實作會改成固定次數的條件加減，用遮罩選結果。</p>
 
 <p>下面的程式中，四個函式依序對應 [[ref:c7-alg-p521]]、[[ref:c7-alg-25519]]、[[ref:c7-alg-448]]、[[ref:c7-alg-p256]]（$2^{255}-19$ 的版本以迴圈折到不能再折為止，效果與兩次折疊相同）。</p>

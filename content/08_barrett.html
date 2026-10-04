@@ -40,8 +40,26 @@ $$\frac{x}{m}=\frac{x}{\beta^{s-1}}\cdot\frac{\beta^{2s}}{m}\cdot\frac{1}{\beta^
 $$Q-2\ \le\ q_3\ \le\ Q .$$
 <p>（HAC 把餘數記作 $R$；本站的 $R$ 留給第 9 章，所以這裡寫 $r$。）</p>
 </div>
+<details class="proof-fold"><summary>證明</summary><div class="proof-body">
+<p>先記兩個範圍。由 $x&lt;\beta^{2s}$，$q_1=\lfloor x/\beta^{s-1}\rfloor&lt;\beta^{s+1}$；由 $m\ge\beta^{s-1}$，$\beta^{2s}/m\le\beta^{s+1}$。</p>
+<p>令 $a=x/\beta^{s-1}$、$b=\beta^{2s}/m$（兩個實數），則 $ab/\beta^{s+1}=x/m$，而且 $q_1=\lfloor a\rfloor$、$\mu=\lfloor b\rfloor$。寫 $a=q_1+\varepsilon_1$、$b=\mu+\varepsilon_2$，其中 $0\le\varepsilon_1,\varepsilon_2&lt;1$。</p>
+<p>上界：$q_1\le a$、$\mu\le b$，所以 $q_1\mu/\beta^{s+1}\le ab/\beta^{s+1}=x/m$。$q_3$ 是左邊的整數部分，所以 $q_3\le\lfloor x/m\rfloor=Q$。</p>
+<p>下界：展開</p>
+$$ab-q_1\mu=\varepsilon_1 b+\varepsilon_2 q_1 .$$
+<p>因為 $\varepsilon_1&lt;1$ 且 $0&lt;b\le\beta^{s+1}$，有 $\varepsilon_1b&lt;\beta^{s+1}$；因為 $\varepsilon_2&lt;1$ 且 $0\le q_1&lt;\beta^{s+1}$，有 $\varepsilon_2q_1&lt;\beta^{s+1}$。所以</p>
+$$\frac xm=\frac{ab}{\beta^{s+1}}&lt;\frac{q_1\mu}{\beta^{s+1}}+2&lt;(q_3+1)+2 ,$$
+<p>最後一步用了 $q_3=\lfloor q_1\mu/\beta^{s+1}\rfloor&gt;q_1\mu/\beta^{s+1}-1$。於是 $Q\le x/m&lt;q_3+3$；$Q$ 與 $q_3$ 都是整數，所以 $Q\le q_3+2$。</p>
+</div></details>
 <p>直覺：$q_3$ 有兩個誤差來源，一是丟掉了 $x$ 的低 $s-1$ 個字組，二是 $\mu$ 本身取過整。兩者都只會讓估計值變小，而且各自讓它少不到 1，所以 $q_3$ 不會超過 $Q$，最多少 2。</p>
-<p>第 2–4 步由此而來。真正的差 $x-q_3m=(Q-q_3)m+r$ 落在 $[0,3m)$。因為 $m&lt;\beta^s$ 且 $\beta&gt;3$，有 $3m&lt;\beta^{s+1}$，所以只要知道這個差的低 $s+1$ 個字組就能還原它：第 2 步只算低 $s+1$ 個字組，若相減為負，第 3 步加回 $\beta^{s+1}$。最後 $r&lt;3m$，第 4 步至多減兩次 $m$（HAC Note 14.44）。條件 $\beta&gt;3$ 就是為了這一步。</p>
+<p>第 2–4 步由此而來：真正的差 $x-q_3m$ 落在 $[0,3m)$，夠小，只要知道它的低 $s+1$ 個字組就能還原；還原後至多減兩次 $m$（HAC Note 14.44）。</p>
+<details class="proof-fold"><summary>證明（[[ref:c8-alg-barrett]] 的正確性）</summary><div class="proof-body">
+<p>這是 [[ref:c8-alg-barrett]] 的正確性證明。令 $Q,r^\ast$ 為帶餘除法 $x=Qm+r^\ast$、$0\le r^\ast&lt;m$ 的商與餘數（為了與演算法中的變數 $r$ 區分，這裡把真正的餘數寫成 $r^\ast$）。令 $D=x-q_3m$，這是演算法想算出的差。</p>
+<p>$D$ 的範圍。由 [[ref:c8-thm-q3]]，$0\le Q-q_3\le2$，所以 $D=(Q-q_3)m+r^\ast$ 落在 $[0,3m)$。又 $m&lt;\beta^s$，而 $\beta&gt;3$ 給出 $3m&lt;3\beta^s&lt;\beta^{s+1}$，所以 $0\le D&lt;\beta^{s+1}$。</p>
+<p>第 2、3 步算出 $D$。$r_1\equiv x$、$r_2\equiv q_3m\pmod{\beta^{s+1}}$，而且兩者都在 $[0,\beta^{s+1})$，所以</p>
+$$r_1-r_2\equiv D\pmod{\beta^{s+1}},$$
+<p>且 $-\beta^{s+1}&lt;r_1-r_2&lt;\beta^{s+1}$。若 $r_1-r_2\ge0$，它就是 $[0,\beta^{s+1})$ 中與 $D$ 同餘的唯一數，即 $D$；若為負，加上 $\beta^{s+1}$ 後同理也等於 $D$。所以第 3 步之後 $r=D$。</p>
+<p>第 4 步。$r=D=(Q-q_3)m+r^\ast$，其中 $Q-q_3\in\{0,1,2\}$。減掉 $Q-q_3$ 次 $m$ 之後得到 $r^\ast\in[0,m)$，迴圈停止；在這之前 $r\ge m$，迴圈不會提早停。所以回傳 $r^\ast=x\bmod m$，且至多減兩次。</p>
+</div></details>
 <div class="example"><div class="ex-label">手算小例：兩次修正真的會發生</div>
 <p>取 $m=241$，$\beta=4$。$4^3=64\le241&lt;256=4^4$，所以 $s=4$，$\mu=\lfloor 4^8/241\rfloor=\lfloor 65536/241\rfloor=271$。對 $x=57855&lt;4^8$：</p>
 $$q_1=\lfloor 57855/4^3\rfloor=903,\qquad q_2=903\cdot271=244713,$$

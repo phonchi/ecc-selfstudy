@@ -336,6 +336,14 @@ details.code-fold>summary::-webkit-details-marker{display:none;}
 details.code-fold>summary::before{content:'▸';display:inline-block;margin-right:.45rem;transition:transform .2s;}
 details.code-fold[open]>summary::before{transform:rotate(90deg);}
 details.code-fold .code-block{margin:0 .6rem .6rem;}
+details.proof-fold{margin:-.6rem 0 1.3rem;border:1px dashed var(--card-border);border-radius:8px;background:var(--card);}
+details.proof-fold>summary{cursor:pointer;padding:.45rem .9rem;font-size:.88rem;font-weight:600;color:var(--muted);list-style:none;}
+details.proof-fold>summary::-webkit-details-marker{display:none;}
+details.proof-fold>summary::before{content:'▸';display:inline-block;margin-right:.45rem;transition:transform .2s;}
+details.proof-fold[open]>summary::before{transform:rotate(90deg);}
+details.proof-fold>.proof-body{padding:.1rem 1.1rem .7rem;overflow-x:auto;}
+details.proof-fold mjx-assistive-mml{max-width:1px;}
+details.proof-fold>.proof-body>p:last-child::after{content:'∎';float:right;margin-left:.5rem;}
 
 .cover h1{font-size:clamp(1.9rem,4.5vw,2.6rem);}
 footer{text-align:left;padding:2rem 0 1rem;font-size:.8rem;color:var(--muted);border-top:1px solid var(--card-border);margin-top:2rem;}

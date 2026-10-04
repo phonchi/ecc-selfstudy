@@ -101,7 +101,16 @@ $$a_i+u_i\,m\equiv0\pmod\beta .$$
 $$A=\frac{T+Um}{R}\ \text{是整數},\qquad A\equiv TR^{-1}\pmod m,\qquad 0\le A&lt;2m .$$
 <p>所以第 4 步至多減一次 $m$，結束時 $A=TR^{-1}\bmod m$。</p>
 </div>
-<p>範圍的理由只有一行：$T&lt;mR$ 且 $Um&lt;Rm$，所以 $(T+Um)/R&lt;2m$。這也是輸入必須滿足 $T&lt;mR$ 的原因。HAC Fact 14.29 用的是 $-m^{-1}\bmod R$；因為 $R=\beta^s$，逐字組處理時只需要 $m'=-m^{-1}\bmod\beta$（HAC Note 14.33(i)）。</p>
+<details class="proof-fold"><summary>證明</summary><div class="proof-body">
+<p>記 $A^{(i)}$ 為第 2 步第 $i$ 輪結束時的 $A$（$A^{(-1)}=T$）。以歸納法證明：</p>
+$$\begin{gathered}A^{(i)}=T+\Bigl(\sum_{j=0}^{i}u_j\beta^j\Bigr)m,\\ A^{(i)}\equiv0\pmod{\beta^{i+1}} .\end{gathered}$$
+<p>$i=-1$ 時第二式是空條件。設第 $i-1$ 輪後成立，則 $A^{(i-1)}$ 的低 $i$ 個字組為 0，可寫成 $A^{(i-1)}=\beta^i(a_i+\beta B)$，其中 $a_i$ 是它的第 $i$ 個字組、$B$ 是整數。第 $i$ 輪加上 $u_im\beta^i$ 後，</p>
+$$A^{(i)}=\beta^i\bigl(a_i+u_im+\beta B\bigr).$$
+<p>由 $m'\equiv-m^{-1}\pmod\beta$，$u_im\equiv a_im'm\equiv-a_i\pmod\beta$，所以 $a_i+u_im\equiv0\pmod\beta$，$A^{(i)}$ 被 $\beta^{i+1}$ 整除。加上的量是 $\beta^i$ 的倍數，所以低 $i$ 個字組維持為 0。第一式顯然隨每輪的加法成立。</p>
+<p>取 $i=s-1$：進入第 3 步時 $A=T+Um$，$U=\sum_{j&lt;s}u_j\beta^j$，且 $R=\beta^s$ 整除 $A$，所以 $A/R$ 是整數。又 $(A/R)\cdot R=T+Um\equiv T\pmod m$，兩邊乘以 $R^{-1}$ 得 $A/R\equiv TR^{-1}\pmod m$。</p>
+<p>範圍：每個 $u_j\le\beta-1$，所以 $U\le R-1&lt;R$。於是 $0\le T+Um&lt;mR+Rm=2mR$，除以 $R$ 得 $0\le A&lt;2m$。這也是輸入必須滿足 $T&lt;mR$ 的原因。第 4 步至多減一次 $m$，得到 $[0,m)$ 中與 $TR^{-1}$ 同餘的數，即 $TR^{-1}\bmod m$。</p>
+</div></details>
+<p>HAC Fact 14.29 用的是 $-m^{-1}\bmod R$；因為 $R=\beta^s$，逐字組處理時只需要 $m'=-m^{-1}\bmod\beta$（HAC Note 14.33(i)）。</p>
 <div class="example"><div class="ex-label">手算小例：$\beta=10$，$m=4567$，$R=10^4$</div>
 <p>$m$ 有 $s=4$ 位，$\gcd(4567,10)=1$。$4567\equiv7\pmod{10}$，$7^{-1}\equiv3$，所以 $m'=-3\bmod10=7$。對 $T=1234\cdot3211=3962374&lt;mR$：</p>
 <div class="tbl-wrap"><table class="cmp-table">
@@ -133,7 +142,20 @@ $$A=\frac{T+Um}{R}\ \text{是整數},\qquad A\equiv TR^{-1}\pmod m,\qquad 0\le A
 </ol>
 <p>第 2(a) 步選的 $u_i$ 讓 $A+x_iy+u_im$ 的最低字組為 0，所以第 2(b) 步的除法只是右移一個字組。每一輪之後 $A&lt;2m-1$（HAC Note 14.37），所以第 3 步至多減一次。每輪 $2+2s$ 次字組乘法，共 $2s(s+1)$ 次（HAC Note 14.38），與「schoolbook 乘積 $s^2$ 加上 REDC $s(s+1)$」相當。</p>
 </div>
-<div class="example"><div class="ex-label">同一組數字：$x=1234$，$y=3211$，$m=4567$，$\beta=10$</div>
+<details class="proof-fold"><summary>證明</summary><div class="proof-body">
+<p>記 $A^{(i)}$ 為第 $i$ 輪結束時的 $A$（$A^{(-1)}=0$），$X_i=\sum_{j=0}^{i}x_j\beta^j$ 為 $x$ 的低 $i+1$ 個字組（$X_{-1}=0$，$X_{s-1}=x$）。以歸納法證明對 $i=-1,0,\dots,s-1$：</p>
+$$\begin{gathered}A^{(i)}\ \text{是整數},\qquad 0\le A^{(i)}\le2m-2,\\ A^{(i)}\beta^{i+1}\equiv X_i\,y\pmod m .\end{gathered}$$
+<p>$i=-1$ 時三式都成立（$m\ge1$）。設第 $i-1$ 輪後成立，令 $N=A^{(i-1)}+x_iy+u_im$。</p>
+<p>整除。$N\equiv a_0+x_iy_0+u_im_0\pmod\beta$，其中 $a_0$ 是 $A^{(i-1)}$ 的最低字組；又</p>
+$$u_im\equiv(a_0+x_iy_0)m'm\equiv-(a_0+x_iy_0)\pmod\beta ,$$
+<p>所以 $\beta\mid N$，$A^{(i)}=N/\beta$ 是整數。</p>
+<p>範圍。$A^{(i-1)}\le2m-2$、$x_i\le\beta-1$、$y\le m-1$、$u_i\le\beta-1$，所以</p>
+$$N\le(2m-2)+(\beta-1)(m-1)+(\beta-1)m=\beta(2m-1)-1 ,$$
+<p>除以 $\beta$ 得 $A^{(i)}&lt;2m-1$，即 $A^{(i)}\le2m-2$。</p>
+<p>同餘。因為 $u_im\equiv0\pmod m$，</p>
+$$\begin{aligned}A^{(i)}\beta^{i+1}=N\beta^i&amp;\equiv A^{(i-1)}\beta^i+x_i\beta^i y\\&amp;\equiv X_{i-1}y+x_i\beta^iy=X_iy\pmod m .\end{aligned}$$
+<p>取 $i=s-1$：$A\cdot R\equiv xy\pmod m$，所以 $A\equiv xyR^{-1}$，且 $0\le A\le2m-2$。第 3 步至多減一次 $m$，回傳 $xyR^{-1}\bmod m$。</p>
+</div></details><div class="example"><div class="ex-label">同一組數字：$x=1234$，$y=3211$，$m=4567$，$\beta=10$</div>
 <p>$y_0=1$，$m'=7$。</p>
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>輪 $i$</th><th>$x_i$</th><th>$u_i=(a_0+x_i\cdot1)\cdot7\bmod10$</th><th>$A\leftarrow(A+x_i\cdot3211+u_i\cdot4567)/10$</th></tr>
