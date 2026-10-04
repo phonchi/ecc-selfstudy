@@ -15,11 +15,12 @@
 
 <section id="compare" data-nav="三種化簡">
 <h2>三種化簡方法的比較</h2>
+<p>第 7–9 章各自介紹了一種「不做長除法的取模」。實作時要從中選一種（或混用），所以這裡把它們放在同一張表上，比較適用的模數、需要的預計算、每次的成本與輸出形式。</p>
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th></th><th>特殊模數折疊</th><th>Barrett</th><th>Montgomery</th></tr>
 <tr><td>適用的模數</td><td>只有設計好的 $p$（P-256、P-521、$2^{255}-19$…）</td><td>任何模數</td><td>任何與 $\beta$ 互質的模數（$\beta=2^w$ 時就是奇數）</td></tr>
 <tr><td>預先計算</td><td>無（規則寫死在程式裡）</td><td>$\mu=\lfloor \beta^{2s}/m\rfloor$（[[ref:c8-def-mu]]）</td><td>$m'=-m^{-1}\bmod \beta$、$R^2\bmod m$（[[ref:c9-def-redc]]）</td></tr>
-<tr><td>每次化簡的字組乘法</td><td>幾乎沒有（只有加減與移位，或乘小常數）</td><td>約 $s^2+4s$（HAC Note 14.45）</td><td>$s(s+1)$（HAC Note 14.34）</td></tr>
+<tr><td>每次化簡的字組乘法</td><td>幾乎沒有（只有加減與移位，或乘小常數）</td><td>約 $s^2+4s+1$（HAC Note 14.45）</td><td>$s(s+1)$（HAC Note 14.34）</td></tr>
 <tr><td>輸出</td><td>$x\bmod p$，加減幾次 $p$ 修正</td><td>$x\bmod m$，至多修正兩次</td><td>$xR^{-1}\bmod m$，至多修正一次</td></tr>
 <tr><td>表示法</td><td>普通</td><td>普通</td><td>要進出 Montgomery 表示</td></tr>
 <tr><td>適合</td><td>標準曲線的底體運算</td><td>只做少數幾次乘法</td><td>長串乘法（純量乘法、RSA 冪次）</td></tr>

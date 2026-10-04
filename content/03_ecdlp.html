@@ -2,7 +2,7 @@
 <h2>安全性取決於一個大質數 $n$</h2>
 <div class="info-box why"><span class="info-label">動機</span>
 <p>第 2 章的群律（[[ref:c2-thm-grouplaw]]）告訴我們，$\mathbb F_p$ 上的曲線點構成一個有限交換群。第 0 章的 ECDH（[[ref:c0-def-ecdh]]）就在這個群裡運作：大家共用一個點 $G$，Alice 公開 $Q_A=d_AG$，Bob 公開 $Q_B=d_BG$。協定要安全，必須做到「已知 $G$ 與 $Q_A$，求不出 $d_A$」。</p>
-<p>本章會看到，對任何有限群都適用的攻擊，所需時間大約是 $\sqrt q$，其中 $q$ 是 $G$ 的階的<strong>最大質因數</strong>。所以 $G$ 的階 $n$ 本身就必須是一個大質數；要 128 位元的安全，$n$ 大約要 256 位元。這引出三個問題，也是本章的骨架：</p>
+<p>本章會看到，對任何有限群都適用的攻擊，所需時間大約是 $\sqrt q$，其中 $q$ 是 $G$ 的階的<strong>最大質因數</strong>。所以 $G$ 的階至少要有一個很大的質因數；為了避開小因數、也讓協定簡單，實務上直接讓 $G$ 的階 $n$ 是一個大質數；要 128 位元的安全，$n$ 大約要 256 位元。這引出三個問題，也是本章的骨架：</p>
 <ol>
 <li>曲線上一共有幾個點？（3.2 節：Hasse 定理）</li>
 <li>這個群長什麼樣子，能不能找到階為大質數的點？（3.3 節：群結構、基點與餘因子）</li>
@@ -49,7 +49,7 @@ $$\bigl|\,p+1-\#E(\mathbb F_p)\,\bigr|\le 2\sqrt p ,$$
 <p>存在唯一的正整數 $n_1,n_2$，$n_1\mid n_2$，使</p>
 $$E(\mathbb F_p)\cong\mathbb Z/n_1\mathbb Z\times\mathbb Z/n_2\mathbb Z ,$$
 <p>而且 $n_1\mid p-1$。$n_1=1$ 時 $E(\mathbb F_p)$ 是循環群。</p>
-<p>直覺：有限交換群是循環群的直積；而曲線上「階整除 $n_1$ 的點」至多 $n_1^2$ 個，所以最多兩個因子。$n_1\mid p-1$ 來自 Weil 配對（Washington Cor. 3.11）。HMV Thm. 3.12 是同一個結果，但 $n_1,n_2$ 的標法相反。</p>
+<p>直覺：有限交換群是循環群的直積；而曲線上「階整除 $n_1$ 的點」至多 $n_1^2$ 個，所以最多兩個因子。$n_1\mid p-1$ 來自 Weil 配對（一種配對，§3.7 說明；Washington Cor. 3.11）。HMV Thm. 3.12 是同一個結果，但 $n_1,n_2$ 的標法相反。</p>
 </div>
 <p>$N$ 的因數不一定都是某個點的階。$E_A$ 就是例子：它的 $N=100$，99 個非 $\mathcal O$ 的點的階分布如下（逐點計算）：</p>
 <div class="tbl-wrap"><table class="cmp-table">
@@ -84,13 +84,13 @@ $$h:=\#E(\mathbb F_p)/n$$
 <p>座標是 $\mathbb F_p$ 的元素，所有點運算都在<strong>模 $p$</strong> 下做。純量只在模 $n$ 下有意義，因為 $nG=\mathcal O$ 讓 $(k+n)G=kG$；私鑰取在 $[1,n-1]$，ECDSA 的簽章公式也在模 $n$ 下計算（[[ref:c0-rem-ecdsa]]）。P-256 的 $p$ 形狀特殊，可以用第 7 章的折疊；$n$ 沒有特殊形狀，所以 ECDSA 需要第 8、9 章的一般方法。</p>
 </div>
 <div class="box rem" id="c3-rem-cofactor" data-title="餘因子大於 1 時要檢查收到的點">
-<p>餘因子 $h&gt;1$ 時，對方傳來的點可能落在階很小的子群裡（例如 $E_A$ 的三個 2 階點），使共用祕密只剩幾種可能。實作會先檢查收到的點確實在曲線上，再確認它位於 $\langle G\rangle$ 中（例如檢查 $nQ=\mathcal O$）；另一種做法是把共用的點乘上 $h$（cofactor multiplication），若結果是 $\mathcal O$ 就拒絕。只乘 $h$ 而不做這個拒絕，小階的輸入仍會得到可預測的 $\mathcal O$。</p>
+<p>餘因子 $h&gt;1$ 時，對方傳來的點可能落在階很小的子群裡（例如 $E_A$ 的三個 2 階點），使共用祕密只剩幾種可能。實作會先檢查收到的點確實在曲線上，再確認它位於 $\langle G\rangle$ 中：拒絕 $Q=\mathcal O$，並檢查 $nQ=\mathcal O$。後者只在 $\gcd(n,h)=1$ 時足以推出 $Q\in\langle G\rangle$（此時階 $n$ 的子群唯一）；標準曲線都滿足這個條件，但一般情形不成立，例如 $y^2=x^3+2$ 在 $\mathbb F_7$ 上的群是 $\mathbb Z/3\times\mathbb Z/3$，每個點都滿足 $3Q=\mathcal O$。另一種做法是把共用的點乘上 $h$（cofactor multiplication），若結果是 $\mathcal O$ 就拒絕。只乘 $h$ 而不做這個拒絕，小階的輸入仍會得到可預測的 $\mathcal O$。</p>
 </div>
 </section>
 
 <section id="ecdlp" data-nav="DLP 與 ECDLP">
 <h2>離散對數問題</h2>
-<p>第 0 章已經用白話介紹過這兩個問題（[[ref:c0-def-dlp]]、[[ref:c0-def-ecdlp]]）。有了群結構與基點，現在可以把它們說精確。先在一般的循環群中定義，因為有限體 Diffie–Hellman 用的是 $\mathbb F_p^*$（[[ref:thm-fpstar-cyclic]]），而 ECC 用的是 $\langle G\rangle$；兩者是同一個問題的兩個例子。</p>
+<p>第 0 章已經用白話介紹過這兩個問題（[[ref:c0-def-dlp]]、[[ref:c0-def-ecdlp]]）。有了群結構與基點，這裡把它們放回一般循環群的框架，接著看攻擊如何決定參數大小。先在一般的循環群中定義，因為有限體 Diffie–Hellman 用的是 $\mathbb F_p^*$（[[ref:thm-fpstar-cyclic]]），而 ECC 用的是 $\langle G\rangle$；兩者是同一個問題的兩個例子。</p>
 <div class="box rem" id="c3-def-dlp" data-title="回顧：離散對數問題（[[ref:c0-def-dlp]]）" data-ref="HAC Def. 3.51, 3.52">
 <p>設 $C=\langle g\rangle$ 是階為 $r$ 的有限循環群（乘法寫法）。<strong>離散對數問題</strong>（discrete logarithm problem，DLP）是：給定 $g$ 與 $y\in C$，求整數 $k\in[0,r-1]$ 使 $g^k=y$。這個 $k$ 記作 $\log_g y$。$C=\mathbb F_p^*$ 時就是經典的 DLP。</p>
 </div>
@@ -140,10 +140,10 @@ $$c'G+d'Q=c''G+d''Q .$$
 </ol>
 <p>整個過程始終維持 $X'=c'G+d'Q$、$X''=c''G+d''Q$。$X''$ 走得比 $X'$ 快一倍，進入迴圈後一定會追上（Floyd 找迴圈法），所以只需記住兩個點。</p>
 </div>
-<p><strong>成本。</strong>若把迭代函數當成隨機函數（這是啟發式的假設，實驗上很準），由生日悖論，點列約在 $\sqrt{\pi n/2}\approx1.25\sqrt n$ 步後第一次重複；Floyd 法找到它約需 $3\sqrt n$ 次加點（HMV §4.1.2）。平行版本（HMV Alg. 4.5）用 $T$ 台機器可以快約 $T$ 倍。這是目前對一般曲線最好的攻擊。</p>
+<p><strong>成本。</strong>若把迭代函數當成隨機函數（這是啟發式的假設，實驗上很準），由生日悖論（從 $n$ 個元素中隨機取約 $\sqrt{\pi n/2}$ 個，預期就會出現重複），點列約在 $\sqrt{\pi n/2}\approx1.25\sqrt n$ 步後第一次重複；Floyd 法找到它約需 $3\sqrt n$ 次加點（HMV §4.1.2）。平行版本（HMV Alg. 4.5）用 $T$ 台機器可以快約 $T$ 倍。這是目前對一般曲線最好的攻擊。</p>
 <p>對 P-256，$n$ 是 256 位元，$\sqrt{\pi n/2}\approx2^{128.3}$。這就是「256 位元曲線約有 128 位元安全」的來源：安全強度大約是 $n$ 的位元數的一半。</p>
 
-<h3>Pohlig–Hellman：為什麼 $n$ 必須是質數</h3>
+<h3>Pohlig–Hellman：為什麼 $n$ 要有大質因數</h3>
 <p>上面都假設 $G$ 的階是質數。若點的階 $\nu$ 是合數，問題可以拆小。關鍵工具是<strong>中國剩餘定理</strong>（Chinese remainder theorem，CRT；HAC Fact 2.120）：若 $\nu=\prod_i q_i^{e_i}$（$q_i$ 為相異質數），則知道每個 $k\bmod q_i^{e_i}$，就唯一決定 $k\bmod\nu$。所以只要在每個質數冪上分別求出 $k$ 的餘數，再拼回去即可。</p>
 <div class="box algo" id="c3-alg-ph" data-title="Pohlig–Hellman" data-ref="HMV §4.1.1；HAC Alg. 3.63, Fact 3.65">
 <div class="io"><b>輸入</b>點 $P$，其階 $\nu=\operatorname{ord}(P)=\prod_{i=1}^{r}q_i^{e_i}$（$q_i$ 為相異質數，分解已知），以及 $Q\in\langle P\rangle$。</div>
@@ -157,7 +157,7 @@ $$c'G+d'Q=c''G+d''Q .$$
 </ol>
 <p>乘上 $\nu/q^{t+1}$ 會把 $k$ 中已經求出的低位數字消掉，只留下 $k\bmod q_i^{e_i}$ 以 $q$ 為底的第 $t$ 位數字 $z_t$。總成本是 $O\bigl(\sum_i e_i(\log\nu+\sqrt{q_i})\bigr)$ 次群運算（HAC Fact 3.65），由<strong>最大的質因數</strong> $q_i$ 主導。</p>
 </div>
-<p>結論：ECDLP 在 $\langle P\rangle$ 中的難度，不超過它在最大質數階子群中的難度。$E_A$ 的 $N=100=2^2\cdot5^2$，每個子問題都只在階 2 或 5 的群裡，試幾次就解完。所以實際的曲線要讓基點的階 $n$ 是大質數、$h$ 很小，這正是 [[ref:c3-def-base]] 的要求。</p>
+<p>結論：撇開多項式的額外開銷，ECDLP 在 $\langle P\rangle$ 中的難度由最大質數階子群決定。$E_A$ 的 $N=100=2^2\cdot5^2$，每個子問題都只在階 2 或 5 的群裡，試幾次就解完。所以實際的曲線要讓基點的階 $n$ 是大質數、$h$ 很小，這正是 [[ref:c3-def-base]] 的要求。</p>
 </section>
 
 <section id="index" data-nav="指標演算法">
@@ -173,11 +173,11 @@ $$c'G+d'Q=c''G+d''Q .$$
 <p>若 $\#E(\mathbb F_p)=p$（等價地 $t=1$），稱 $E$ 為（質數體上的）<strong>異常曲線</strong>（anomalous curve）。</p>
 </div>
 <p>Semaev、Satoh–Araki、Smart 各自證明，異常曲線上可以有效率地算出一個群同構 $E(\mathbb F_p)\to(\mathbb F_p,+)$，於是 ECDLP 變成「已知 $x$ 與 $kx\bmod p$ 求 $k$」，一次反元素就解完（Washington §5.4 用 $p$ 進數的提升說明）。例如 $\mathbb F_{127}$ 上的 $y^2=x^3-3x+5$ 恰好有 127 個點（逐點計算確認）。檢查方式很簡單：算出 $N$，看是否等於 $p$。</p>
-<div class="box defn" id="c3-def-embed" data-terms="嵌入次數" data-sym="$e$" data-gloss="使 $n\mid p^e-1$ 的最小正整數" data-ref="HMV §4.1.4；Washington §5.3">
-<p>設基點的階 $n$ 是質數且 $n\ne p$。使 $p^e\equiv1\pmod n$（即 $n\mid p^e-1$）的最小正整數 $e$，稱為<strong>嵌入次數</strong>（embedding degree）。它就是 $p\bmod n$ 在 $\mathbb F_n^*$（[[ref:def-fp]]）中的階，所以 $e\mid n-1$。（HMV 把它記作 $k$，本站的 $k$ 留給純量；它也與 3.5 節 Pohlig–Hellman 的指數 $e_i$ 無關。）</p>
+<div class="box defn" id="c3-def-embed" data-terms="嵌入次數" data-sym="$\kappa$" data-gloss="使 $n\mid p^\kappa-1$ 的最小正整數" data-ref="HMV §4.1.4；Washington §5.3">
+<p>設基點的階 $n$ 是質數且 $n\ne p$。使 $p^\kappa\equiv1\pmod n$（即 $n\mid p^\kappa-1$）的最小正整數 $\kappa$，稱為<strong>嵌入次數</strong>（embedding degree）。它就是 $p\bmod n$ 在 $\mathbb F_n^*$（[[ref:def-fp]]）中的階，所以 $\kappa\mid n-1$。（HMV 把它記作 $k$，本站的 $k$ 留給純量；它也與 3.5 節 Pohlig–Hellman 的指數 $e_i$ 無關。）</p>
 </div>
-<p>MOV 攻擊（Menezes–Okamoto–Vanstone）與 Frey–Rück 攻擊用<strong>配對</strong>（pairing，一種與群運算相容的雙線性映射，本站不展開），把 $\langle G\rangle$ 同構地嵌入有 $p^e$ 個元素的有限體的乘法群；在那裡可以用指標演算法。對大多數曲線，$e$ 和 $n$ 差不多大，這個有限體大到無法處理；但 $e$ 很小時這是致命的。例如 $\mathbb F_{103}$ 上的超奇異曲線 $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因數 $n=13$，而 $103\equiv-1\pmod{13}$，所以 $13\mid103^2-1$，$e=2$（Washington §5.3）。相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^e\bmod107$），也就是可能的最大值 $n-1$。</p>
-<p>標準曲線在發布前都排除了這兩類情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。到這裡，「怎樣的曲線才安全」已經回答完。下一章轉向成本：第 2 章的加點公式（[[ref:c2-alg-add]]）每一步都要除一次，在安全的曲線上做幾百次加點，要怎麼避開這些除法？</p>
+<p>MOV 攻擊（Menezes–Okamoto–Vanstone）與 Frey–Rück 攻擊用<strong>配對</strong>（pairing，一種與群運算相容的雙線性映射，本站不展開），把 $\langle G\rangle$ 同構地嵌入有 $p^\kappa$ 個元素的有限體的乘法群；在那裡可以用指標演算法。對大多數曲線，$\kappa$ 和 $n$ 差不多大，這個有限體大到無法處理；但 $\kappa$ 很小時這是致命的。例如 $\mathbb F_{103}$ 上的超奇異曲線（supersingular：對 $p&gt;3$，就是跡 $t=0$、點數 $N=p+1$ 的曲線，它們的嵌入次數至多為 2） $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因數 $n=13$，而 $103\equiv-1\pmod{13}$，所以 $13\mid103^2-1$，$\kappa=2$（Washington §5.3）。相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^\kappa\bmod107$），也就是可能的最大值 $n-1$。</p>
+<p>標準曲線在發布前都排除了這兩類情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。到這裡，「怎樣的曲線才安全」已經回答完；下面兩個互動元件讓你看到前面的群結構與 Hasse 定理。</p>
 </section>
 
 <section id="trail" data-nav="kP 軌跡">
@@ -213,7 +213,7 @@ $$c'G+d'Q=c''G+d''Q .$$
 
 <section id="hist" data-nav="Hasse 直方圖">
 <h2>互動：Hasse 區間裡的點數分布</h2>
-<p><strong>要觀察什麼：</strong>（一）不論怎麼選 $p$ 與 $a$，所有長條都落在 Hasse 區間內，這是 [[ref:c3-thm-hasse]] 的實例；（二）點數散布在整個區間，但多數曲線（約六成以上）落在中間一半，也就是 $|t|\le\sqrt p$ 的範圍；（三）$N$ 為質數的曲線並不罕見，可以直接當 $h=1$ 的候選；（四）偶爾會出現 $N=p$ 的異常曲線，必須排除。</p>
+<p><strong>要觀察什麼：</strong>（一）不論怎麼選 $p$ 與 $a$，所有長條都落在 Hasse 區間內，這是 [[ref:c3-thm-hasse]] 的實例；（二）點數散布在整個區間，但多數曲線（約六成）落在中間一半，也就是 $|t|\le\sqrt p$ 的範圍；（三）$N$ 為質數的曲線並不罕見，可以直接當 $h=1$ 的候選；（四）偶爾會出現 $N=p$ 的異常曲線，必須排除。</p>
 <p>固定 $p$ 與 $a$，讓 $b$ 跑過所有使曲線非奇異（$4a^3+27b^2\not\equiv0$）的值，逐條數出 $N=\#E(\mathbb F_p)$，畫成直方圖。淺色帶是 Hasse 區間 $[\,p+1-2\sqrt p,\ p+1+2\sqrt p\,]$。<span class="pill-hi">藍色</span>是一般的 $N$，<span class="pill-lo">綠色</span>長條的 $N$ 是質數，<span class="pill-anom">紅色</span>長條是 $N=p$ 的異常曲線。點一下長條可以看到是哪些 $b$。</p>
 <div class="viz-layout">
   <div class="viz-panel">
@@ -234,4 +234,5 @@ $$c'G+d'Q=c''G+d''Q .$$
     <div class="info-card"><div class="ic-title">統計</div><div id="w03hinfo"></div></div>
   </div>
 </div>
+<p>下一章轉向成本：第 2 章的加點公式（[[ref:c2-alg-add]]）每一步都要除一次，在安全的曲線上做幾百次加點，要怎麼避開這些除法？</p>
 </section>

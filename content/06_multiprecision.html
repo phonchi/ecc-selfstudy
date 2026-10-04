@@ -10,7 +10,7 @@
 <h2>字組與以 $\beta$ 為基底的表示</h2>
 <p>先把「切成好幾段」說精確：每一段放進一個暫存器，稱為一個字組；整個數就是以 $2^w$ 為基底的展開。</p>
 <div class="box defn" id="c6-def-radix" data-terms="字組|字組大小|基底|以 β 為基底的表示" data-sym="$w,\ \beta=2^w,\ s,\ (x_{s-1}\cdots x_0)_\beta$" data-gloss="$w$：一個字組的位元數；$\beta=2^w$：基底；$s$：字組數；$x=\sum_{i&lt;s}x_i\beta^i$" data-ref="HAC §14.2；HMV §2.2.1">
-<p>設 $w\ge1$，稱 $w$ 為<strong>字組大小</strong>（word size），令<strong>基底</strong> $\beta=2^w$（實務上 $w=32$ 或 $64$；手算例子也會取 $\beta=4$ 或 $10$）。每個整數 $0\le x&lt;\beta^s$ 都可以唯一寫成</p>
+<p>設 $w\ge1$，稱 $w$ 為<strong>字組大小</strong>（word size），令<strong>基底</strong> $\beta=2^w$（實務上 $w=32$ 或 $64$）。下面的定義對任何整數基底 $\beta\ge2$ 都成立，所以手算例子也會取 $\beta=4$ 或 $10$；在機器字組的情境下一律是 $\beta=2^w$。每個整數 $0\le x&lt;\beta^s$ 都可以唯一寫成</p>
 $$x=\sum_{i=0}^{s-1}x_i\,\beta^{\,i},\qquad 0\le x_i&lt;\beta ,$$
 <p>記作 $x=(x_{s-1}\cdots x_1x_0)_\beta$，稱為 $x$ <strong>以 $\beta$ 為基底的表示</strong>（radix-$\beta$ representation）。每個 $x_i$ 稱為一個<strong>字組</strong>（word），$s$ 是字組數。</p>
 </div>
@@ -111,7 +111,7 @@ $$x\,y=x_1y_1\,B^2+\bigl[(x_1+x_0)(y_1+y_0)-x_1y_1-x_0y_0\bigr]B+x_0y_0 .$$
 
 <section id="lab" data-nav="逐格演示">
 <h2>互動：schoolbook 乘法逐格演示</h2>
-<p>選字組大小 $w$ 與字組數 $s$，按「隨機 x, y」產生兩個 $s$ 字組的數。格子的第 $i$ 列、第 $j$ 行是部分積 $x_j\cdot y_i$，它加到輸出的第 $i+j$ 個字組 $z_{i+j}$。播放時目前的格子以<span class="pill-cur">橙色</span>標出，下方的輸出列同步更新；每一列結束時，最後的進位寫入第 $i+s$ 個字組。「全部取最大值」讓 $x=y=\beta^s-1$，可以看到內積運算逼近 [[ref:c6-thm-inner]] 的上界 $\beta^2-1$。</p>
+<p>這個元件用來親眼確認 [[ref:c6-alg-schoolbook]] 的兩件事：每一格的部分積加上進位都塞得進兩個字組，以及總共恰好做 $s^2$ 次字組乘法。選字組大小 $w$ 與字組數 $s$，按「隨機 x, y」產生兩個 $s$ 字組的數。格子的第 $i$ 列、第 $j$ 行是部分積 $x_j\cdot y_i$，它加到輸出的第 $i+j$ 個字組 $z_{i+j}$。播放時目前的格子以<span class="pill-cur">橙色</span>標出，下方的輸出列同步更新；每一列結束時，最後的進位寫入第 $i+s$ 個字組。「全部取最大值」讓 $x=y=\beta^s-1$，可以看到內積運算逼近 [[ref:c6-thm-inner]] 的上界 $\beta^2-1$。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">SCHOOLBOOK</div>

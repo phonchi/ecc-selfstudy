@@ -29,7 +29,7 @@ $$A\equiv A_0+c\,A_1\pmod p .$$
 <tr><td>$2^{448}-2^{224}-1$</td><td>Solinas</td><td class="num">$2^{224}+1$</td><td>Curve448</td></tr>
 <tr><td>$2^{256}-2^{224}+2^{192}+2^{96}-1$</td><td>Solinas</td><td class="num">$2^{224}-2^{192}-2^{96}+1$</td><td>P-256</td></tr>
 </table></div>
-<p>後兩個是 Solinas 質數：Goldilocks 是 $f(X)=X^2-X-1$、$v=224$；P-256 是 $f(X)=X^8-X^7+X^6+X^3-1$、$v=32$。它們的 $c$ 不小，但它是少數幾個 2 的冪的和或差，而且次方都落在字組邊界上，所以「乘 $c$」仍然只是移位與加減。SP 800-186 附錄 G.1 把 P-224 到 P-521 的模數稱為 generalized Mersenne numbers，把 Curve25519、Curve448 的模數稱為 Crandall primes；Curve448 的模數同時也符合上面 Solinas 的形式。</p>
+<p>後兩個是 Solinas 質數：Goldilocks 是 $f(X)=X^2-X-1$、$v=224$；P-256 是 $f(X)=X^8-X^7+X^6+X^3-1$、$v=32$。它們的 $c$ 不小，但它是少數幾個 2 的冪的和或差，而且次方都落在字組邊界上，所以「乘 $c$」仍然只是移位與加減。SP 800-186 附錄 G.1 把 P-224 到 P-521 的模數稱為 generalized Mersenne numbers，把 Curve25519 這類模數則屬於 Crandall primes（即本章的偽 Mersenne 質數）；Curve448 的模數 $2^{448}-2^{224}-1$ 的 $c$ 不小，按本章的分類屬於 Solinas 形式。</p>
 <div class="box defn" id="c7-def-concat" data-terms="塊的並排" data-sym="$(X_{q-1}\Vert\cdots\Vert X_0)$（每塊 $t$ 位元）" data-gloss="$\sum_i X_i\,2^{ti}$，其中 $0\le X_i&lt;2^t$" data-ref="SP 800-186 App. G.1">
 <p>給定塊寬 $t$，若 $0\le X_i&lt;2^t$，記</p>
 $$(X_{q-1}\Vert\cdots\Vert X_1\Vert X_0)=\sum_{i=0}^{q-1}X_i\,2^{ti},$$
@@ -61,7 +61,7 @@ $$A\equiv 88+36=124\pmod{127},$$
 <section id="pseudo" data-nav="2^255−19">
 <h2>偽 Mersenne：$2^{255}-19$</h2>
 <p>Mersenne 質數很少（$L$ 本身必須是質數，而且大多數這樣的 $2^L-1$ 仍是合數），密碼學需要的大小不一定剛好有。放寬成 $c$ 小的偽 Mersenne 質數，選擇就多了。最著名的例子是 $p=2^{255}-19$，Curve25519 的底體（RFC 7748）。這時 $2^{255}\equiv19$，每次折疊多一次「乘 19」。</p>
-<div class="box algo" id="c7-alg-25519" data-title="化簡模 2^255 − 19（兩次折疊）" data-ref="HAC Alg. 14.47（$b=2,\ t=255,\ c=19$）">
+<div class="box algo" id="c7-alg-25519" data-title="化簡模 2^255 − 19（兩次折疊）" data-ref="依 HAC §14.3.4（Alg. 14.47）的折疊原理改寫">
 <div class="io"><b>輸入</b>$p=2^{255}-19$，整數 $0\le A&lt;p^2$。</div>
 <div class="io"><b>輸出</b>$A\bmod p$。</div>
 <ol class="steps">
@@ -120,7 +120,7 @@ $$2^{256}\equiv2^{224}-2^{192}-2^{96}+1\pmod p ,$$
 
 <section id="lab" data-nav="折疊實驗">
 <h2>互動：折疊實驗室</h2>
-<p>選一個模數，按「隨機乘積」產生 $A=x\cdot y$（$x,y$ 是隨機的體元素），再逐步播放。<span class="pill-hi">藍色</span>是要折回去的高位部分，<span class="pill-lo">綠色</span>是低位部分。Mersenne 與偽 Mersenne 的每一次折疊都讓<strong>值</strong>變小，而<strong>模 $p$ 的同餘類</strong>不變。Goldilocks 與 P-256 則要把所有項加完，總和才與 $A$ 同餘；中間的部分和不一定同餘，P-256 的總和甚至可能是負數，最後再加減 $p$ 正規化。最後一行與直接算 <code>A % p</code> 比對。</p>
+<p>這個元件要讓你看到折疊為什麼省事：每一步都只是切開、相加與移位，而且最後的結果與直接取模完全相同。選一個模數，按「隨機乘積」產生 $A=x\cdot y$（$x,y$ 是隨機的體元素），再逐步播放。<span class="pill-hi">藍色</span>是要折回去的高位部分，<span class="pill-lo">綠色</span>是低位部分。Mersenne 與偽 Mersenne 的每一次折疊都讓<strong>值</strong>變小，而<strong>模 $p$ 的同餘類</strong>不變。Goldilocks 與 P-256 則要把所有項加完，總和才與 $A$ 同餘；中間的部分和不一定同餘，P-256 的總和甚至可能是負數，最後再加減 $p$ 正規化。最後一行與直接算 <code>A % p</code> 比對。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">FOLD LAB</div>

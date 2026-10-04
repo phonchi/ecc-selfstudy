@@ -40,7 +40,7 @@
 <p>同一個群可以寫成乘法（$a\cdot b$、單位元 $1$、$a^k$）或加法（$a+b$、單位元 $0$、$ka$）。整數模 $p$ 的非零元素在乘法下成的群（§1.4 的 $\mathbb F_p^*$）習慣用乘法寫法；橢圓曲線的點群習慣用加法寫法，單位元記作 $\mathcal O$，「$P$ 自己加 $k$ 次」記作 $kP$（第 2 章）。兩者是同一件事的兩種寫法。</p>
 </div>
 <div class="box defn" id="def-subgroup" data-terms="子群|元素的階|循環群|生成元" data-sym="$\operatorname{ord}(g)$、$\langle g\rangle$" data-gloss="$g$ 的階：使 $g^t=e$ 的最小正整數 $t$；$\langle g\rangle$：$g$ 生成的循環子群" data-ref="HAC Def. 2.166, 2.167, 2.169">
-<p>$G$ 的非空子集 $H$ 若在同一個運算下也是群，稱為<strong>子群</strong>。對 $g\in G$，使 $g^t=e$ 的最小正整數 $t$ 稱為 $g$ 的<strong>階</strong>，記作 $\operatorname{ord}(g)$。$g$ 的所有冪次 $\langle g\rangle=\{e,g,g^2,\dots\}$ 是一個子群，大小正好是 $\operatorname{ord}(g)$。若存在 $g$ 使 $\langle g\rangle=G$，稱 $G$ 為<strong>循環群</strong>，$g$ 為它的<strong>生成元</strong>（generator）。</p>
+<p>$G$ 的非空子集 $H$ 若在同一個運算下也是群，稱為<strong>子群</strong>。以下 $G$ 都是有限群（本站只用到有限群）。對 $g\in G$，使 $g^t=e$ 的最小正整數 $t$ 稱為 $g$ 的<strong>階</strong>，記作 $\operatorname{ord}(g)$；有限群中這樣的 $t$ 一定存在。$g$ 的所有冪次 $\langle g\rangle=\{g^j:j\in\mathbb Z\}=\{e,g,\dots,g^{t-1}\}$ 是一個子群，大小正好是 $\operatorname{ord}(g)$。若存在 $g$ 使 $\langle g\rangle=G$，稱 $G$ 為<strong>循環群</strong>，$g$ 為它的<strong>生成元</strong>（generator）。</p>
 </div>
 <div class="box thm" id="thm-lagrange" data-title="Lagrange 定理" data-ref="HAC Fact 2.171">
 <p>若 $G$ 是有限群、$H$ 是它的子群，則 $|H|$ 整除 $|G|$。特別地，每個元素的階都整除 $|G|$，所以 $g^{|G|}=e$。</p>
@@ -110,30 +110,30 @@
 </table></div>
 <p>每一列等於「上上列 − $q$ × 上一列」。餘數到 1 時，5 的係數是 3，所以 $5^{-1}\equiv3\pmod 7$。驗算：$5\cdot3=15=2\cdot7+1$。</p>
 </div>
-<p>步數與 $\log p$ 成正比（HAC Fact 2.108），但<strong>每一步都要做一次多字組的除法</strong>（一個大數在電腦裡佔好幾個 64 位元的「字組」，第 6 章定義），而且步數與商都隨輸入而變。這讓它在實作上不如看起來便宜，也不容易做成常數時間（執行時間與祕密資料無關；第 5 章定義）。</p>
+<p>迴圈的次數至多與 $\log p$ 成正比（Lamé 定理），整個演算法需要 $O((\log p)^2)$ 次位元運算（HAC Fact 2.108），但<strong>每一步都要做一次多字組的除法</strong>（一個大數在電腦裡佔好幾個 64 位元的「字組」，第 6 章定義），而且步數與商都隨輸入而變。這讓它在實作上不如看起來便宜，也不容易做成常數時間（執行時間與祕密資料無關；第 5 章定義）。</p>
 <!-- code: egcd 兩種求反元素的方法 -->
 </section>
 
 <section id="fermat" data-nav="Fermat">
 <h2>反元素之二：Fermat 小定理</h2>
-<p>既然已經有延伸歐幾里得，為什麼還需要第二種方法？因為我們想要一個<strong>步驟完全固定、只用乘法</strong>的算法：步驟固定，執行時間就不會洩漏輸入；只用乘法，就能共用第 6–9 章那套最佳化過的乘法程式。Fermat 小定理正好提供這樣的方法。</p>
+<p>既然已經有延伸歐幾里得，為什麼還需要第二種方法？因為我們想要一個<strong>步驟完全固定、只用乘法</strong>的算法：步驟固定，運算的排程就與輸入無關（底層的乘法本身也必須是常數時間，才能完全不洩漏）；只用乘法，就能共用第 6–9 章那套最佳化過的乘法程式。Fermat 小定理正好提供這樣的方法。</p>
 <div class="box thm" id="thm-fermat" data-title="Fermat 小定理" data-ref="HAC Fact 2.127">
 <p>設 $p$ 是質數。對任意 $a\not\equiv0\pmod p$，$a^{p-1}\equiv1\pmod p$。因此 $a^{-1}\equiv a^{p-2}\pmod p$。</p>
 </div>
 <p>這是 Lagrange 定理（[[ref:thm-lagrange]]）用在階 $p-1$ 的群 $\mathbb F_p^*$ 上的特例。剩下的問題是怎麼快速算出 $a^{p-2}$。</p>
 <div class="box algo" id="alg-sqmul" data-title="平方-乘（由左而右的二進位冪次）" data-ref="HAC Alg. 14.79">
-<div class="io"><b>輸入</b>$a\in\mathbb F_p$，指數 $e=(e_{t-1}\cdots e_1e_0)_2$，$e_{t-1}=1$。</div>
-<div class="io"><b>輸出</b>$a^e\bmod p$。</div>
+<div class="io"><b>輸入</b>$a\in\mathbb F_p$，指數 $u=(u_{t-1}\cdots u_1u_0)_2$，$u_{t-1}=1$。</div>
+<div class="io"><b>輸出</b>$a^u\bmod p$。</div>
 <ol class="steps">
 <li>$A\leftarrow a$。</li>
-<li>對 $i=t-2,t-3,\dots,0$：$A\leftarrow A^2$；若 $e_i=1$，再令 $A\leftarrow A\cdot a$。</li>
+<li>對 $i=t-2,t-3,\dots,0$：$A\leftarrow A^2$；若 $u_i=1$，再令 $A\leftarrow A\cdot a$。</li>
 <li>回傳 $A$。</li>
 </ol>
-<p>共 $t-1$ 次平方，以及（$e$ 中 1 的個數減 1）次乘法。</p>
+<p>共 $t-1$ 次平方，以及（$u$ 中 1 的個數減 1）次乘法。</p>
 </div>
-<p>以 P-256 為例，$p-2$ 有 256 位元、128 個 1，直接照做是 255 次平方加 127 次乘法。實作上會針對固定的 $p-2$ 設計<strong>加法鏈</strong>（addition chain：一串從 1 出發、每一項都是前面兩項之和的整數，最後一項是指數），把乘法次數壓到十幾次，但平方仍然約 255 次。所以 Fermat 求反元素大約要兩三百次乘法與平方。</p>
+<p>以 P-256 為例，$p-2$ 有 256 位元、128 個 1，直接照做是 255 次平方加 127 次乘法。實作上會針對固定的 $p-2$ 設計<strong>加法鏈</strong>（addition chain：一串從 1 出發的整數，每一項都是前面某兩項（可以相同）之和，最後一項是指數），把乘法次數壓到十幾次，但平方仍然約 255 次。所以 Fermat 求反元素大約要兩三百次乘法與平方。</p>
 <div class="box algo" id="alg-fermat-inv" data-title="以 Fermat 小定理求反元素">
-<div class="io"><b>輸入</b>質數 $p$，$a\in\mathbb F_p^*$。</div>
+<div class="io"><b>輸入</b>奇質數 $p$，$a\in\mathbb F_p^*$。</div>
 <div class="io"><b>輸出</b>$a^{-1}$。</div>
 <ol class="steps"><li>用 [[ref:alg-sqmul]] 計算 $a^{p-2}\bmod p$，回傳。</li></ol>
 </div>

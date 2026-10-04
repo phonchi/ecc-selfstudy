@@ -2,7 +2,7 @@
 <h2>把 $k$ 個 $P$ 加起來，但不能真的加 $k$ 次</h2>
 <div class="info-box why"><span class="info-label">動機</span>
 <p>第 4 章算出了單次倍點與加點的成本（Jacobian 座標下約 $7\mathbf M$ 與 $10\mathbf M$），但留下一個問題：一次 $kP$ 要做<strong>幾次</strong>倍點與加點，又要按什麼順序做？ECC 的公開金鑰是 $Q_A=d_AG$，ECDH 的共同祕密是 $d_A(d_BG)$：所有協定的核心都是這個運算。$k$ 是 256 位元左右的整數，一個一個加要 $2^{256}$ 步，顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法。</p>
-<p>本章有兩條主線。第一條是<strong>速度</strong>：double-and-add 與 NAF（一種帶負號數字的二進位表示，§5.3 定義），最後把一次 $kP$ 的成本換算成 $\mathbb F_p$ 乘法的次數。第二條是<strong>安全</strong>：運算的順序本身可能洩漏 $k$，Montgomery 階梯把每一位的動作做成一樣。</p>
+<p>本章有兩條主線。第一條是<strong>速度</strong>：double-and-add 與 NAF（一種帶負號數字的二進位表示，§5.4 定義），最後把一次 $kP$ 的成本換算成 $\mathbb F_p$ 乘法的次數。第二條是<strong>安全</strong>：運算的順序本身可能洩漏 $k$，Montgomery 階梯把每一位的動作做成一樣。</p>
 </div>
 </section>
 
@@ -76,7 +76,7 @@ $$k_ik_{i+1}=0\qquad(0\le i&lt;L-1),$$
 <li>對 $i=L-1,\dots,0$：$R\leftarrow2R$；若 $k_i=1$，$R\leftarrow R+P$；若 $k_i=-1$，$R\leftarrow R-P$。</li>
 <li>回傳 $R$。</li>
 </ol>
-<p>與 [[ref:c5-alg-dbladd]] 只差在多了「減 $P$」的分支。由 [[ref:c5-thm-naf]] 的 (iii) 與 (v)，平均約 $\ell$ 次倍點與 $\ell/3$ 次加點。</p>
+<p>與 [[ref:c5-alg-dbladd]] 只差在多了「減 $P$」的分支。由 [[ref:c5-thm-naf]] 的第 3、5 項，平均約 $\ell$ 次倍點與 $\ell/3$ 次加點。</p>
 </div>
 <div class="example"><div class="ex-label">小例</div>
 <p>$7=(111)_2$ 要加兩次；它的 NAF 是 $(1\,0\,0\,\bar1)=8-1$，只要減一次。$45=(101101)_2$ 有 4 個 1，NAF 是 $(1\,0\,\bar1\,0\,\bar1\,0\,1)=64-16-4+1$，非零數字也是 4 個，但長度多一位：NAF 保證權重不比二進位多，不保證每個 $k$ 都更少。</p>
@@ -99,7 +99,7 @@ $$k_ik_{i+1}=0\qquad(0\le i&lt;L-1),$$
 <section id="ladder" data-nav="旁通道與階梯">
 <h2>旁通道與 Montgomery 階梯</h2>
 <p>上表最快的是 NAF，但實作上常用最慢的階梯。原因是 double-and-add 與 NAF 有一個不在數學裡、而在實體裡的弱點。</p>
-<div class="box defn" id="c5-def-sca" data-terms="旁通道|簡單功率分析|SPA|常數時間" data-gloss="從執行時間、耗電等實體量洩漏祕密；SPA 從單次耗電曲線讀出運算序列；常數時間指這些量與祕密無關" data-ref="HMV §5.3, §5.3.1, §5.3.5">
+<div class="box defn" id="c5-def-sca" data-terms="旁通道|簡單功率分析|SPA|常數時間" data-gloss="從執行時間、耗電等實體量洩漏祕密；SPA 從單次耗電曲線讀出運算序列；常數時間指執行時間（與運算排程）與祕密無關" data-ref="HMV §5.3, §5.3.1, §5.3.5">
 <p><strong>旁通道</strong>（side channel）：演算法的輸入輸出以外，實作在執行時洩漏的實體資訊，例如執行時間、耗電、電磁輻射。<strong>簡單功率分析</strong>（simple power analysis，SPA）：量測一次（或少數幾次）運算的耗電曲線，從曲線的形狀直接辨認出執行了哪些運算、順序為何，進而推出祕密。一個實作是<strong>常數時間</strong>（constant time）的，是指它的執行時間、執行的運算序列、以及存取的記憶體位址都與祕密資料無關。</p>
 </div>
 <p>double-and-add 讀到 0 只做倍點，讀到 1 多做一次加點。倍點與加點的耗電形狀不同，所以從「倍點、倍點加點、倍點……」的節奏就能直接讀出 $k$ 的每一位。NAF 的節奏洩漏非零數字的位置，雖然看不出是 $+1$ 還是 $-1$，也已經大幅縮小 $k$ 的範圍。下面的 <strong>Montgomery 階梯</strong>（Montgomery ladder）讓每一位做的事都一樣：同時維護兩個點，每一位都做一次加點與一次倍點。</p>

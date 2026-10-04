@@ -56,6 +56,7 @@ $$\frac{x}{m}=\frac{x}{\beta^{s-1}}\cdot\frac{\beta^{2s}}{m}\cdot\frac{1}{\beta^
 
 <section id="algo" data-nav="演算法">
 <h2><span class="secno">8.3</span>Barrett 化簡：估商、相減、修正</h2>
+<p>上一節的估商式還帶著實數除法；這一節把它變成只用移位、兩次截短的乘法與幾次減法的程序，並且把每個前提都寫進輸入。</p>
 <div class="box algo" id="c8-alg-barrett"><div class="box-head"><span class="box-label">演算法 8.2</span><span class="box-title">Barrett 化簡</span><span class="box-ref">HAC Alg. 14.42</span></div>
 <div class="io"><b>輸入</b>基底 $\beta&gt;3$；模數 $m$，恰有 $s$ 個字組（$\beta^{s-1}\le m&lt;\beta^s$）；整數 $0\le x&lt;\beta^{2s}$；預先算好的 $\mu=\lfloor\beta^{2s}/m\rfloor$（<a class="xref" href="08_barrett.html#c8-def-mu">定義 8.1</a>）。</div>
 <div class="io"><b>輸出</b>$r=x\bmod m$。</div>

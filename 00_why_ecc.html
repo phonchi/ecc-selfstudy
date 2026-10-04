@@ -56,15 +56,15 @@
 <section id="dlp" data-nav="離散對數">
 <h2><span class="secno">0.2</span>離散對數：容易的方向與困難的方向</h2>
 <p>公開金鑰需要一個「正著算容易、反著算困難」的運算。在循環群裡，次方就是這樣的運算。</p>
-<p>設 $G$ 是一個階為 $n$ 的循環群，生成元為 $g$（<a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>、<a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>）。給定整數 $k$，算 $y=g^k$ 很容易：平方-乘（<a class="xref" href="01_finite_field.html#alg-sqmul">演算法 1.16</a>）依 $k$ 的二進位逐位處理，每一位做一次平方，遇到 1 再乘一次 $g$。$k$ 有 $\ell$ 個位元時，最多 $2\ell$ 次群運算；$k$ 有 256 位元，就是幾百次，而不是 $2^{256}$ 次。</p>
+<p>設 $C=\langle g\rangle$ 是一個階為 $n$ 的循環群，生成元為 $g$（<a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>、<a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>；字母 $G$ 留給後面的基點）。給定整數 $k$，算 $y=g^k$ 很容易：平方-乘（<a class="xref" href="01_finite_field.html#alg-sqmul">演算法 1.16</a>）依 $k$ 的二進位逐位處理，每一位做一次平方，遇到 1 再乘一次 $g$。$k$ 有 $\ell$ 個位元時，最多 $2\ell$ 次群運算；$k$ 有 256 位元，就是幾百次，而不是 $2^{256}$ 次。</p>
 <div class="box defn" id="c0-def-dlp"><div class="box-head"><span class="box-label">定義 0.2</span><span class="box-title">離散對數問題、DLP</span><span class="box-ref">HAC Def. 3.52</span></div>
-<p>設 $G$ 是循環群、$g$ 是生成元。給定 $y\in G$，求整數 $k$（$0\le k&lt;n$）使 $g^k=y$，稱為<strong>離散對數問題</strong>（discrete logarithm problem，DLP），$k$ 記作 $\log_g y$。</p>
+<p>設 $C=\langle g\rangle$ 是階為 $n$ 的循環群、$g$ 是生成元。給定 $y\in C$，求整數 $k$（$0\le k&lt;n$）使 $g^k=y$，稱為<strong>離散對數問題</strong>（discrete logarithm problem，DLP），$k$ 記作 $\log_g y$。</p>
 </div>
 <p>若群的階 $n$（<a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>）是大質數，而且群的元素沒有可以利用的特殊結構，已知最好的<strong>通用</strong>演算法（只用群運算、不看元素怎麼表示的演算法，例如 Pollard rho，第 3 章）大約要 $\sqrt n$ 次群運算。（$n$ 若是合數，問題可以拆到較小的子群上解；子群見 <a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>，拆解的方法在第 3 章。）$n\approx2^{256}$ 時就是約 $2^{128}$ 次，遠超出任何可行的計算量。</p>
 <h3>同一個問題，不同的群</h3>
 <p>難度不只取決於 $n$ 的大小，還取決於<strong>群的元素是怎麼表示的</strong>。</p>
 <ul>
-<li><strong>$\mathbb F_p^*$（<a class="xref" href="01_finite_field.html#def-fp">定義 1.11</a>）</strong>：元素是整數，可以談「分解成小質數」。<strong>指標演算法</strong>（index calculus）利用這一點：先求出一組小質數的離散對數，再把目標元素分解到這組小質數上。它的改良（數域篩法）讓 $\mathbb F_p^*$ 上的 DLP 只需<strong>次指數時間</strong>（比 $p$ 的任何多項式都慢、但比 $\sqrt p$ 快得多），所以 $p$ 必須取到兩三千位元以上。</li>
+<li><strong>$\mathbb F_p^*$（<a class="xref" href="01_finite_field.html#def-fp">定義 1.11</a>）</strong>：元素是整數，可以談「分解成小質數」。<strong>指標演算法</strong>（index calculus）利用這一點：先求出一組小質數的離散對數，再把目標元素分解到這組小質數上。它的改良（數域篩法）讓 $\mathbb F_p^*$ 上的 DLP 只需<strong>次指數時間</strong>（以輸入長度 $\log p$ 來看，比任何多項式都慢、比指數時間快；具體來說遠小於 $\sqrt p$），所以 $p$ 必須取到兩三千位元以上。</li>
 <li><strong>橢圓曲線的點群 $E(\mathbb F_p)$</strong>（第 2 章定義）：點沒有「分解成小點」的自然方法。對於挑選得當的曲線，至今沒有已知的指標演算法類比，最好的攻擊仍是通用的 $\sqrt n$ 級演算法（第 3 章）。</li>
 </ul>
 <div class="box defn" id="c0-def-ecdlp"><div class="box-head"><span class="box-label">定義 0.3</span><span class="box-title">ECDLP、基點</span><span class="box-ref">HMV §4.1</span></div>
@@ -80,7 +80,7 @@
 <h2><span class="secno">0.3</span>同樣的安全強度，金鑰差多少</h2>
 <p>既然 $\mathbb F_p^*$ 有次指數攻擊、橢圓曲線沒有，要達到同樣的安全，兩者需要的參數大小就差很多。這是選擇橢圓曲線最直接的理由。</p>
 <div class="box defn" id="c0-def-strength"><div class="box-head"><span class="box-label">定義 0.5</span><span class="box-title">安全強度</span><span class="box-ref">SP 800-57 §5.6.1</span></div>
-<p>一個演算法的<strong>安全強度</strong>為 $s$ 位元，意思是已知最好的攻擊大約需要 $2^s$ 次運算。</p>
+<p>一個演算法的<strong>安全強度</strong>為 $\sigma$ 位元，意思是已知最好的攻擊大約需要 $2^\sigma$ 次運算。</p>
 </div>
 <p>NIST SP 800-57 Part 1 Rev. 5 的 Table 2 把不同演算法族群的參數大小對到同一把尺上：</p>
 <div class="tbl-wrap"><table class="cmp-table">

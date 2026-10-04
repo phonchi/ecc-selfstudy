@@ -11,7 +11,7 @@
 <li><strong>Montgomery 階梯</strong>（Montgomery ladder，第 5 章）：一種純量乘法的排程，每一位都做一次加點和一次倍點。</li>
 <li><strong>Montgomery 曲線</strong>：一種特殊形式的曲線，例如第 7 章提到的 Curve25519：$v^2=u^3+486662u^2+u$。</li>
 </ul>
-<p>它們可以一起用，也可以分開用。後兩者關係最近：Montgomery 曲線上的「差分加法」正好配合階梯，只需要 $u$ 座標。</p>
+<p>它們可以一起用，也可以分開用。後兩者關係最近：在 Montgomery 曲線上，已知 $P,Q$ 與 $P-Q$ 的 $u$ 座標就能算出 $P+Q$ 的 $u$ 座標（稱為差分加法），而階梯的不變量 $R_1-R_0=P$ 正好提供這個差，所以只需要 $u$ 座標。</p>
 </div>
 </section>
 
@@ -116,7 +116,7 @@ $$A=\frac{T+Um}{R}\ \text{是整數},\qquad A\equiv TR^{-1}\pmod m,\qquad 0\le A
 
 <section id="lab" data-nav="逐輪演示">
 <h2>互動：REDC 逐輪演示</h2>
-<p>第 $i$ 輪把第 $i$ 個字組消成 0（灰色）；<span class="pill-cur">橙色</span>是下一輪要處理的字組。若某個字組本來就是 0，該輪的 $u_i=0$，什麼都不加。最後整段右移。選十進位可以對照上面的手算；選 P-256 或 P-521 則是實際的 64 位元字組。</p>
+<p>這個元件用來確認 [[ref:c9-alg-redc]] 的核心不變量：第 $i$ 輪結束後，最低 $i+1$ 個字組全是 0，所以最後的除以 $R$ 只是右移。第 $i$ 輪把第 $i$ 個字組消成 0（灰色）；<span class="pill-cur">橙色</span>是下一輪要處理的字組。若某個字組本來就是 0，該輪的 $u_i=0$，什麼都不加。最後整段右移。選十進位可以對照上面的手算；選 P-256 或 P-521 則是實際的 64 位元字組。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">REDC</div>
@@ -178,7 +178,7 @@ $$A=\frac{T+Um}{R}\ \text{是整數},\qquad A\equiv TR^{-1}\pmod m,\qquad 0\le A
 <section id="cost" data-nav="取捨">
 <h2>成本與取捨</h2>
 <ul>
-<li><strong>每次乘法的成本</strong>：[[ref:c9-alg-montmul]] 是 $2s(s+1)$ 次字組乘法，和 Barrett（第 8 章，約 $2s^2$ 次）同一量級，但流程完全規則：每一輪做的事一樣，沒有商的估計，進位也只往高位走。這讓它很適合硬體與 SIMD 實作。</li>
+<li><strong>每次乘法的成本</strong>：[[ref:c9-alg-montmul]] 是 $2s(s+1)$ 次字組乘法，和 Barrett（第 8 章，約 $2s^2$ 次）同一量級，但流程完全規則：每一輪做的事一樣，沒有商的估計，進位也只往高位走。這讓它很適合硬體實作，以及一次對多筆資料做同一運算的向量指令（SIMD）。</li>
 <li><strong>適用任何與 $\beta$ 互質的模數</strong>：換模數只要換 $m'$ 與 $R^2\bmod m$。許多函式庫用它處理 P-256 的 $p$ 與基點階 $n$，以及 RSA。</li>
 <li><strong>需要轉換</strong>：只做一兩次乘法時，進出的成本不划算（HAC Note 14.39），這時 Barrett 比較合適。ECC 的純量乘法有幾千次乘法，轉換成本可以忽略。</li>
 <li><strong>最後一次減法與資料有關</strong>：和 Barrett 一樣，常數時間的實作會固定做一次條件減法，用遮罩選結果。</li>
