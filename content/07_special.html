@@ -2,13 +2,13 @@
 <h2>不做除法，能不能化簡？</h2>
 <div class="info-box why"><span class="info-label">動機</span>
 <p>第 6 章結束時，兩個 $\mathbb F_p$ 元素 $x,y\in[0,p)$ 的整數乘積 $A=x\cdot y$ 已經算好：$0\le A&lt;p^2$，有 $2s$ 個字組。剩下的工作是求 $A\bmod p$（[[ref:def-mod]]）。照字面做是一次多字組的長除法，比乘法本身還慢；而一次純量乘法要做幾千次這樣的化簡。</p>
-<p>本章的想法是：<strong>模數 $p$ 是設計曲線的人挑的，那就挑一個讓化簡變容易的 $p$。</strong>若 $p$ 很接近 2 的冪，「除以 $p$」可以換成移位、加法和小常數乘法。NIST 的 P-256、P-521，以及 Curve25519、Curve448 的模數都是這樣挑出來的。第 8、9 章再處理沒辦法挑的模數。</p>
+<p>本章的想法是：模數 $p$ 是設計曲線的人挑的，那就挑一個讓化簡變容易的 $p$。若 $p$ 很接近 2 的冪，「除以 $p$」可以換成移位、加法和小常數乘法。NIST 的 P-256、P-521，以及 Curve25519、Curve448 的模數都是這樣挑出來的。第 8、9 章再處理沒辦法挑的模數。</p>
 </div>
 </section>
 
 <section id="fold" data-nav="折疊">
 <h2>折疊恆等式與三類特殊模數</h2>
-<p>整個章節只用到一個觀察。若 $p=2^L-c$（$L$ 是正整數，通常就是 $p$ 的位元數），則 $2^L=p+c$，所以 $2^L\equiv c\pmod p$（[[ref:def-cong]]）：$2^L$ 這個「大」的量，模 $p$ 等於 $c$。</p>
+<p>本章只用到一個觀察。若 $p=2^L-c$（$L$ 是正整數，通常就是 $p$ 的位元數），則 $2^L=p+c$，所以 $2^L\equiv c\pmod p$（[[ref:def-cong]]）：$2^L$ 這個「大」的量，模 $p$ 等於 $c$。</p>
 <div class="box thm" id="c7-thm-fold" data-title="折疊恆等式" data-ref="HAC §14.3.4">
 <p>設 $p=2^L-c$，其中 $c$ 是整數。對整數 $A\ge0$，令 $A_1=\lfloor A/2^L\rfloor$、$A_0=A\bmod 2^L$，即 $A=A_1\cdot2^L+A_0$，$0\le A_0&lt;2^L$。則</p>
 $$A\equiv A_0+c\,A_1\pmod p .$$
@@ -29,7 +29,7 @@ $$A\equiv A_0+c\,A_1\pmod p .$$
 <tr><td>$2^{448}-2^{224}-1$</td><td>Solinas</td><td class="num">$2^{224}+1$</td><td>Curve448</td></tr>
 <tr><td>$2^{256}-2^{224}+2^{192}+2^{96}-1$</td><td>Solinas</td><td class="num">$2^{224}-2^{192}-2^{96}+1$</td><td>P-256</td></tr>
 </table></div>
-<p>後兩個是 Solinas 質數：Goldilocks 是 $f(X)=X^2-X-1$、$v=224$；P-256 是 $f(X)=X^8-X^7+X^6+X^3-1$、$v=32$。它們的 $c$ 不小，但它是少數幾個 2 的冪的和或差，而且次方都落在字組邊界上，所以「乘 $c$」仍然只是移位與加減。SP 800-186 附錄 G.1 把 P-224 到 P-521 的模數稱為 generalized Mersenne numbers，把 Curve25519 這類模數則屬於 Crandall primes（即本章的偽 Mersenne 質數）；Curve448 的模數 $2^{448}-2^{224}-1$ 的 $c$ 不小，按本章的分類屬於 Solinas 形式。</p>
+<p>後兩個是 Solinas 質數：Goldilocks 是 $f(X)=X^2-X-1$、$v=224$；P-256 是 $f(X)=X^8-X^7+X^6+X^3-1$、$v=32$。它們的 $c$ 不小，但它是少數幾個 2 的冪的和或差，而且次方都落在字組邊界上，所以「乘 $c$」仍然只是移位與加減。SP 800-186 附錄 G.1 把 P-224 到 P-521 的模數稱為 generalized Mersenne numbers，Curve25519 這類模數則歸為 Crandall primes（即本章的偽 Mersenne 質數）；Curve448 的模數 $2^{448}-2^{224}-1$ 的 $c$ 不小，按本章的分類屬於 Solinas 形式。</p>
 <div class="box defn" id="c7-def-concat" data-terms="塊的並排" data-sym="$(X_{q-1}\Vert\cdots\Vert X_0)$（每塊 $t$ 位元）" data-gloss="$\sum_i X_i\,2^{ti}$，其中 $0\le X_i&lt;2^t$" data-ref="SP 800-186 App. G.1">
 <p>給定塊寬 $t$，若 $0\le X_i&lt;2^t$，記</p>
 $$(X_{q-1}\Vert\cdots\Vert X_1\Vert X_0)=\sum_{i=0}^{q-1}X_i\,2^{ti},$$
@@ -39,7 +39,7 @@ $$(X_{q-1}\Vert\cdots\Vert X_1\Vert X_0)=\sum_{i=0}^{q-1}X_i\,2^{ti},$$
 
 <section id="mersenne" data-nav="P-521">
 <h2>Mersenne：P-521 的 $2^{521}-1$</h2>
-<p>最乾淨的情形是 $c=1$。這時 [[ref:c7-thm-fold]] 變成 $A\equiv A_0+A_1$：化簡只要一次加法。NIST 的 <strong>P-521</strong> 就用 Mersenne 質數 $p=2^{521}-1$。</p>
+<p>最乾淨的情形是 $c=1$。這時 [[ref:c7-thm-fold]] 變成 $A\equiv A_0+A_1$：化簡只要一次加法。NIST 的 P-521 就用 Mersenne 質數 $p=2^{521}-1$。</p>
 <div class="box algo" id="c7-alg-p521" data-title="化簡模 2^521 − 1" data-ref="HMV Alg. 2.31；SP 800-186 App. G.1.4">
 <div class="io"><b>輸入</b>$p=2^{521}-1$，整數 $0\le A&lt;p^2$，寫成 $A=(A_1\Vert A_0)$（每塊 521 位元）。</div>
 <div class="io"><b>輸出</b>$A\bmod p$。</div>
@@ -98,7 +98,7 @@ $$2^{672}=2^{224}\cdot2^{448}\equiv2^{448}+2^{224}\equiv2^{225}+1\pmod p .$$
 
 <section id="p256" data-nav="P-256">
 <h2>P-256：九項的加減</h2>
-<p>P-256 的模數 $p=2^{256}-2^{224}+2^{192}+2^{96}-1$ 看起來比上面幾個複雜，為什麼要選這個形狀？關鍵是<strong>每個次方 $256,224,192,96,0$ 都是 32 的倍數</strong>。由 [[ref:c7-thm-fold]]，</p>
+<p>P-256 的模數 $p=2^{256}-2^{224}+2^{192}+2^{96}-1$ 看起來比上面幾個複雜，選這個形狀，是因為<strong>每個次方 $256,224,192,96,0$ 都是 32 的倍數</strong>。由 [[ref:c7-thm-fold]]，</p>
 $$2^{256}\equiv2^{224}-2^{192}-2^{96}+1\pmod p ,$$
 <p>右邊每一項都是 $2^{32i}$ 的形式。所以若以 32 位元字組寫 $A=(A_{15}\Vert\cdots\Vert A_1\Vert A_0)$（每塊 32 位元），把 $2^{256},2^{288},\dots,2^{480}$ 一個個換成 $2^0,2^{32},\dots,2^{224}$ 的組合，每個 $A_j$ 都整塊落到某些字組位置上，不必在字組內部移位，而且係數只有 $0,\pm1,\pm2$。這正是設計者要的：在 32 位元機器上，化簡只剩字組的重排與加減。</p>
 <div class="box algo" id="c7-alg-p256" data-title="化簡模 P-256 的 p" data-ref="HMV Alg. 2.29；SP 800-186 App. G.1.2">
@@ -120,7 +120,7 @@ $$2^{256}\equiv2^{224}-2^{192}-2^{96}+1\pmod p ,$$
 
 <section id="lab" data-nav="折疊實驗">
 <h2>互動：折疊實驗室</h2>
-<p>這個元件要讓你看到折疊為什麼省事：每一步都只是切開、相加與移位，而且最後的結果與直接取模完全相同。選一個模數，按「隨機乘積」產生 $A=x\cdot y$（$x,y$ 是隨機的體元素），再逐步播放。<span class="pill-hi">藍色</span>是要折回去的高位部分，<span class="pill-lo">綠色</span>是低位部分。Mersenne 與偽 Mersenne 的每一次折疊都讓<strong>值</strong>變小，而<strong>模 $p$ 的同餘類</strong>不變。Goldilocks 與 P-256 則要把所有項加完，總和才與 $A$ 同餘；中間的部分和不一定同餘，P-256 的總和甚至可能是負數，最後再加減 $p$ 正規化。最後一行與直接算 <code>A % p</code> 比對。</p>
+<p>這個元件展示折疊為什麼省事：每一步都只是切開、相加與移位，而且最後的結果與直接取模完全相同。選一個模數，按「隨機乘積」產生 $A=x\cdot y$（$x,y$ 是隨機的體元素），再逐步播放。<span class="pill-hi">藍色</span>是要折回去的高位部分，<span class="pill-lo">綠色</span>是低位部分。Mersenne 與偽 Mersenne 的每一次折疊都讓<strong>值</strong>變小，而<strong>模 $p$ 的同餘類</strong>不變。Goldilocks 與 P-256 則要把所有項加完，總和才與 $A$ 同餘；中間的部分和不一定同餘，P-256 的總和甚至可能是負數，最後再加減 $p$ 正規化。最後一行與直接算 <code>A % p</code> 比對。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">FOLD LAB</div>
@@ -157,9 +157,9 @@ $$2^{256}\equiv2^{224}-2^{192}-2^{96}+1\pmod p ,$$
 <h2>特殊模數的代價</h2>
 <p>折疊這麼快，為什麼還需要第 8、9 章的一般方法？</p>
 <ul>
-<li><strong>模數不一定能挑。</strong>曲線的底體 $p$ 可以挑，但 ECDSA 簽章還要在模<strong>基點的階 $n$</strong>下計算（第 8 章開頭說明），而 $n$ 由曲線決定，通常沒有特殊形狀；RSA 的模數更是兩個隨機質數的乘積。</li>
+<li><strong>模數不一定能挑。</strong>曲線的底體 $p$ 可以挑，但 ECDSA 簽章還要在模基點的階 $n$ 下計算（第 8 章開頭說明），而 $n$ 由曲線決定，通常沒有特殊形狀；RSA 的模數更是兩個隨機質數的乘積。</li>
 <li><strong>每個模數要一套專用程式。</strong>折疊規則是為某一個 $p$ 量身打造的；一般方法只要換掉預先算好的常數，就能用在任何模數上。</li>
 <li><strong>平台不同，最佳選擇不同。</strong>P-256 的規則是為 32 位元字組設計的；P-521 的 521 位元不在 64 位元字組邊界上。在某些硬體上，第 9 章的 Montgomery 乘法即使用在特殊模數上也不輸給折疊。</li>
 </ul>
-<p>所以本章與後兩章不是互相取代，而是各有用處。第 10 章有一張總比較表。</p>
+<p>特殊模數與後兩章的一般方法各有適用的場合，第 10 章有一張總比較表。</p>
 </section>

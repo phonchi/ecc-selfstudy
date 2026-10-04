@@ -36,7 +36,7 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">4.1</span>每一次加點都要付一次反元素</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 3 章回答了「怎樣的曲線才安全」：基點的階 $n$ 是大質數，約 256 位元。接下來的問題是成本。第 2 章的加點與倍點公式（<a class="xref" href="02_group_law.html#c2-alg-add">演算法 2.5</a>）裡，斜率 $\lambda$ 是一個分數，所以<strong>每一次</strong>加點或倍點都要算一次 $\mathbb F_p$ 的反元素。第 1 章說過，一次反元素 $\mathbf I$ 大約等於 80 到 100 次乘法 $\mathbf M$（<a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）。一次 256 位元的純量乘法 $kP$（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）要做約 255 次倍點與 128 次加點（第 5 章），光是反元素就要將近四萬次乘法。</p>
+<p>第 3 章回答了「怎樣的曲線才安全」：基點的階 $n$ 是大質數，約 256 位元。接下來的問題是成本。第 2 章的加點與倍點公式（<a class="xref" href="02_group_law.html#c2-alg-add">演算法 2.5</a>）裡，斜率 $\lambda$ 是一個分數，所以每一次加點或倍點都要算一次 $\mathbb F_p$ 的反元素。第 1 章說過，一次反元素 $\mathbf I$ 大約等於 80 到 100 次乘法 $\mathbf M$（<a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）。一次 256 位元的純量乘法 $kP$（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）要做約 255 次倍點與 128 次加點（第 5 章），光是反元素就要將近四萬次乘法。</p>
 <p>解法很像分數運算：<strong>先不要約分</strong>。把分母另外存成第三個座標，一路只做乘法；整個純量乘法做完，最後才做一次除法。第 2 章為了描述無窮遠點已經用過這個想法（射影座標，<a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）；本章把它換成對倍點更省的版本，並逐項計算成本。</p>
 </div>
 </section>
@@ -62,8 +62,8 @@ $$X_1Z_2^2=X_2Z_1^2\quad\text{且}\quad Y_1Z_2^3=Y_2Z_1^3 .$$
 <p>這個判斷不用除法，而且不必把 $Z=0$ 另外處理：兩個都是 $\mathcal O$ 時兩式都是 $0=0$；若 $Z_1=0\ne Z_2$，第一式變成 $X_1Z_2^2=0$，但 $\mathcal O$ 的 $X_1=\theta^2\ne0$，所以判為不相等。兩個 $Z$ 都不為 0 時，兩式除以 $Z_1^2Z_2^2$ 與 $Z_1^3Z_2^3$ 就是仿射座標相等。</p>
 </div>
 <ul>
-<li><strong>進入很便宜</strong>：$(x,y)\mapsto(x:y:1)$，不花任何乘法。</li>
-<li><strong>離開要一次反元素</strong>：算 $Z^{-1}$（$1\mathbf I$），再算 $Z^{-2}$（$1\mathbf S$）、$Z^{-3}$（$1\mathbf M$）、$x=XZ^{-2}$ 與 $y=YZ^{-3}$（$2\mathbf M$），共 $1\mathbf I+3\mathbf M+1\mathbf S$。</li>
+<li>從仿射轉入不花成本：$(x,y)\mapsto(x:y:1)$，不用任何乘法。</li>
+<li>轉回仿射要一次反元素：算 $Z^{-1}$（$1\mathbf I$），再算 $Z^{-2}$（$1\mathbf S$）、$Z^{-3}$（$1\mathbf M$）、$x=XZ^{-2}$ 與 $y=YZ^{-3}$（$2\mathbf M$），共 $1\mathbf I+3\mathbf M+1\mathbf S$。</li>
 </ul>
 </section>
 
@@ -171,11 +171,11 @@ $$X_1Z_2^2=X_2Z_1^2\quad\text{且}\quad Y_1Z_2^3=Y_2Z_1^3 .$$
 <tr><td>混合加點（另一點 $Z=1$）</td><td class="num">—</td><td class="num">7M + 4S</td><td class="num">madd-2007-bl</td><td class="num">8M + 3S</td></tr>
 <tr><td>轉回仿射</td><td class="num">—</td><td class="num">1I + 3M + 1S</td><td class="num">—</td><td class="num">1I + 3M + 1S</td></tr>
 </table></div>
-<p>作為對照，HMV 表 3.3 中普通射影座標（<a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）的倍點是 $7\mathbf M+3\mathbf S$、加點 $12\mathbf M+2\mathbf S$；Jacobian 座標的倍點明顯較省，而純量乘法中倍點佔了大多數（第 5 章），這就是本站選 Jacobian 的原因。EFD 與 HMV 的數字略有不同，是因為公式在乘法與平方之間的取捨不同，總量差不多。</p>
+<p>對照之下，HMV 表 3.3 中普通射影座標（<a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）的倍點是 $7\mathbf M+3\mathbf S$、加點 $12\mathbf M+2\mathbf S$；Jacobian 座標的倍點明顯較省，而純量乘法中倍點佔了大多數（第 5 章），所以本站選用 Jacobian 座標。EFD 與 HMV 的數字略有不同，是因為公式在乘法與平方之間的取捨不同，總量差不多。</p>
 <p>兩個常見的技巧：</p>
 <ul>
 <li><strong>混合加點</strong>（mixed addition）：第 5 章的演算法裡，加上的永遠是同一個已知點 $P$，它可以一直保持仿射形式（$Z=1$）。<a class="xref" href="04_coordinates.html#c4-alg-madd">演算法 4.4</a> 中所有乘 $Z_2$ 的步驟因此消失，比兩點都是 Jacobian 的加點省約 $4\mathbf M+1\mathbf S$。</li>
-<li><strong>$a=-3$</strong>：倍點的分子是 $3X^2+aZ^4$。一般的 $a$ 要先算 $X^2$ 與 $Z^4=(Z^2)^2$ 兩次平方，再乘一次 $a$；dbl-2007-bl 的總成本是 $1\mathbf M+8\mathbf S+$（一次乘 $a$）。當 $a=-3$ 時，$3X^2-3Z^4=3(X-Z^2)(X+Z^2)$，用一次乘法取代這兩次平方與乘 $a$；連帶地，原本借用 $X^2$ 來省乘法的另一步也改成直接相乘，最後得到 dbl-2001-b 的 $3\mathbf M+5\mathbf S$（以 $\mathbf S=0.8\mathbf M$ 估算，約 $7\mathbf M$ 對 $7.4\mathbf M$ 再加乘 $a$）。HMV Alg. 3.21 用同一個恆等式，取捨不同，得到 $4\mathbf M+4\mathbf S$。這就是 NIST 曲線都取 $a=-3$ 的原因。</li>
+<li><strong>$a=-3$</strong>：倍點的分子是 $3X^2+aZ^4$。一般的 $a$ 要先算 $X^2$ 與 $Z^4=(Z^2)^2$ 兩次平方，再乘一次 $a$；dbl-2007-bl 的總成本是 $1\mathbf M+8\mathbf S+$（一次乘 $a$）。當 $a=-3$ 時，$3X^2-3Z^4=3(X-Z^2)(X+Z^2)$，用一次乘法取代這兩次平方與乘 $a$；連帶地，原本借用 $X^2$ 來省乘法的另一步也改成直接相乘，最後得到 dbl-2001-b 的 $3\mathbf M+5\mathbf S$（以 $\mathbf S=0.8\mathbf M$ 估算，約 $7\mathbf M$ 對 $7.4\mathbf M$ 再加乘 $a$）。HMV Alg. 3.21 用同一個恆等式，取捨不同，得到 $4\mathbf M+4\mathbf S$。NIST 曲線都取 $a=-3$，理由就在這裡。</li>
 </ul>
 </section>
 
@@ -220,7 +220,7 @@ $$X_1Z_2^2=X_2Z_1^2\quad\text{且}\quad Y_1Z_2^3=Y_2Z_1^3 .$$
 
 <section id="summary" data-nav="小結">
 <h2><span class="secno">4.7</span>小結：成本鏈往下走一層</h2>
-<p>換成 Jacobian 座標之後，每次倍點約 $7\mathbf M$、每次混合加點約 $10\mathbf M$（以 $\mathbf S=0.8\mathbf M$ 估算），整個純量乘法（下一章定義）只在最後付一次反元素。只要反元素比大約 5 次乘法還貴（實際上一定是），Jacobian 座標就划算。剩下兩個問題：一次 $kP$ 到底要做幾次倍點、幾次加點，順序怎麼排才不洩漏 $k$？這是第 5 章的主題。之後整個 ECC 的速度，就幾乎完全取決於<strong>一次 $\mathbb F_p$ 乘法有多快</strong>，那是第 6 到第 9 章的主題。</p>
+<p>換成 Jacobian 座標之後，每次倍點約 $7\mathbf M$、每次混合加點約 $10\mathbf M$（以 $\mathbf S=0.8\mathbf M$ 估算），整個純量乘法（下一章定義）只在最後付一次反元素。只要反元素比大約 5 次乘法還貴（實際上一定是），Jacobian 座標就划算。剩下兩個問題：一次 $kP$ 到底要做幾次倍點、幾次加點，順序怎麼排才不洩漏 $k$？這是第 5 章的主題。這兩個問題解決之後，ECC 的速度幾乎完全取決於<strong>一次 $\mathbb F_p$ 乘法有多快</strong>，那是第 6 到第 9 章的主題。</p>
 </section>
 
 <section id="refs" data-nav="本章文獻">

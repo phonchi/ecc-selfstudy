@@ -16,7 +16,7 @@ $$\begin{aligned}E_A&amp;:\ y^2=x^3+2x+3,\\ E_B&amp;:\ y^2=x^3-3x+6 .\end{aligne
 
 <section id="hasse" data-nav="點數">
 <h2>點有多少個：Hasse 定理</h2>
-<p>為什麼要先數點？因為下一節的群結構、基點的階 $n$、餘因子 $h$，全都從點的總數出發。</p>
+<p>先數點，因為下一節的群結構、基點的階 $n$、餘因子 $h$，全都從點的總數出發。</p>
 <div class="box defn" id="c3-def-order" data-terms="曲線的點數" data-sym="$\#E(\mathbb F_p)$、$N$" data-gloss="$E(\mathbb F_p)$ 的元素個數（含 $\mathcal O$）；第 3 章簡記為 $N$" data-ref="HMV §3.1.3">
 <p>設 $E$ 是 $\mathbb F_p$ 上的橢圓曲線（[[ref:c2-def-curve]]）。$E(\mathbb F_p)$ 是座標都在 $\mathbb F_p$ 中的仿射點，再加上無窮遠點 $\mathcal O$（[[ref:c2-def-proj]]）所成的群。它的元素個數 $\#E(\mathbb F_p)$ 稱為 $E$ 在 $\mathbb F_p$ 上的<strong>點數</strong>，也就是這個群的階（[[ref:def-group]]）。本章簡記 $N:=\#E(\mathbb F_p)$。</p>
 </div>
@@ -39,7 +39,7 @@ $$\bigl|\,p+1-\#E(\mathbb F_p)\,\bigr|\le 2\sqrt p ,$$
 <p>在 $E_A$ 上，97 個 $x$ 之中有 48 個使 $f(x)$ 是非零平方、46 個是非剩餘、3 個使 $f(x)=0$，所以 $N=2\cdot48+3+1=100$，$t=-2$。在 $E_B$ 上是 53、44、0 個，$N=2\cdot53+1=107$，$t=-9$。</p>
 <p>$p=97$ 時 Hasse 區間是 $[\,98-2\sqrt{97},\ 98+2\sqrt{97}\,]$，約為 $[78.30,\ 117.70]$，兩者都落在裡面。</p>
 </div>
-<p>真實大小的曲線也一樣。P-256 的 $p$ 與點數都是 256 位元的數，而 $t$ 只有 127 位元，比 $2\sqrt p$（129 位元）小。實際的 $N$ 不是用上面的和去數（那要 $p$ 步），而是用 Schoof 演算法及其改良 SEA，時間是 $\log p$ 的多項式（Washington §4.5、§12.4）。</p>
+<p>真實大小的曲線也一樣。P-256 的 $p$ 與點數都是 256 位元的數，而 $t$ 只有 127 位元，比 $2\sqrt p$（129 位元）小。實際計算 $N$ 時不用上面的和（那要 $p$ 步），改用 Schoof 演算法及其改良 SEA，時間是 $\log p$ 的多項式（Washington §4.5、§12.4）。</p>
 </section>
 
 <section id="subgroup" data-nav="群結構">
@@ -97,7 +97,7 @@ $$h:=\#E(\mathbb F_p)/n$$
 <div class="box rem" id="c3-def-ecdlp" data-title="回顧：ECDLP（[[ref:c0-def-ecdlp]]）" data-ref="HMV Def. 4.1">
 <p>設 $G\in E(\mathbb F_p)$ 的階為 $n$，$Q\in\langle G\rangle$。<strong>橢圓曲線離散對數問題</strong>（elliptic curve discrete logarithm problem，ECDLP）是：求整數 $k\in[0,n-1]$ 使 $Q=kG$，記作 $k=\log_G Q$。它就是加法寫法的 DLP。</p>
 </div>
-<p>最直接的方法是依序算 $G,2G,3G,\dots$ 直到碰到 $Q$，最多 $n$ 次加點。當 $n\approx2^{256}$ 時這毫無希望。問題是：有沒有明顯更快的方法？下一節的答案是「有，但只快到 $\sqrt n$」。</p>
+<p>最直接的方法是依序算 $G,2G,3G,\dots$ 直到碰到 $Q$，最多 $n$ 次加點。$n\approx2^{256}$ 時這不可行。下一節會看到，更快的方法確實存在，但只快到 $\sqrt n$ 的量級。</p>
 </section>
 
 <section id="attacks" data-nav="通用攻擊">
@@ -176,13 +176,13 @@ $$c'G+d'Q=c''G+d''Q .$$
 <div class="box defn" id="c3-def-embed" data-terms="嵌入次數" data-sym="$\kappa$" data-gloss="使 $n\mid p^\kappa-1$ 的最小正整數" data-ref="HMV §4.1.4；Washington §5.3">
 <p>設基點的階 $n$ 是質數且 $n\ne p$。使 $p^\kappa\equiv1\pmod n$（即 $n\mid p^\kappa-1$）的最小正整數 $\kappa$，稱為<strong>嵌入次數</strong>（embedding degree）。它就是 $p\bmod n$ 在 $\mathbb F_n^*$（[[ref:def-fp]]）中的階，所以 $\kappa\mid n-1$。（HMV 把它記作 $k$，本站的 $k$ 留給純量；它也與 3.5 節 Pohlig–Hellman 的指數 $e_i$ 無關。）</p>
 </div>
-<p>MOV 攻擊（Menezes–Okamoto–Vanstone）與 Frey–Rück 攻擊用<strong>配對</strong>（pairing，一種與群運算相容的雙線性映射，本站不展開），把 $\langle G\rangle$ 同構地嵌入有 $p^\kappa$ 個元素的有限體的乘法群；在那裡可以用指標演算法。對大多數曲線，$\kappa$ 和 $n$ 差不多大，這個有限體大到無法處理；但 $\kappa$ 很小時這是致命的。例如 $\mathbb F_{103}$ 上的超奇異曲線（supersingular：對 $p&gt;3$，就是跡 $t=0$、點數 $N=p+1$ 的曲線，它們的嵌入次數至多為 2） $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因數 $n=13$，而 $103\equiv-1\pmod{13}$，所以 $13\mid103^2-1$，$\kappa=2$（Washington §5.3）。相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^\kappa\bmod107$），也就是可能的最大值 $n-1$。</p>
-<p>標準曲線在發布前都排除了這兩類情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。到這裡，「怎樣的曲線才安全」已經回答完；下面兩個互動元件讓你看到前面的群結構與 Hasse 定理。</p>
+<p>MOV 攻擊（Menezes–Okamoto–Vanstone）與 Frey–Rück 攻擊用<strong>配對</strong>（pairing，一種與群運算相容的雙線性映射，本站不展開），把 $\langle G\rangle$ 同構地嵌入有 $p^\kappa$ 個元素的有限體的乘法群；在那裡可以用指標演算法。對大多數曲線，$\kappa$ 和 $n$ 差不多大，這個有限體大到無法處理；但 $\kappa$ 很小時，這個攻擊就可行。例如 $\mathbb F_{103}$ 上的超奇異曲線（supersingular：對 $p&gt;3$，就是跡 $t=0$、點數 $N=p+1$ 的曲線，它們的嵌入次數至多為 2） $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因數 $n=13$，而 $103\equiv-1\pmod{13}$，所以 $13\mid103^2-1$，$\kappa=2$（Washington §5.3）。相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^\kappa\bmod107$），也就是可能的最大值 $n-1$。</p>
+<p>標準曲線在發布前都排除了這兩類情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。下面兩個互動元件用來觀察前面的群結構與 Hasse 定理。</p>
 </section>
 
 <section id="trail" data-nav="kP 軌跡">
 <h2>互動：$kP$ 的軌跡與點的階</h2>
-<p><strong>要觀察什麼：</strong>（一）軌跡回到 $\mathcal O$ 時走過的步數就是起點的階，而它一定整除 $N$（Lagrange 定理）；（二）在 $E_A$ 上，軌跡長度只會是 2、5、10、25 或 50，看不到 4、20、100，這就是 $\mathbb Z/2\mathbb Z\times\mathbb Z/50\mathbb Z$ 的結構；（三）在 $E_B$ 上，每一條軌跡都走遍全部 106 個仿射點，而且點的位置毫無規律，這正是「從 $kP$ 看不出 $k$」的直觀寫照。</p>
+<p><strong>要觀察什麼：</strong>（一）軌跡回到 $\mathcal O$ 時走過的步數就是起點的階，而它一定整除 $N$（Lagrange 定理）；（二）在 $E_A$ 上，軌跡長度只會是 2、5、10、25 或 50，看不到 4、20、100，這就是 $\mathbb Z/2\mathbb Z\times\mathbb Z/50\mathbb Z$ 的結構；（三）在 $E_B$ 上，每一條軌跡都走遍全部 106 個仿射點，而且點的位置看不出規律，這就是「從 $kP$ 看不出 $k$」的直觀意義。</p>
 <p>點雲是曲線在 $\mathbb F_{97}$ 上的所有點。點一下任何一點當作起點 $P$（或用下拉選單挑一個指定階的點），再播放：每一步加上 $P$，紫色線依序連起 $P,2P,3P,\dots$，直到回到 $\mathcal O$。</p>
 <div class="viz-layout">
   <div class="viz-panel">

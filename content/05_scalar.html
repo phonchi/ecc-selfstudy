@@ -37,7 +37,7 @@ $$k=(\cdots((k_{\ell-1})\,2+k_{\ell-2})\,2+\cdots)\,2+k_0 .$$
 
 <section id="naf" data-nav="NAF">
 <h2>NAF：減法是免費的</h2>
-<p>為什麼要換表示法？因為在曲線上取負號幾乎不花成本：$-(x,y)=(x,-y)$，Jacobian 座標下是 $-(X:Y:Z)=(X:-Y:Z)$。所以「減 $P$」和「加 $P$」一樣便宜，可以允許 $k$ 的數字取 $-1$。數字越多種，就有越多寫法可以挑，目標是挑非零數字最少的那一種，因為每個非零數字就是一次加點。</p>
+<p>換表示法是因為在曲線上取負號幾乎不花成本：$-(x,y)=(x,-y)$，Jacobian 座標下是 $-(X:Y:Z)=(X:-Y:Z)$。所以「減 $P$」和「加 $P$」一樣便宜，可以允許 $k$ 的數字取 $-1$。數字越多種，就有越多寫法可以挑，目標是挑非零數字最少的那一種，因為每個非零數字就是一次加點。</p>
 <div class="box defn" id="c5-def-naf" data-terms="帶號二進位表示|非相鄰形式|NAF|Hamming 權重" data-sym="$\operatorname{NAF}(k)$" data-gloss="數字取 $-1,0,1$、相鄰兩位不同時非零的二進位表示；非零數字的個數稱為權重" data-ref="HMV Def. 3.28">
 <p>把正整數寫成 $k=\sum_{i=0}^{L-1}k_i2^i$，$k_i\in\{-1,0,1\}$，$k_{L-1}\ne0$，稱為 $k$ 的一個長度 $L$ 的<strong>帶號二進位表示</strong>（signed binary representation）；非零數字的個數稱為它的<strong>權重</strong>（weight）。若還滿足</p>
 $$k_ik_{i+1}=0\qquad(0\le i&lt;L-1),$$
@@ -93,12 +93,12 @@ $$k_ik_{i+1}=0\qquad(0\le i&lt;L-1),$$
 <tr><td>NAF</td><td class="num">255</td><td class="num">約 86（混合）</td><td class="num">約 2 800 M</td></tr>
 <tr><td>Montgomery 階梯（下一節）</td><td class="num">256</td><td class="num">256（一般加點）</td><td class="num">約 5 700 M</td></tr>
 </table></div>
-<p>（逐項：$255\times7+128\times10.2+103.8\approx3\,194$；$255\times7+86\times10.2+103.8\approx2\,766$；$256\times7+256\times15+103.8\approx5\,736$。）結論是：<strong>一次純量乘法 ≈ 三千到六千次 $\mathbb F_p$ 乘法</strong>。一次 ECDH 每一方要做一兩次純量乘法。把一次 $\mathbb F_p$ 乘法加快 20%，整個協定大約就快 20%。</p>
+<p>（逐項：$255\times7+128\times10.2+103.8\approx3\,194$；$255\times7+86\times10.2+103.8\approx2\,766$；$256\times7+256\times15+103.8\approx5\,736$。）所以<strong>一次純量乘法約等於三千到六千次 $\mathbb F_p$ 乘法</strong>。一次 ECDH 每一方要做一兩次純量乘法。把一次 $\mathbb F_p$ 乘法加快 20%，整個協定大約就快 20%。</p>
 </section>
 
 <section id="ladder" data-nav="旁通道與階梯">
 <h2>旁通道與 Montgomery 階梯</h2>
-<p>上表最快的是 NAF，但實作上常用最慢的階梯。原因是 double-and-add 與 NAF 有一個不在數學裡、而在實體裡的弱點。</p>
+<p>上表最快的是 NAF，但實作上常用最慢的階梯。原因是 double-and-add 與 NAF 有一個實體層面的弱點，光看數學看不出來。</p>
 <div class="box defn" id="c5-def-sca" data-terms="旁通道|簡單功率分析|SPA|常數時間" data-gloss="從執行時間、耗電等實體量洩漏祕密；SPA 從單次耗電曲線讀出運算序列；常數時間指執行時間（與運算排程）與祕密無關" data-ref="HMV §5.3, §5.3.1, §5.3.5">
 <p><strong>旁通道</strong>（side channel）：演算法的輸入輸出以外，實作在執行時洩漏的實體資訊，例如執行時間、耗電、電磁輻射。<strong>簡單功率分析</strong>（simple power analysis，SPA）：量測一次（或少數幾次）運算的耗電曲線，從曲線的形狀直接辨認出執行了哪些運算、順序為何，進而推出祕密。一個實作是<strong>常數時間</strong>（constant time）的，是指它的執行時間、執行的運算序列、以及存取的記憶體位址都與祕密資料無關。</p>
 </div>
@@ -114,10 +114,10 @@ $$k_ik_{i+1}=0\qquad(0\le i&lt;L-1),$$
 <li>回傳 $R_0$。</li>
 </ol>
 <p><strong>不變量</strong>：處理完 $k_{\ell-1},\dots,k_i$ 之後，$R_0=jP$、$R_1=(j+1)P$，其中 $j$ 是已讀位元代表的整數；特別地，$R_1-R_0=P$ 始終成立。讀到 0 時 $j\mapsto2j$，$2R_0=2jP$、$R_0+R_1=(2j+1)P$；讀到 1 時 $j\mapsto2j+1$，$R_0+R_1=(2j+1)P$、$2R_1=(2j+2)P$。兩種情形都是一次加點加一次倍點，差別只在「哪一個被倍點」。成本是 $\ell$ 次倍點與 $\ell$ 次一般加點（兩個點都在變，不能用混合加點）。</p>
-<p>HECC 的版本從 $(R_0,R_1)=(P,2P)$ 開始，並假設最高位是 1；這裡從 $(\mathcal O,P)$ 開始、跑滿公開的 $\ell$ 位，讀到最高位的 1 時恰好得到 $(P,2P)$，兩者等價。跑滿固定長度很重要：否則迴圈次數本身就洩漏了 $k$ 的位元長度。</p>
+<p>HECC 的版本從 $(R_0,R_1)=(P,2P)$ 開始，並假設最高位是 1；這裡從 $(\mathcal O,P)$ 開始、跑滿公開的 $\ell$ 位，讀到最高位的 1 時恰好得到 $(P,2P)$，兩者等價。一定要跑滿固定長度，否則迴圈次數本身就洩漏了 $k$ 的位元長度。</p>
 </div>
 <div class="info-box red"><span class="info-label">規則的排程還不夠</span>
-<p>操作順序固定只是第一步。常數時間的實作還要求：「依 $k_i$ 選擇哪一個被倍點」不能用依賴祕密的分支或記憶體位址，而是用遮罩做的條件交換（conditional swap，cswap）；底層的 $\mathbb F_p$ 運算本身也必須是常數時間（第 8、9 章最後的條件減法就是一個例子）。本站的 JavaScript BigInt 示範<strong>不是</strong>常數時間，只用來說明演算法。</p>
+<p>操作順序固定只是第一步。常數時間的實作還要求：「依 $k_i$ 選擇哪一個被倍點」不能用依賴祕密的分支或記憶體位址，要改用遮罩做的條件交換（conditional swap，cswap）；底層的 $\mathbb F_p$ 運算本身也必須是常數時間（第 8、9 章最後的條件減法就是一個例子）。本站的 JavaScript BigInt 示範<strong>不是</strong>常數時間，只用來說明演算法。</p>
 </div>
 <div class="box rem" id="c5-rem-montgomery" data-title="三個不同的「Montgomery」">
 <p>本章的 Montgomery 階梯、第 9 章的 Montgomery 乘法（一種模乘法的化簡方法）、以及 Montgomery 形式的曲線 $By^2=x^3+Ax^2+x$，是三件不同的事，只是都出自 P. Montgomery。階梯在 $y^2=x^3+ax+b$ 上同樣可以用（HECC §13.2.3.b）；在 Montgomery 曲線上則可以只用 $x$ 座標，特別省（HECC §13.2.3.a；RFC 7748 §5 的 X25519）。</p>
@@ -126,8 +126,8 @@ $$k_ik_{i+1}=0\qquad(0\le i&lt;L-1),$$
 
 <section id="lab" data-nav="逐位演示">
 <h2>互動：逐位執行三種方法</h2>
-<p><strong>要觀察什麼：</strong>（一）每一步「目前的點」都等於「已讀數字代表的整數 $j$」乘上 $P$，這就是三個演算法共同的不變量；（二）下方條帶的節奏：double-and-add 的條帶裡，「D 後面有沒有 A」直接洩漏每一個位元；NAF 洩漏非零數字的位置；階梯每一格都是一次 A 加一次 D，看不出任何位元；（三）選階梯時，右側還會檢查 $R_1-R_0=P$。</p>
-<p>曲線是 $E_B: y^2=x^3-3x+6$ over $\mathbb F_{97}$（107 個點，質數階），$P=(0,43)$。每一步顯示讀到的數字、做了哪些運算、目前的點。條帶中 <span class="pill-dbl">D</span> 是倍點、<span class="pill-add">A</span> 是加點。</p>
+<p><strong>要觀察什麼：</strong>（一）每一步「目前的點」都等於「已讀數字代表的整數 $j$」乘上 $P$，也就是三個演算法共同的不變量；（二）下方條帶的節奏：double-and-add 的條帶裡，「D 後面有沒有 A」直接洩漏每一個位元；NAF 洩漏非零數字的位置；階梯每一格都是一次 A 加一次 D，看不出任何位元；（三）選階梯時，右側還會檢查 $R_1-R_0=P$。</p>
+<p>曲線是 $\mathbb F_{97}$ 上的 $E_B: y^2=x^3-3x+6$（107 個點，質數階），$P=(0,43)$。每一步顯示讀到的數字、做了哪些運算、目前的點。條帶中 <span class="pill-dbl">D</span> 是倍點、<span class="pill-add">A</span> 是加點。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">SCALAR MULTIPLICATION</div>

@@ -34,13 +34,13 @@
   <div class="chain" aria-label="成本鏈"><span class="chain-cap">成本鏈</span><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer on" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div>
 </div>
 <section id="why" data-nav="動機">
-<h2><span class="secno">9.1</span>反過來想：消掉低位，而不是估計高位</h2>
+<h2><span class="secno">9.1</span>從另一端下手：消掉低位，不估計高位</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 8 章的 Barrett 化簡適用於任何模數，但它必須<em>估計商</em>：從 $x$ 的高位猜出要減掉幾個 $m$，猜得不準就事後修正 0 到 2 次。Montgomery（1985）換了一個方向：不碰高位，而是<strong>加上 $m$ 的適當倍數，讓低位字組全部變成 0，再整段右移</strong>。加上 $m$ 的倍數不改變模 $m$ 的同餘類；右移 $s$ 個字組等於除以 $\beta^s$，在電腦上不用任何計算。每一步該加多少是確定的，沒有猜測。</p>
-<p>代價是答案多了一個因子：得到的是 $x\beta^{-s}\bmod m$，而不是 $x\bmod m$。解法是換一套表示法，讓這個因子在每次乘法中自動抵銷。只要整個純量乘法都在這套表示法裡做，進出各換一次的成本，由中間幾千次乘法分攤。</p>
+<p>第 8 章的 Barrett 化簡適用於任何模數，但它必須<em>估計商</em>：從 $x$ 的高位猜出要減掉幾個 $m$，猜得不準就事後修正 0 到 2 次。Montgomery（1985）反過來做：不碰高位，只<strong>加上 $m$ 的適當倍數，讓低位字組全部變成 0，再整段右移</strong>。加上 $m$ 的倍數不改變模 $m$ 的同餘類；右移 $s$ 個字組等於除以 $\beta^s$，在電腦上不用任何計算。每一步該加多少是確定的，沒有猜測。</p>
+<p>代價是答案多了一個因子：得到的是 $x\beta^{-s}\bmod m$，不是 $x\bmod m$。解法是換一套表示法，讓這個因子在每次乘法中自動抵銷。只要整個純量乘法都在這套表示法裡做，進出各換一次的成本就由中間幾千次乘法分攤。</p>
 </div>
 <div class="box rem" id="c9-rem-names"><div class="box-head"><span class="box-label">注意 9.1</span><span class="box-title">三個都叫 Montgomery 的東西</span></div>
-<p>密碼學裡有三個以 Montgomery 命名的概念，它們是不同的東西：</p>
+<p>密碼學裡有三個以 Montgomery 命名的概念，彼此不同：</p>
 <ul>
 <li><strong>Montgomery 乘法／REDC</strong>（本章 §9.2 定義）：一種模乘的化簡方法，用在任何與 $\beta$ 互質的模數上。</li>
 <li><strong>Montgomery 階梯</strong>（Montgomery ladder，第 5 章）：一種純量乘法的排程，每一位都做一次加點和一次倍點。</li>
@@ -52,7 +52,7 @@
 
 <section id="domain" data-nav="定義">
 <h2><span class="secno">9.2</span>REDC 與 Montgomery 表示</h2>
-<p>先把「消掉低位再右移」算出來的東西定義清楚，再看怎麼利用它。以下沿用第 6 章的基底 $\beta=2^w$ 與字組數 $s$（<a class="xref" href="06_multiprecision.html#c6-def-radix">定義 6.1</a>）。</p>
+<p>先定義「消掉低位再右移」算出的量，再看怎麼利用它。以下沿用第 6 章的基底 $\beta=2^w$ 與字組數 $s$（<a class="xref" href="06_multiprecision.html#c6-def-radix">定義 6.1</a>）。</p>
 <div class="box defn" id="c9-def-redc"><div class="box-head"><span class="box-label">定義 9.2</span><span class="box-title">Montgomery 化簡、REDC</span><span class="box-ref">HAC §14.3.2</span></div>
 <p>設模數 $m$ 恰有 $s$ 個字組，且 $\gcd(m,\beta)=1$（$\beta$ 是 2 的冪時，就是 $m$ 為奇數）。令 $R=\beta^s$，則 $R&gt;m$ 且 $\gcd(m,R)=1$，所以 $R$ 在 $\mathbb Z/m\mathbb Z$ 中有反元素 $R^{-1}$（<a class="xref" href="01_finite_field.html#thm-zn-field">定理 1.10</a>）。對整數 $0\le T&lt;mR$，定義</p>
 $$\mathrm{REDC}(T)=TR^{-1}\bmod m ,$$
@@ -61,7 +61,7 @@ $$\mathrm{REDC}(T)=TR^{-1}\bmod m ,$$
 <div class="box defn" id="c9-def-mont"><div class="box-head"><span class="box-label">定義 9.3</span><span class="box-title">Montgomery 表示</span><span class="box-ref">HAC §14.3.2</span></div>
 <p>在 <a class="xref" href="09_montgomery.html#c9-def-redc">定義 9.2</a> 的條件下，對 $x\in[0,m)$，稱 $\tilde x=xR\bmod m$ 為 $x$ 的 <strong>Montgomery 表示</strong>。因為 $R$ 模 $m$ 可逆，$x\mapsto\tilde x$ 是 $[0,m)$ 上的一一對應。</p>
 </div>
-<p>這套表示法的用處在於乘法。對 $x,y\in[0,m)$，乘積 $\tilde x\tilde y&lt;m^2&lt;mR$ 符合 REDC 的輸入條件，而且</p>
+<p>這套表示法是為乘法設計的。對 $x,y\in[0,m)$，乘積 $\tilde x\tilde y&lt;m^2&lt;mR$ 符合 REDC 的輸入條件，而且</p>
 $$\tilde x\,\tilde y\,R^{-1}\equiv(xR)(yR)R^{-1}=xy\,R\pmod m .$$
 <p>左右兩邊同餘；把左邊取 $\bmod m$ 就得到兩個 $[0,m)$ 中的數之間的<strong>等式</strong>：</p>
 $$\mathrm{REDC}(\tilde x\,\tilde y)=(xy)R\bmod m=\tilde z,\qquad z=xy\bmod m .$$
@@ -183,7 +183,7 @@ $$A=\frac{T+Um}{R}\ \text{是整數},\qquad A\equiv TR^{-1}\pmod m,\qquad 0\le A
 
 <section id="lab" data-nav="逐輪演示">
 <h2><span class="secno">9.5</span>互動：REDC 逐輪演示</h2>
-<p>這個元件用來確認 <a class="xref" href="09_montgomery.html#c9-alg-redc">演算法 9.4</a> 的核心不變量：第 $i$ 輪結束後，最低 $i+1$ 個字組全是 0，所以最後的除以 $R$ 只是右移。第 $i$ 輪把第 $i$ 個字組消成 0（灰色）；<span class="pill-cur">橙色</span>是下一輪要處理的字組。若某個字組本來就是 0，該輪的 $u_i=0$，什麼都不加。最後整段右移。選十進位可以對照上面的手算；選 P-256 或 P-521 則是實際的 64 位元字組。</p>
+<p>這個元件演示 <a class="xref" href="09_montgomery.html#c9-alg-redc">演算法 9.4</a> 的核心不變量：第 $i$ 輪結束後，最低 $i+1$ 個字組全是 0，所以最後的除以 $R$ 只是右移。第 $i$ 輪把第 $i$ 個字組消成 0（灰色）；<span class="pill-cur">橙色</span>是下一輪要處理的字組。若某個字組本來就是 0，該輪的 $u_i=0$，什麼都不加。最後整段右移。選十進位可以對照上面的手算；選 P-256 或 P-521 則是實際的 64 位元字組。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">REDC</div>
@@ -245,7 +245,7 @@ $$A=\frac{T+Um}{R}\ \text{是整數},\qquad A\equiv TR^{-1}\pmod m,\qquad 0\le A
 <section id="cost" data-nav="取捨">
 <h2><span class="secno">9.7</span>成本與取捨</h2>
 <ul>
-<li><strong>每次乘法的成本</strong>：<a class="xref" href="09_montgomery.html#c9-alg-montmul">演算法 9.6</a> 是 $2s(s+1)$ 次字組乘法，和 Barrett（第 8 章，約 $2s^2$ 次）同一量級，但流程完全規則：每一輪做的事一樣，沒有商的估計，進位也只往高位走。這讓它很適合硬體實作，以及一次對多筆資料做同一運算的向量指令（SIMD）。</li>
+<li><strong>每次乘法的成本</strong>：<a class="xref" href="09_montgomery.html#c9-alg-montmul">演算法 9.6</a> 是 $2s(s+1)$ 次字組乘法，和 Barrett（第 8 章，約 $2s^2$ 次）同一量級，但流程完全規則：每一輪做的事一樣，沒有商的估計，進位也只往高位走。因此很適合硬體實作，也適合一次對多筆資料做同一運算的向量指令（SIMD）。</li>
 <li><strong>適用任何與 $\beta$ 互質的模數</strong>：換模數只要換 $m'$ 與 $R^2\bmod m$。許多函式庫用它處理 P-256 的 $p$ 與基點階 $n$，以及 RSA。</li>
 <li><strong>需要轉換</strong>：只做一兩次乘法時，進出的成本不划算（HAC Note 14.39），這時 Barrett 比較合適。ECC 的純量乘法有幾千次乘法，轉換成本可以忽略。</li>
 <li><strong>最後一次減法與資料有關</strong>：和 Barrett 一樣，常數時間的實作會固定做一次條件減法，用遮罩選結果。</li>
@@ -264,7 +264,7 @@ $$A=\frac{T+Um}{R}\ \text{是整數},\qquad A\equiv TR^{-1}\pmod m,\qquad 0\le A
 <nav class="chapter-nav"><a class="prev" href="08_barrett.html"><div class="nav-dir">← 上一章</div><div class="nav-title">8. Barrett 化簡</div></a><a class="home" href="index.html"><div class="nav-dir">導讀</div><div class="nav-title">全部章節</div></a><a class="next" href="10_synthesis.html"><div class="nav-dir">下一章 →</div><div class="nav-title">10. 總整：何時用哪一種</div></a></nav>
 <footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">9.1 反過來想：消掉低位，而不是估計高位</a></li><li><a href="#domain" data-target="domain">9.2 REDC 與 Montgomery 表示</a></li><li><a href="#redc" data-target="redc">9.3 Montgomery 化簡：一次消掉一個字組</a></li><li><a href="#montmul" data-target="montmul">9.4 Montgomery 乘法：乘法與化簡交錯</a></li><li><a href="#lab" data-target="lab">9.5 互動：REDC 逐輪演示</a></li><li><a href="#flow" data-target="flow">9.6 互動：進入、相乘、離開，再與 Barrett 對照</a></li><li><a href="#cost" data-target="cost">9.7 成本與取捨</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">9.1 從另一端下手：消掉低位，不估計高位</a></li><li><a href="#domain" data-target="domain">9.2 REDC 與 Montgomery 表示</a></li><li><a href="#redc" data-target="redc">9.3 Montgomery 化簡：一次消掉一個字組</a></li><li><a href="#montmul" data-target="montmul">9.4 Montgomery 乘法：乘法與化簡交錯</a></li><li><a href="#lab" data-target="lab">9.5 互動：REDC 逐輪演示</a></li><li><a href="#flow" data-target="flow">9.6 互動：進入、相乘、離開，再與 Barrett 對照</a></li><li><a href="#cost" data-target="cost">9.7 成本與取捨</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
 </div>
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <script src="assets/ecc-core.js?v=20261005"></script>

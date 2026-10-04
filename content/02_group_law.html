@@ -8,7 +8,7 @@
 
 <section id="curve" data-nav="曲線">
 <h2>短 Weierstrass 形式與非奇異條件</h2>
-<p>為什麼只看 $y^2=x^3+ax+b$ 這一種形式？橢圓曲線一般用 Weierstrass 方程式描述，有好幾種寫法；只要體的特徵（[[ref:def-char]]）不是 2 或 3，每一條橢圓曲線經過座標變換都能化成這個最簡單的形式（Washington §2.1）。本站的 $\mathbb F_p$ 都有 $p&gt;3$，所以只用這一種。</p>
+<p>本站只看 $y^2=x^3+ax+b$ 這一種形式。橢圓曲線一般用 Weierstrass 方程式描述，有好幾種寫法；只要體的特徵（[[ref:def-char]]）不是 2 或 3，每一條橢圓曲線經過座標變換都能化成這個最簡單的形式（Washington §2.1）。本站的 $\mathbb F_p$ 都有 $p&gt;3$，所以只用這一種。</p>
 <div class="box defn" id="c2-def-curve" data-terms="橢圓曲線|短 Weierstrass 形式|判別式" data-sym="$E:\ y^2=x^3+ax+b$，$\Delta$" data-gloss="$\Delta=-16(4a^3+27b^2)\ne0$ 的三次曲線" data-ref="Washington §2.1；HMV §3.1">
 <p>設 $K$ 是特徵不為 2、3 的體，$a,b\in K$。方程式</p>
 $$E:\ y^2=x^3+ax+b$$
@@ -22,17 +22,17 @@ $$E(L)=\{(x,y)\in L^2:\ y^2=x^3+ax+b\}\cup\{\mathcal O\},$$
 
 <section id="proj" data-nav="無窮遠點">
 <h2>射影平面與無窮遠點 $\mathcal O$</h2>
-<p>為什麼需要一個「不在平面上」的點？兩個原因。第一，$P$ 與它對 $x$ 軸的鏡射 $(x,-y)$ 的連線是鉛直線，它與曲線只有這兩個交點，「第三個交點」不存在；第二，群需要單位元。射影平面把兩個問題一起解決：補上的那一點同時就是單位元。</p>
+<p>需要一個「不在平面上」的點，原因有兩個。第一，$P$ 與它對 $x$ 軸的鏡射 $(x,-y)$ 的連線是鉛直線，它與曲線只有這兩個交點，「第三個交點」不存在；第二，群需要單位元。射影平面把兩個問題一起解決：補上的那一點同時就是單位元。</p>
 <div class="box defn" id="c2-def-proj" data-terms="射影平面|射影座標|無窮遠點" data-sym="$\mathbb P^2(K)$，$(X:Y:Z)$，$\mathcal O$" data-gloss="$K^3\setminus\{0\}$ 對非零倍數的等價類；$\mathcal O=(0:1:0)$" data-ref="Washington §2.3">
 <p><strong>射影平面</strong> $\mathbb P^2(K)$ 是 $K^3\setminus\{(0,0,0)\}$ 在等價關係 $(X,Y,Z)\sim(cX,cY,cZ)$（$c\in K^*$）下的等價類，類記作 $(X:Y:Z)$。$Z\ne0$ 的點對應到一般平面上的 $(X/Z,\ Y/Z)$；$Z=0$ 的點稱為<strong>無窮遠點</strong>。曲線 $E$ 的<strong>射影化</strong>是</p>
 $$Y^2Z=X^3+aXZ^2+bZ^3 .$$
 <p>代入 $Z=0$ 得 $X^3=0$，所以 $X=0$、$Y\ne0$，曲線上恰好只有一個無窮遠點 $(0:1:0)$，記作 $\mathcal O$。</p>
 </div>
-<p>直觀上，$\mathcal O$ 位在 $y$ 軸方向的盡頭，<strong>每一條鉛直線 $x=c$ 都經過它</strong>（鉛直線的射影化是 $X=cZ$，代入 $Z=0$ 得 $X=0$，正是 $\mathcal O$）。第 4 章會換用另一種加權的射影座標來加速計算，屆時再與這裡的定義對照。</p>
+<p>直觀上，$\mathcal O$ 位在 $y$ 軸方向的盡頭，每一條鉛直線 $x=c$ 都經過它（鉛直線的射影化是 $X=cZ$，代入 $Z=0$ 得 $X=0$，正是 $\mathcal O$）。第 4 章會換用另一種加權的射影座標來加速計算，屆時再與這裡的定義對照。</p>
 <div class="box thm" id="c2-thm-bezout" data-title="直線與曲線的交點" data-ref="Washington §2.4（Bézout 定理的特例）">
 <p>在 $K$ 的代數閉包上（包含 $K$、而且每個多項式都能完全分解成一次因式的最小的體），射影平面中的任一直線與 $E$ 恰有三個交點，交點依重數計算（重數：交點方程式中該根出現的次數，所以切線的切點算兩次，反曲點算三次）。若其中兩個交點的座標在 $K$ 中，第三個也在 $K$ 中。</p>
 </div>
-<p>最後一句是群律能在 $\mathbb F_p$ 上運作的關鍵：已知兩個交點都在 $\mathbb F_p$ 中，第三個交點可以只用 $\mathbb F_p$ 的四則運算算出來，下一節的公式就是這樣得來的。</p>
+<p>群律能在 $\mathbb F_p$ 上運作，靠的是最後一句：已知兩個交點都在 $\mathbb F_p$ 中，第三個交點可以只用 $\mathbb F_p$ 的四則運算算出來，下一節的公式就是這樣得來的。</p>
 </section>
 
 <section id="chord" data-nav="割線與切線">
@@ -55,12 +55,12 @@ $$P+Q=-R',\qquad\text{其中}\ -(x,y)=(x,-y),\ -\mathcal O=\mathcal O .$$
 </ol>
 <p>成本：加點 $1\mathbf I+2\mathbf M+1\mathbf S$，倍點 $1\mathbf I+2\mathbf M+2\mathbf S$（HMV Table 3.3；$\mathbf M,\mathbf S,\mathbf I$ 見 [[ref:def-cost]]）。</p>
 </div>
-<p>兩件事值得記下：$b$ 沒有出現在公式裡；<strong>每一次加點或倍點都要一次除法</strong>（算 $\lambda$）。第 1 章說過除法很貴，這個事實會在第 4 章成為重點。</p>
+<p>注意兩件事：$b$ 沒有出現在公式裡；<strong>每一次加點或倍點都要一次除法</strong>（算 $\lambda$）。第 1 章說過除法很貴，第 4 章會專門處理這個問題。</p>
 </section>
 
 <section id="real" data-nav="實數圖">
 <h2>互動：在實數平面上加點</h2>
-<p>先在實數平面上看幾何直覺。$\mathbb F_p$ 上沒有「圖形」可看，但公式完全相同，所以實數圖是理解群律最好的入口。</p>
+<p>先在實數平面上看幾何直覺。$\mathbb F_p$ 上沒有「圖形」可看，但公式完全相同，所以先用實數圖理解群律。</p>
 <p>拖曳紅色的 $P$ 與綠色的 $Q$（點會被吸到曲線上）。虛線是 $P,Q$ 的連線，空心圈是第三個交點，橙色點是鏡射後的 $P+Q$。調 $a,b$ 可以看到曲線有一個或兩個分支，以及判別式為 0 時的奇異情形。</p>
 <div class="viz-layout">
   <div class="viz-panel">
@@ -101,7 +101,7 @@ $$P+Q=-R',\qquad\text{其中}\ -(x,y)=(x,-y),\ -\mathcal O=\mathcal O .$$
 <section id="fp" data-nav="搬到 F_p">
 <h2>搬到 $\mathbb F_p$：幾何消失，代數留下</h2>
 <p>密碼學要的是有限的群，所以把 $K$ 換成 $\mathbb F_p$。[[ref:c2-alg-add]] 只用到四則運算，可以原封不動地在 $\mathbb F_p$ 裡計算：每一步都取 $\bmod p$，除法換成乘反元素（[[ref:alg-egcd]] 或 [[ref:alg-fermat-inv]]）。</p>
-<p>這時曲線不再是一條線，而是 $p\times p$ 格子上的一堆點；「直線」$y=\lambda(x-x_1)+y_1$ 也變成每碰到邊界就繞回來的一排點。割線的第三個交點仍然落在這排點上，這不是巧合：$x_3=\lambda^2-x_1-x_2$ 這個代數恆等式在任何體上都成立（[[ref:c2-thm-bezout]]）。</p>
+<p>這時曲線不再是一條線，而是 $p\times p$ 格子上的一堆點；「直線」$y=\lambda(x-x_1)+y_1$ 也變成每碰到邊界就繞回來的一排點。割線的第三個交點仍然落在這排點上，因為 $x_3=\lambda^2-x_1-x_2$ 這個代數恆等式在任何體上都成立（[[ref:c2-thm-bezout]]）。</p>
 <p>某個 $x$ 上有沒有點，取決於 $x^3+ax+b$ 是不是 $\mathbb F_p$ 中的平方剩餘（[[ref:def-qr]]）：是的話有兩個點 $(x,\pm y)$，等於 0 時有一個點，否則沒有。</p>
 <p>右圖是 $E_A: y^2=x^3+2x+3$ 在 $\mathbb F_{97}$ 上的全部點（加上 $\mathcal O$ 共 100 個；第 3 章還會用到這條曲線，記作 $E_A$）。注意點對 $y=97/2$ 上下對稱，那就是 $\mathbb F_p$ 版的「對 $x$ 軸鏡射」：$-(x,y)=(x,p-y)$。</p>
 <div class="viz-layout">

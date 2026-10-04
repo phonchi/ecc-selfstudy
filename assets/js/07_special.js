@@ -18,7 +18,7 @@ HC.ready(() => {
     return x % bound;
   };
   const show = (x, M) => (M.bits ? `<span class="bits">${x.toString(2)}</span> <span class="where">= ${x}</span>`
-    : `<span class="bigval">${HC.hexShort(x, 16)}</span> <span class="where">(${x.toString(2).length} 位元)</span>`);
+    : `<span class="bigval">${HC.hexShort(x, 16)}</span> <span class="where">（${x.toString(2).length} 位元）</span>`);
   const split = (A, M) => {
     const hi = A >> BigInt(M.n), lo = A & ((1n << BigInt(M.n)) - 1n);
     if (M.bits) {

@@ -38,7 +38,7 @@
 <h2><span class="secno">0.1</span>在公開的通道上約定一個祕密</h2>
 <div class="info-box why"><span class="info-label">動機</span>
 <p>Alice 和 Bob 從沒見過面，只能透過一條所有人都聽得到的通道說話。他們想約定一把只有兩人知道的<strong>金鑰</strong>（key），之後用它加密大量資料。對稱式加密（例如 AES）本身很快也很安全，難處在於「第一把金鑰怎麼來」。</p>
-<p>這就是<strong>公開金鑰密碼</strong>（public-key cryptography）要解的問題。它需要一種<strong>單向運算</strong>：正著算很容易，倒推回去卻難到不可行。本章說明：在一個群裡，「重複做同一個運算」就是這樣的單向運算；而橢圓曲線（正式定義見 <a class="xref" href="02_group_law.html#c2-def-curve">定義 2.1</a>）上的點所成的群，是目前已知在同樣的安全要求下<strong>金鑰最短</strong>的選擇。</p>
+<p>這就是<strong>公開金鑰密碼</strong>（public-key cryptography）要解的問題。它需要一種<strong>單向運算</strong>：正著算很容易，倒推回去卻難到不可行。本章說明：在一個群裡，「重複做同一個運算」就是這樣的單向運算；而橢圓曲線（正式定義見 <a class="xref" href="02_group_law.html#c2-def-curve">定義 2.1</a>）上的點所成的群，是目前已知在同樣的安全要求下金鑰最短的選擇。</p>
 </div>
 <p>本章是序章，只用白話描述，正式的定義放在第 1、2 章。下面先列出本章會用到的詞，每個都附上正式定義的位置。</p>
 <div class="box rem" id="c0-rem-terms"><div class="box-head"><span class="box-label">注意 0.1</span><span class="box-title">本章用到的詞（白話版）</span></div>
@@ -50,13 +50,13 @@
 <li><strong>純量乘法 $kP$</strong>：點 $P$ 自己加 $k$ 次。群用加法寫法時，$kP$ 就是乘法寫法裡的 $g^k$（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）。</li>
 </ul>
 </div>
-<p>整個網站圍繞一個問題：這個單向運算在電腦上<strong>到底花多少力氣</strong>。答案一層一層往下拆，最後落在「兩個幾百位元的整數相乘再取模 $p$」。本章最後一節把這條<strong>成本鏈</strong>畫出來，作為全站的地圖。</p>
+<p>整個網站圍繞一個問題：這個單向運算在電腦上到底花多少力氣。答案一層一層往下拆，最後落在「兩個幾百位元的整數相乘再取模 $p$」。本章最後一節把這條<strong>成本鏈</strong>畫出來，作為全站的地圖。</p>
 </section>
 
 <section id="dlp" data-nav="離散對數">
 <h2><span class="secno">0.2</span>離散對數：容易的方向與困難的方向</h2>
 <p>公開金鑰需要一個「正著算容易、反著算困難」的運算。在循環群裡，次方就是這樣的運算。</p>
-<p>設 $C=\langle g\rangle$ 是一個階為 $n$ 的循環群，生成元為 $g$（<a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>、<a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>；字母 $G$ 留給後面的基點）。給定整數 $k$，算 $y=g^k$ 很容易：平方-乘（<a class="xref" href="01_finite_field.html#alg-sqmul">演算法 1.16</a>）依 $k$ 的二進位逐位處理，每一位做一次平方，遇到 1 再乘一次 $g$。$k$ 有 $\ell$ 個位元時，最多 $2\ell$ 次群運算；$k$ 有 256 位元，就是幾百次，而不是 $2^{256}$ 次。</p>
+<p>設 $C=\langle g\rangle$ 是一個階為 $n$ 的循環群，生成元為 $g$（<a class="xref" href="01_finite_field.html#def-group">定義 1.4</a>、<a class="xref" href="01_finite_field.html#def-subgroup">定義 1.6</a>；字母 $G$ 留給後面的基點）。給定整數 $k$，算 $y=g^k$ 很容易：平方-乘（<a class="xref" href="01_finite_field.html#alg-sqmul">演算法 1.16</a>）依 $k$ 的二進位逐位處理，每一位做一次平方，遇到 1 再乘一次 $g$。$k$ 有 $\ell$ 個位元時，最多 $2\ell$ 次群運算；$k$ 有 256 位元，就是幾百次，遠少於 $2^{256}$ 次。</p>
 <div class="box defn" id="c0-def-dlp"><div class="box-head"><span class="box-label">定義 0.2</span><span class="box-title">離散對數問題、DLP</span><span class="box-ref">HAC Def. 3.52</span></div>
 <p>設 $C=\langle g\rangle$ 是階為 $n$ 的循環群、$g$ 是生成元。給定 $y\in C$，求整數 $k$（$0\le k&lt;n$）使 $g^k=y$，稱為<strong>離散對數問題</strong>（discrete logarithm problem，DLP），$k$ 記作 $\log_g y$。</p>
 </div>
@@ -91,7 +91,7 @@
 <tr><td>256</td><td class="num">15360</td><td class="num">15360</td><td class="num">512 以上</td></tr>
 </table></div>
 <p class="where">資料來源：NIST SP 800-57 Part 1 Rev. 5，§5.6.1.1 Table 2（只考慮古典攻擊）。RSA 是以大數分解為基礎的公開金鑰系統，這裡只用來比較長度；FFC 一欄另有第二個參數，這裡省略。</p>
-<p>ECC 一欄是基點的階 $n$ 的位元數，大約是安全強度的兩倍，這正是 $\sqrt n$ 攻擊的直接結果。RSA 與 FFC 一欄則因為次指數攻擊而增長得快得多：從 112 位元到 256 位元的強度，ECC 的大小約變為 2.3 倍（224 到 512），RSA 卻變為 7.5 倍（2048 到 15360）。常聽到的「<strong>P-256 約等於 RSA-3072</strong>」就是表中 128 位元那一列（P-256 是 NIST 標準曲線，它的 $n$ 有 256 位元，第 3 章列出完整參數）。</p>
+<p>ECC 一欄是基點的階 $n$ 的位元數，大約是安全強度的兩倍，原因就是 $\sqrt n$ 攻擊。RSA 與 FFC 一欄則因為次指數攻擊而增長得快得多：從 112 位元到 256 位元的強度，ECC 的大小約變為 2.3 倍（224 到 512），RSA 卻變為 7.5 倍（2048 到 15360）。常聽到的「<strong>P-256 約等於 RSA-3072</strong>」就是表中 128 位元那一列（P-256 是 NIST 標準曲線，它的 $n$ 有 256 位元，第 3 章列出完整參數）。</p>
 </section>
 
 <section id="ecdh" data-nav="ECDH">
@@ -196,7 +196,7 @@ $$23\,Q_B = 61\,Q_A = (72,49) = 12\,G ,$$
       <div class="ic-note" id="w00evenote" style="margin-top:.4rem"></div></div>
   </div>
 </div>
-<p>側欄的「竊聽者看到的」卡片顯示一個重點：這個玩具群只有 107 個元素，從 $G$ 開始一個一個加，最多試 106 次就能找回 $d_A$。真實的 P-256 群階約 $2^{256}$，通用攻擊仍需約 $2^{128}$ 次群運算。小質數只是為了能把點畫出來。</p>
+<p>側欄的「竊聽者看到的」卡片提醒：這個玩具群只有 107 個元素，從 $G$ 開始一個一個加，最多試 106 次就能找回 $d_A$。真實的 P-256 群階約 $2^{256}$，通用攻擊仍需約 $2^{128}$ 次群運算。這裡選小質數，只是為了能把點畫出來。</p>
 </section>
 
 <section id="chain" data-nav="成本鏈">
