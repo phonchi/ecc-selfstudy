@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ECC 自學站的記號與術語表">
+<title>記號與術語 — 橢圓曲線密碼：從曲線到模乘法</title>
+<script>
+  try { const t = localStorage.getItem('ecc-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (_) {}
+  MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+             options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] },
+             chtml: { scale: 0.98 } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ecc.css?v=20261005">
+</head>
+<body>
+<header class="topbar">
+  <button class="sb-toggle" id="sbToggle" type="button" aria-label="開關章節導覽" aria-controls="sidebar">☰</button>
+  <a class="tb-title" href="index.html">ECC 自學</a>
+  <span class="tb-spacer"></span>
+  <a class="tb-link" href="https://github.com/phonchi/ecc-selfstudy">原始碼</a>
+  <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
+</header>
+<div class="book">
+<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch on" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
+<main class="content" id="top">
+<div class="ch-head"><div class="eyebrow">附錄</div><h1>記號與術語</h1>
+<p class="ch-sub">全站每個記號與術語的意義，以及第一次正式定義的位置。依章節順序排列。</p></div>
+<section id="conv" data-nav="記號約定">
+<h2>全站記號約定</h2>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>記號</th><th>固定的意義</th></tr>
+<tr><td>$p$</td><td>質數，有限體 $\mathbb F_p$ 的大小</td></tr>
+<tr><td>$a,b$</td><td>曲線 $y^2=x^3+ax+b$ 的係數</td></tr>
+<tr><td>$k$</td><td>純量（整數），純量乘法 $kP$ 中的 $k$</td></tr>
+<tr><td>$d_A,d_B$；$Q_A,Q_B$</td><td>ECDH 中 Alice、Bob 的私鑰與公鑰</td></tr>
+<tr><td>$G,\ n,\ h$</td><td>基點、基點的階 $n=\operatorname{ord}(G)$、餘因子 $h=\#E(\mathbb F_p)/n$</td></tr>
+<tr><td>$\ell$</td><td>純量 $k$ 的位元數</td></tr>
+<tr><td>$w,\ \beta=2^w,\ s$</td><td>字組的位元數、字組基底、一個數佔的字組數</td></tr>
+<tr><td>$m$</td><td>第 6–9 章化簡用的一般模數（可以是 $p$，也可以是 $n$）</td></tr>
+<tr><td>$\mathbf M,\mathbf S,\mathbf I$</td><td>一次 $\mathbb F_p$ 乘法、平方、求反元素的成本</td></tr>
+</table></div>
+</section>
+<section id="list" data-nav="依章列表">
+<h2>依章列表</h2>
+<h3>第一部　數學基礎</h3><div class="tbl-wrap"><table class="cmp-table notation"><tr><th>記號</th><th>術語</th><th>意義</th><th>定義位置</th></tr><tr><td>$x\bmod n$</td><td>帶餘除法、x mod n</td><td>$x$ 除以 $n$ 的餘數，落在 $[0,n)$</td><td class="num"><a href="01_finite_field.html#def-mod">定義 1.1</a></td></tr><tr><td>$x\equiv y\pmod n$</td><td>同餘</td><td>$n$ 整除 $x-y$</td><td class="num"><a href="01_finite_field.html#def-cong">定義 1.2</a></td></tr><tr><td>$\mathbb Z/n\mathbb Z$</td><td>剩餘類環、ℤ/nℤ</td><td>模 $n$ 的同餘類，共 $n$ 個，可以相加相乘</td><td class="num"><a href="01_finite_field.html#def-zn">定義 1.3</a></td></tr><tr><td>$(G,\ast)$、$|G|$</td><td>群、交換群、群的階</td><td>有結合律、單位元、反元素的二元運算；$|G|$ 是元素個數</td><td class="num"><a href="01_finite_field.html#def-group">定義 1.4</a></td></tr><tr><td>$\operatorname{ord}(g)$、$\langle g\rangle$</td><td>子群、元素的階、循環群、生成元</td><td>$g$ 的階：使 $g^t=e$ 的最小正整數 $t$；$\langle g\rangle$：$g$ 生成的循環子群</td><td class="num"><a href="01_finite_field.html#def-subgroup">定義 1.6</a></td></tr><tr><td>$(F,+,\cdot)$</td><td>環、單位、體</td><td>加法成交換群、乘法有結合律與分配律；體：非零元素都有乘法反元素</td><td class="num"><a href="01_finite_field.html#def-field">定義 1.8</a></td></tr><tr><td>$\operatorname{char}F$</td><td>特徵</td><td>使 $1+\cdots+1$（$m$ 個）$=0$ 的最小正整數 $m$</td><td class="num"><a href="01_finite_field.html#def-char">定義 1.9</a></td></tr><tr><td>$\mathbb F_p,\ \mathbb F_p^*$</td><td>質數體、𝔽_p、乘法群 𝔽_p^*</td><td>$\mathbb F_p:=\mathbb Z/p\mathbb Z$（$p$ 質數）；$\mathbb F_p^*$ 是它的非零元素在乘法下成的群</td><td class="num"><a href="01_finite_field.html#def-fp">定義 1.11</a></td></tr><tr><td>$\mathbf M,\ \mathbf S,\ \mathbf I$</td><td>M、S、I</td><td>一次 $\mathbb F_p$ 乘法、平方、求反元素的成本</td><td class="num"><a href="01_finite_field.html#def-cost">定義 1.13</a></td></tr><tr><td>$\left(\frac{r}{p}\right)$</td><td>平方剩餘、Legendre 符號</td><td>$r$ 是非零平方數時為 $1$，非平方數時為 $-1$，$r\equiv0$ 時為 $0$</td><td class="num"><a href="01_finite_field.html#def-qr">定義 1.18</a></td></tr></table></div>
+</section>
+<footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
+</main>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#conv" data-target="conv">全站記號約定</a></li><li><a href="#list" data-target="list">依章列表</a></li></ul></nav>
+</div>
+<div class="sb-backdrop" id="sbBackdrop"></div>
+<script src="assets/ecc-ui.js?v=20261005"></script>
+</body>
+</html>

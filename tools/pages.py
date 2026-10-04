@@ -1,6 +1,16 @@
 """章節的單一來源：標題、成本鏈位置、本章文獻。內容在 content/<slug>.html。"""
 from dataclasses import dataclass, field
 
+# 左欄的分部
+PARTS = [
+    ("序章", [0]),
+    ("第一部　數學基礎", [1, 2, 3]),
+    ("第二部　從曲線到運算成本", [4, 5]),
+    ("第三部　模乘法", [6, 7, 8, 9]),
+    ("總整", [10]),
+]
+APPENDIX = [("notation.html", "記號與術語"), ("references.html", "參考文獻")]
+
 # 成本鏈：由上而下，每一層都由下一層的運算組成
 CHAIN = [
     ("協定 ECDH", "00_why_ecc.html"),
@@ -34,7 +44,7 @@ PAGES = [
          r"$Q = kG \quad\text{已知 } G, Q,\ \text{求 } k\ \text{很難}$", 0,
          "公開金鑰的需求、RSA 與 ECC 的金鑰長度、ECDH 交換，以及整個網站的成本鏈。",
          [("SP800-57", "Part 1 Rev. 5, §5.6.1.1 Table 2"), ("HMV", "§1.3, Table 1.1"), ("PP", "§6.2.4 Table 6.1, §9.3"), ("RFC7748", "§6")]),
-    Page(1, "01_finite_field", "有限體 F_p", "The Prime Field",
+    Page(1, "01_finite_field", "群、體與 𝔽ₚ", "Groups, Fields and the Prime Field",
          "曲線上的座標住在這裡：加減乘除都取模 p",
          r"$a\cdot a^{-1}\equiv 1 \pmod p,\qquad a^{-1}=a^{p-2}\bmod p$", 3,
          "模運算、反元素的兩種算法（延伸歐幾里得、Fermat），以及為什麼求反元素比乘法貴。",

@@ -32,6 +32,9 @@ SOURCES = {
 }
 
 
+ABBR = {"HAC", "HMV", "HECC"}
+
+
 def cite_html(key, where=""):
     a, t, pub, url = SOURCES[key]
     title = f'<a href="{url}" target="_blank" rel="noopener"><cite>{t}</cite></a>' if url else f"<cite>{t}</cite>"

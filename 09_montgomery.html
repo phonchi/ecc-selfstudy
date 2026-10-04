@@ -14,30 +14,27 @@
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/ecc.css?v=20261004">
+<link rel="stylesheet" href="assets/ecc.css?v=20261005">
 </head>
 <body>
-<nav class="float-nav" id="floatNav" aria-label="本章導覽"><a href="#why" data-target="why"><span class="fn-num">9.1</span><span class="fn-name">動機</span></a><a href="#domain" data-target="domain"><span class="fn-num">9.2</span><span class="fn-name">R 的世界</span></a><a href="#redc" data-target="redc"><span class="fn-num">9.3</span><span class="fn-name">REDC</span></a><a href="#lab" data-target="lab"><span class="fn-num">9.4</span><span class="fn-name">逐輪演示</span></a><a href="#flow" data-target="flow"><span class="fn-num">9.5</span><span class="fn-name">完整流程</span></a><a href="#cost" data-target="cost"><span class="fn-num">9.6</span><span class="fn-name">取捨</span></a><a href="#refs" data-target="refs"><span class="fn-num">REF</span><span class="fn-name">本章文獻</span></a></nav>
-<header class="hero small" id="top">
-  <div class="hero-grid"></div>
-  <svg class="hero-curve" width="300" height="300" viewBox="-2.2 -3.2 5 6.4" aria-hidden="true">
-  <path d="M2.591,3.770 L2.571,3.722 L2.551,3.674 L2.531,3.626 L2.511,3.579 L2.491,3.532 L2.471,3.485 L2.451,3.438 L2.431,3.392 L2.411,3.346 L2.391,3.300 L2.371,3.254 L2.351,3.208 L2.331,3.163 L2.311,3.118 L2.291,3.073 L2.271,3.028 L2.251,2.984 L2.231,2.940 L2.211,2.896 L2.191,2.852 L2.171,2.809 L2.151,2.766 L2.131,2.723 L2.111,2.681 L2.091,2.638 L2.071,2.596 L2.051,2.555 L2.031,2.513 L2.011,2.472 L1.991,2.431 L1.971,2.391 L1.951,2.350 L1.931,2.310 L1.911,2.271 L1.891,2.232 L1.871,2.193 L1.851,2.154 L1.831,2.116 L1.811,2.078 L1.791,2.040 L1.771,2.003 L1.751,1.966 L1.731,1.930 L1.711,1.894 L1.691,1.858 L1.671,1.823 L1.651,1.788 L1.631,1.754 L1.611,1.720 L1.591,1.687 L1.571,1.654 L1.551,1.621 L1.531,1.590 L1.511,1.558 L1.491,1.527 L1.471,1.497 L1.451,1.467 L1.431,1.438 L1.411,1.410 L1.391,1.382 L1.371,1.355 L1.351,1.328 L1.331,1.302 L1.311,1.277 L1.291,1.253 L1.271,1.229 L1.251,1.207 L1.231,1.185 L1.211,1.164 L1.191,1.143 L1.171,1.124 L1.151,1.106 L1.131,1.088 L1.111,1.072 L1.091,1.057 L1.071,1.042 L1.051,1.029 L1.031,1.017 L1.011,1.006 L0.991,0.996 L0.971,0.987 L0.951,0.979 L0.931,0.972 L0.911,0.966 L0.891,0.962 L0.871,0.959 L0.851,0.956 L0.831,0.955 L0.811,0.955 L0.791,0.955 L0.771,0.957 L0.751,0.960 L0.731,0.964 L0.711,0.968 L0.691,0.974 L0.671,0.980 L0.651,0.987 L0.631,0.995 L0.611,1.003 L0.591,1.012 L0.571,1.022 L0.551,1.032 L0.531,1.043 L0.511,1.054 L0.491,1.066 L0.471,1.078 L0.451,1.091 L0.431,1.104 L0.411,1.117 L0.391,1.130 L0.371,1.144 L0.351,1.158 L0.331,1.172 L0.311,1.187 L0.291,1.201 L0.271,1.216 L0.251,1.230 L0.231,1.245 L0.211,1.260 L0.191,1.275 L0.171,1.290 L0.151,1.304 L0.131,1.319 L0.111,1.334 L0.091,1.349 L0.071,1.363 L0.051,1.378 L0.031,1.392 L0.011,1.406 L-0.009,1.421 L-0.029,1.435 L-0.049,1.448 L-0.069,1.462 L-0.089,1.476 L-0.109,1.489 L-0.129,1.502 L-0.149,1.515 L-0.169,1.527 L-0.189,1.540 L-0.209,1.552 L-0.229,1.564 L-0.249,1.576 L-0.269,1.587 L-0.289,1.598 L-0.309,1.609 L-0.329,1.619 L-0.349,1.630 L-0.369,1.639 L-0.389,1.649 L-0.409,1.658 L-0.429,1.667 L-0.449,1.676 L-0.469,1.684 L-0.489,1.691 L-0.509,1.699 L-0.529,1.706 L-0.549,1.712 L-0.569,1.719 L-0.589,1.724 L-0.609,1.730 L-0.629,1.735 L-0.649,1.739 L-0.669,1.743 L-0.689,1.747 L-0.709,1.750 L-0.729,1.752 L-0.749,1.754 L-0.769,1.756 L-0.789,1.757 L-0.809,1.757 L-0.829,1.757 L-0.849,1.757 L-0.869,1.755 L-0.889,1.754 L-0.909,1.751 L-0.929,1.748 L-0.949,1.745 L-0.969,1.740 L-0.989,1.735 L-1.009,1.729 L-1.029,1.723 L-1.049,1.716 L-1.069,1.708 L-1.089,1.699 L-1.109,1.689 L-1.129,1.679 L-1.149,1.668 L-1.169,1.655 L-1.189,1.642 L-1.209,1.628 L-1.229,1.613 L-1.249,1.597 L-1.269,1.579 L-1.289,1.561 L-1.309,1.541 L-1.329,1.520 L-1.349,1.498 L-1.369,1.474 L-1.389,1.449 L-1.409,1.422 L-1.429,1.393 L-1.449,1.362 L-1.469,1.330 L-1.489,1.295 L-1.509,1.258 L-1.529,1.218 L-1.549,1.175 L-1.569,1.129 L-1.589,1.080 L-1.609,1.026 L-1.629,0.967 L-1.649,0.902 L-1.669,0.830 L-1.689,0.748 L-1.709,0.653 L-1.729,0.538 L-1.749,0.384 L-1.769,0.046 L-1.769,-0.046 L-1.749,-0.384 L-1.729,-0.538 L-1.709,-0.653 L-1.689,-0.748 L-1.669,-0.830 L-1.649,-0.902 L-1.629,-0.967 L-1.609,-1.026 L-1.589,-1.080 L-1.569,-1.129 L-1.549,-1.175 L-1.529,-1.218 L-1.509,-1.258 L-1.489,-1.295 L-1.469,-1.330 L-1.449,-1.362 L-1.429,-1.393 L-1.409,-1.422 L-1.389,-1.449 L-1.369,-1.474 L-1.349,-1.498 L-1.329,-1.520 L-1.309,-1.541 L-1.289,-1.561 L-1.269,-1.579 L-1.249,-1.597 L-1.229,-1.613 L-1.209,-1.628 L-1.189,-1.642 L-1.169,-1.655 L-1.149,-1.668 L-1.129,-1.679 L-1.109,-1.689 L-1.089,-1.699 L-1.069,-1.708 L-1.049,-1.716 L-1.029,-1.723 L-1.009,-1.729 L-0.989,-1.735 L-0.969,-1.740 L-0.949,-1.745 L-0.929,-1.748 L-0.909,-1.751 L-0.889,-1.754 L-0.869,-1.755 L-0.849,-1.757 L-0.829,-1.757 L-0.809,-1.757 L-0.789,-1.757 L-0.769,-1.756 L-0.749,-1.754 L-0.729,-1.752 L-0.709,-1.750 L-0.689,-1.747 L-0.669,-1.743 L-0.649,-1.739 L-0.629,-1.735 L-0.609,-1.730 L-0.589,-1.724 L-0.569,-1.719 L-0.549,-1.712 L-0.529,-1.706 L-0.509,-1.699 L-0.489,-1.691 L-0.469,-1.684 L-0.449,-1.676 L-0.429,-1.667 L-0.409,-1.658 L-0.389,-1.649 L-0.369,-1.639 L-0.349,-1.630 L-0.329,-1.619 L-0.309,-1.609 L-0.289,-1.598 L-0.269,-1.587 L-0.249,-1.576 L-0.229,-1.564 L-0.209,-1.552 L-0.189,-1.540 L-0.169,-1.527 L-0.149,-1.515 L-0.129,-1.502 L-0.109,-1.489 L-0.089,-1.476 L-0.069,-1.462 L-0.049,-1.448 L-0.029,-1.435 L-0.009,-1.421 L0.011,-1.406 L0.031,-1.392 L0.051,-1.378 L0.071,-1.363 L0.091,-1.349 L0.111,-1.334 L0.131,-1.319 L0.151,-1.304 L0.171,-1.290 L0.191,-1.275 L0.211,-1.260 L0.231,-1.245 L0.251,-1.230 L0.271,-1.216 L0.291,-1.201 L0.311,-1.187 L0.331,-1.172 L0.351,-1.158 L0.371,-1.144 L0.391,-1.130 L0.411,-1.117 L0.431,-1.104 L0.451,-1.091 L0.471,-1.078 L0.491,-1.066 L0.511,-1.054 L0.531,-1.043 L0.551,-1.032 L0.571,-1.022 L0.591,-1.012 L0.611,-1.003 L0.631,-0.995 L0.651,-0.987 L0.671,-0.980 L0.691,-0.974 L0.711,-0.968 L0.731,-0.964 L0.751,-0.960 L0.771,-0.957 L0.791,-0.955 L0.811,-0.955 L0.831,-0.955 L0.851,-0.956 L0.871,-0.959 L0.891,-0.962 L0.911,-0.966 L0.931,-0.972 L0.951,-0.979 L0.971,-0.987 L0.991,-0.996 L1.011,-1.006 L1.031,-1.017 L1.051,-1.029 L1.071,-1.042 L1.091,-1.057 L1.111,-1.072 L1.131,-1.088 L1.151,-1.106 L1.171,-1.124 L1.191,-1.143 L1.211,-1.164 L1.231,-1.185 L1.251,-1.207 L1.271,-1.229 L1.291,-1.253 L1.311,-1.277 L1.331,-1.302 L1.351,-1.328 L1.371,-1.355 L1.391,-1.382 L1.411,-1.410 L1.431,-1.438 L1.451,-1.467 L1.471,-1.497 L1.491,-1.527 L1.511,-1.558 L1.531,-1.590 L1.551,-1.621 L1.571,-1.654 L1.591,-1.687 L1.611,-1.720 L1.631,-1.754 L1.651,-1.788 L1.671,-1.823 L1.691,-1.858 L1.711,-1.894 L1.731,-1.930 L1.751,-1.966 L1.771,-2.003 L1.791,-2.040 L1.811,-2.078 L1.831,-2.116 L1.851,-2.154 L1.871,-2.193 L1.891,-2.232 L1.911,-2.271 L1.931,-2.310 L1.951,-2.350 L1.971,-2.391 L1.991,-2.431 L2.011,-2.472 L2.031,-2.513 L2.051,-2.555 L2.071,-2.596 L2.091,-2.638 L2.111,-2.681 L2.131,-2.723 L2.151,-2.766 L2.171,-2.809 L2.191,-2.852 L2.211,-2.896 L2.231,-2.940 L2.251,-2.984 L2.271,-3.028 L2.291,-3.073 L2.311,-3.118 L2.331,-3.163 L2.351,-3.208 L2.371,-3.254 L2.391,-3.300 L2.411,-3.346 L2.431,-3.392 L2.451,-3.438 L2.471,-3.485 L2.491,-3.532 L2.511,-3.579 L2.531,-3.626 L2.551,-3.674 L2.571,-3.722 L2.591,-3.770" fill="none" stroke="#fff" stroke-width="0.05"/>
-</svg>
-  <a class="home-link" href="index.html">← 總覽</a>
+<header class="topbar">
+  <button class="sb-toggle" id="sbToggle" type="button" aria-label="開關章節導覽" aria-controls="sidebar">☰</button>
+  <a class="tb-title" href="index.html">ECC 自學</a>
+  <span class="tb-spacer"></span>
+  <a class="tb-link" href="https://github.com/phonchi/ecc-selfstudy">原始碼</a>
   <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
-  <div class="hero-content">
-    <div class="eyebrow">CHAPTER 09 · MONTGOMERY MULTIPLICATION</div>
-    <h1>Montgomery 乘法</h1>
-    <div class="subtitle">換一個座標系：在「乘上 R」的世界裡，除以 R 只是丟掉低位</div>
-    <div class="big-formula">$\mathrm{REDC}(T) = T R^{-1} \bmod m,\qquad R=b^k$</div>
-    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer on" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
-  </div>
 </header>
-<main class="container">
-<div class="toc"><div class="toc-title">本章內容</div><div class="toc-grid"><a href="#why"><span class="toc-num">9.1</span>反過來想：消掉低位，而不是估計高位</a><a href="#domain"><span class="toc-num">9.2</span>Montgomery 表示：住在「乘上 R」的世界</a><a href="#redc"><span class="toc-num">9.3</span>REDC：一次消掉一個字組</a><a href="#lab"><span class="toc-num">9.4</span>互動：REDC 逐輪演示</a><a href="#flow"><span class="toc-num">9.5</span>互動：進入、相乘、離開，再與 Barrett 對照</a><a href="#cost"><span class="toc-num">9.6</span>成本與取捨</a><a href="#refs"><span class="toc-num">REF</span>本章文獻</a></div></div>
+<div class="book">
+<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch on" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a><ul class="sb-secs"><li><a href="#why" data-target="why">9.1 動機</a></li><li><a href="#domain" data-target="domain">9.2 R 的世界</a></li><li><a href="#redc" data-target="redc">9.3 REDC</a></li><li><a href="#lab" data-target="lab">9.4 逐輪演示</a></li><li><a href="#flow" data-target="flow">9.5 完整流程</a></li><li><a href="#cost" data-target="cost">9.6 取捨</a></li></ul></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
+<main class="content" id="top">
+<div class="ch-head">
+  <div class="eyebrow">第 9 章 · Montgomery Multiplication</div>
+  <h1>Montgomery 乘法</h1>
+  <p class="ch-sub">換一個座標系：在「乘上 R」的世界裡，除以 R 只是丟掉低位</p>
+  <div class="chain" aria-label="成本鏈"><span class="chain-cap">成本鏈</span><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer on" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div>
+</div>
 <section id="why" data-nav="動機">
-<div class="section-number">§9.1</div>
-<h2>反過來想：消掉低位，而不是估計高位</h2>
+<h2><span class="secno">9.1</span>反過來想：消掉低位，而不是估計高位</h2>
 <div class="info-box why"><span class="info-label">動機</span>
 <p>Barrett 化簡必須<em>估計商</em>：從 $x$ 的高位猜出要減掉幾個 $m$。Montgomery（1985）換了一個方向：不去碰高位，而是<strong>加上 $m$ 的適當倍數，讓低位全部變成 0，再整段右移</strong>。加上 $m$ 的倍數不改變模 $m$ 的同餘類；右移則等於除以 $R=b^k$，在二進位電腦上不用任何計算。</p>
 <p>代價是答案多了一個因子：得到的是 $xR^{-1}\bmod m$，而不是 $x\bmod m$。解法是換一套表示法，讓這個因子自動抵銷。只要整個純量乘法都在這套表示法裡做，進出各換一次的成本，由中間幾千次乘法分攤。</p>
@@ -55,8 +52,7 @@
 </section>
 
 <section id="domain" data-nav="R 的世界">
-<div class="section-number">§9.2</div>
-<h2>Montgomery 表示：住在「乘上 $R$」的世界</h2>
+<h2><span class="secno">9.2</span>Montgomery 表示：住在「乘上 $R$」的世界</h2>
 <p>取 $R=b^k&gt;m$（$m$ 有 $k$ 個字組）。對 $x\in\mathbb Z_m$，定義它的 <strong>Montgomery 表示</strong></p>
 $$\tilde x = xR \bmod m .$$
 <p>再定義 $\mathrm{REDC}(T)=TR^{-1}\bmod m$（下一節說明怎麼不用除法算它）。那麼</p>
@@ -72,8 +68,7 @@ $$\mathrm{REDC}(\tilde x\,\tilde y) = (xR)(yR)R^{-1} = (xy)R \equiv \widetilde{x
 </section>
 
 <section id="redc" data-nav="REDC">
-<div class="section-number">§9.3</div>
-<h2>REDC：一次消掉一個字組</h2>
+<h2><span class="secno">9.3</span>REDC：一次消掉一個字組</h2>
 <p>要算 $TR^{-1}\bmod m$，就要把 $T$ 加上 $m$ 的某個倍數，讓結果被 $R=b^k$ 整除。一次處理一個字組：第 $i$ 輪看目前的數的第 $i$ 個字組 $a_i$（更低的字組前幾輪已經消成 0），想找 $u_i$ 使</p>
 $$a_i + u_i m \equiv 0 \pmod b .$$
 <p>解是 $u_i = a_i\, m' \bmod b$，其中 $m' = -m^{-1}\bmod b$ 也是預先算好的常數。注意 $u_i$ 只需要<strong>模 $b$ 的乘法</strong>，也就是一個字組乘一個字組。把 $u_i m b^i$ 加上去，第 $i$ 個字組就變成 0，而且不影響更低的字組（它們已經是 0）。做完 $k$ 輪，低 $k$ 個字組全為 0，右移 $k$ 個字組就是除以 $R$。</p>
@@ -91,7 +86,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 <div class="info-box green"><span class="info-label">為什麼最多減一次</span>
 <p>加上去的總量是 $Um$，其中 $U=\sum u_ib^i&lt;R$。所以右移後的數是 $(T+Um)/R &lt; (mR + Rm)/R = 2m$。只要再比較一次、必要時減一次 $m$，就落在 $[0,m)$。</p>
 </div>
-<div class="code-block"><div class="code-cap">REDC 與交錯式 Montgomery 乘法（HAC 演算法 14.32、14.36）</div><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">mont_setup</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<details class="code-fold"><summary>Python 參考實作（選讀）：REDC 與交錯式 Montgomery 乘法（HAC 演算法 14.32、14.36）</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">mont_setup</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;m 必須是奇數；R = b^k &gt; m，m&#39; = -m^(-1) mod b。&quot;&quot;&quot;</span>
     <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span> <span class="o">+</span> <span class="n">w</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">w</span>
     <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">w</span>
@@ -123,13 +118,12 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
         <span class="n">u_i</span> <span class="o">=</span> <span class="p">(</span><span class="n">a0</span> <span class="o">+</span> <span class="n">x_i</span> <span class="o">*</span> <span class="n">y0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m_prime</span> <span class="o">%</span> <span class="n">b</span>
         <span class="n">A</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">+</span> <span class="n">x_i</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">u_i</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">w</span>
     <span class="k">return</span> <span class="n">A</span> <span class="o">-</span> <span class="n">m</span> <span class="k">if</span> <span class="n">A</span> <span class="o">&gt;=</span> <span class="n">m</span> <span class="k">else</span> <span class="n">A</span>
-</code></pre></div>
+</code></pre></div></details>
 <p>上面第二個函式把乘法和化簡交錯進行（HAC 14.36）：每讀 $x$ 的一個字組，就加上 $x_iy$ 再立刻消掉最低字組。中間結果始終小於 $2m$，不必先存整個 $2k$ 字組的乘積。</p>
 </section>
 
 <section id="lab" data-nav="逐輪演示">
-<div class="section-number">§9.4</div>
-<h2>互動：REDC 逐輪演示</h2>
+<h2><span class="secno">9.4</span>互動：REDC 逐輪演示</h2>
 <p>第 $i$ 輪把第 $i$ 個字組消成 0（灰色）；<span class="pill-cur">橙色</span>是下一輪要處理的字組。若某個字組本來就是 0，該輪的 $u_i=0$，什麼都不加。最後整段右移。選十進位可以對照上面的手算；選 P-256 或 P-521 則是實際的 64 位元字組。</p>
 <div class="viz-layout">
   <div class="viz-panel">
@@ -163,8 +157,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 </section>
 
 <section id="flow" data-nav="完整流程">
-<div class="section-number">§9.5</div>
-<h2>互動：進入、相乘、離開，再與 Barrett 對照</h2>
+<h2><span class="secno">9.5</span>互動：進入、相乘、離開，再與 Barrett 對照</h2>
 <p>REDC 單獨看，答案「不對」：它給的是 $TR^{-1}$。這個元件把完整流程走一遍，並用同一組 $x,y$ 跑 Barrett，確認兩條路得到同一個 $xy\bmod m$。</p>
 <div class="viz-layout wide">
   <div class="viz-panel">
@@ -191,8 +184,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 </section>
 
 <section id="cost" data-nav="取捨">
-<div class="section-number">§9.6</div>
-<h2>成本與取捨</h2>
+<h2><span class="secno">9.6</span>成本與取捨</h2>
 <ul>
 <li><strong>每次乘法的成本</strong>和 Barrett 同一個量級（約 $2k^2$ 次字組乘法），但流程完全規則：每一輪做的事一樣，沒有商的估計，進位也只往高位走。這讓它很適合硬體與 SIMD 實作。</li>
 <li><strong>適用任何奇數模數</strong>：換模數只要換 $m'$ 與 $R^2\bmod m$。許多函式庫用它處理 P-256 的 $p$ 與 $n$，以及 RSA。</li>
@@ -202,16 +194,18 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 </section>
 
 <section id="refs" data-nav="本章文獻">
-<div class="section-number">REF</div>
 <h2>本章文獻</h2>
 <ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.3.2：Fact 14.29, Alg. 14.32, 14.36, Notes 14.33–14.39</span></li><li>H. Cohen, G. Frey (eds.), <cite>Handbook of Elliptic and Hyperelliptic Curve Cryptography</cite>, CRC Press, 2006. <span class="where">— §10.4.2</span></li><li>P. L. Montgomery, <a href="https://doi.org/10.1090/S0025-5718-1985-0777282-X" target="_blank" rel="noopener"><cite>Modular multiplication without trial division</cite></a>, Mathematics of Computation 44 (1985), 519–521.</li></ul>
-<p class="where">完整書目見 <a href="references.html">參考文獻</a>。</p>
+<p class="where">完整書目見 <a href="references.html">參考文獻</a>；全部記號見 <a href="notation.html">記號與術語</a>。</p>
 </section>
-<nav class="chapter-nav"><a class="prev" href="08_barrett.html"><div class="nav-dir">← 上一章</div><div class="nav-title">8. Barrett 化簡</div></a><a class="home" href="index.html"><div class="nav-dir">總覽</div><div class="nav-title">全部章節</div></a><a class="next" href="10_synthesis.html"><div class="nav-dir">下一章 →</div><div class="nav-title">10. 總整：何時用哪一種</div></a></nav>
+<nav class="chapter-nav"><a class="prev" href="08_barrett.html"><div class="nav-dir">← 上一章</div><div class="nav-title">8. Barrett 化簡</div></a><a class="home" href="index.html"><div class="nav-dir">導讀</div><div class="nav-title">全部章節</div></a><a class="next" href="10_synthesis.html"><div class="nav-dir">下一章 →</div><div class="nav-title">10. 總整：何時用哪一種</div></a></nav>
+<footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<footer>橢圓曲線密碼：從曲線到模乘法・<a href="https://github.com/phonchi/ecc-selfstudy">原始碼</a>・所有互動元件在瀏覽器以 BigInt 計算，僅供教學，不是常數時間實作</footer>
-<script src="assets/ecc-core.js?v=20261004"></script>
-<script src="assets/ecc-ui.js?v=20261004"></script>
-<script src="assets/js/09_montgomery.js?v=20261004"></script>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">9.1 反過來想：消掉低位，而不是估計高位</a></li><li><a href="#domain" data-target="domain">9.2 Montgomery 表示：住在「乘上 R」的世界</a></li><li><a href="#redc" data-target="redc">9.3 REDC：一次消掉一個字組</a></li><li><a href="#lab" data-target="lab">9.4 互動：REDC 逐輪演示</a></li><li><a href="#flow" data-target="flow">9.5 互動：進入、相乘、離開，再與 Barrett 對照</a></li><li><a href="#cost" data-target="cost">9.6 成本與取捨</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
+</div>
+<div class="sb-backdrop" id="sbBackdrop"></div>
+<script src="assets/ecc-core.js?v=20261005"></script>
+<script src="assets/ecc-ui.js?v=20261005"></script>
+<script src="assets/js/09_montgomery.js?v=20261005"></script>
 </body>
 </html>

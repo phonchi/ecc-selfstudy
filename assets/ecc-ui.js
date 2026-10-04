@@ -185,20 +185,29 @@ HC.ready(() => {
   if (btn) btn.addEventListener('click', () => { HC.theme.set(HC.theme.current() === 'dark' ? 'light' : 'dark'); label(); });
   label();
 
-  /* 浮動導覽 scroll-spy */
-  const nav = $('floatNav');
-  if (nav) {
-    const links = [...nav.querySelectorAll('a[data-target]')];
-    const secs = links.map(a => $(a.dataset.target)).filter(Boolean);
+  /* 左欄與右欄目錄的 scroll-spy */
+  const spyLinks = [...document.querySelectorAll('.sb-secs a[data-target], .pagetoc a[data-target]')];
+  if (spyLinks.length) {
+    const ids = [...new Set(spyLinks.map(a => a.dataset.target))];
+    const secs = ids.map(id => $(id)).filter(Boolean);
     const update = () => {
-      const y = window.scrollY + window.innerHeight * 0.3;
+      const y = window.scrollY + 90;
       let act = secs[0]?.id;
       for (const s of secs) if (s.offsetTop <= y) act = s.id;
-      links.forEach(a => a.classList.toggle('active', a.dataset.target === act));
+      spyLinks.forEach(a => a.classList.toggle('active', a.dataset.target === act));
     };
     window.addEventListener('scroll', update, { passive: true });
     update();
   }
+
+  /* 手機：左欄收合 */
+  const sbt = $('sbToggle'), bd = $('sbBackdrop');
+  const close = () => document.body.classList.remove('sb-open');
+  if (sbt) sbt.addEventListener('click', () => document.body.classList.toggle('sb-open'));
+  if (bd) bd.addEventListener('click', close);
+  document.querySelectorAll('.sidebar a').forEach(a => a.addEventListener('click', close));
+  const cur = document.querySelector('.sidebar .sb-ch.on');
+  if (cur) { const sb = $('sidebar'); sb.scrollTop = Math.max(0, cur.offsetTop - 120); }
 
   /* 程式碼複製 */
   document.querySelectorAll('.code-block').forEach(cb => {
