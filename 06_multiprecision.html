@@ -31,7 +31,7 @@
     <h1>大整數乘法</h1>
     <div class="subtitle">256 位元的數放不進一個暫存器：先切成字組，再逐格相乘</div>
     <div class="big-formula">$x\cdot y=\sum_{i,j} x_j y_i\, b^{\,i+j},\quad b=2^{w}$</div>
-    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer on" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer on" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
   </div>
 </header>
 <main class="container">
@@ -62,7 +62,7 @@ $$x=\sum_{i=0}^{k-1}x_i\,b^{\,i},\qquad 0\le x_i&lt;b .$$
 <tr><td>P-384</td><td class="num">384</td><td class="num">6</td><td class="num">12</td></tr>
 <tr><td>P-521</td><td class="num">521</td><td class="num">9</td><td class="num">17</td></tr>
 </table></div>
-<p>P-521 的 521 位元比 8 個 64 位元字組多出 9 個位元，就得用上第 9 個字組；第 7 章提過的跨字組移位就是這樣來的。</p>
+<p>P-521 的 521 位元比 8 個 64 位元字組多出 9 個位元，就得用上第 9 個字組；第 7 章的 P-521 折疊會用到跨字組移位，就是這個原因。</p>
 </section>
 
 <section id="schoolbook" data-nav="Schoolbook">
@@ -74,7 +74,7 @@ $$x\cdot y=\sum_{i=0}^{k-1}\sum_{j=0}^{k-1}x_j\,y_i\,b^{\,i+j}.$$
 $$(u,v)\leftarrow w_{i+j}+x_j\,y_i+c,\qquad w_{i+j}\leftarrow v,\quad c\leftarrow u,$$
 <p>其中 $(u,v)$ 表示一個兩字組的數，$v$ 是低字組、$u$ 是高字組（新的進位）。</p>
 <div class="info-box green"><span class="info-label">為什麼兩個字組一定夠</span>
-<p>三個加數都不超過字組的最大值：$w_{i+j}\le b-1$、$c\le b-1$、$x_jy_i\le(b-1)^2$。所以</p>
+<p>兩個單字組的加數 $w_{i+j}\le b-1$、$c\le b-1$，加上一個雙字組的乘積 $x_jy_i\le(b-1)^2$。所以</p>
 $$w_{i+j}+x_jy_i+c\ \le\ (b-1)^2+2(b-1)\ =\ b^2-1 .$$
 <p>結果剛好塞進兩個字組，不會溢位；進位 $u$ 也一定小於 $b$，下一步仍然成立。以 $w=8$ 為例，$255^2+2\cdot255=65535=2^{16}-1$。處理器的「乘法得雙字組結果」加上「帶進位的加法」指令，就是為這一步設計的。</p>
 </div>
@@ -119,7 +119,7 @@ $$w_{i+j}+x_jy_i+c\ \le\ (b-1)^2+2(b-1)\ =\ b^2-1 .$$
 <p>當 $x=y$ 時，交叉項成對出現：$x_ix_j$ 與 $x_jx_i$ 相同。所以</p>
 $$x^2=\sum_{i}x_i^2\,b^{\,2i}+2\sum_{i&lt;j}x_ix_j\,b^{\,i+j}.$$
 <p>不同的乘積只有 $k$ 個平方加上 $k(k-1)/2$ 個交叉項，共 $k(k+1)/2$ 個，而不是 $k^2$ 個。$k=4$ 時是 10 對 16；$k=9$ 時是 45 對 81。乘以 2 只是左移一位，幾乎不花時間（但 $2x_ix_j$ 可能比兩個字組多一個位元，實作要多留一個進位位元，見 HAC 演算法 14.16）。</p>
-<p>加法、進位與記憶體存取並沒有減半，所以實際的節省少於一半。估算成本時常用的假設是一次平方 $S\approx0.8M$（$M$ 為一次乘法；HMV §2.2.2）。第 4 章的點運算公式會分開數 $M$ 和 $S$，就是這個原因。</p>
+<p>加法、進位與記憶體存取並沒有減半，所以實際的節省少於一半。估算成本時常用的假設是一次平方 $S\approx0.8M$（$M$ 為一次乘法）。這只是估算用的經驗值，實際比例依實作而定；平方演算法見 HMV §2.2.3。第 4 章的點運算公式會分開數 $M$ 和 $S$，就是這個原因。</p>
 </section>
 
 <section id="karatsuba" data-nav="Karatsuba">
@@ -128,7 +128,7 @@ $$x^2=\sum_{i}x_i^2\,b^{\,2i}+2\sum_{i&lt;j}x_ix_j\,b^{\,i+j}.$$
 <div class="info-box purple"><span class="info-label">三個半長乘積取代四個</span>
 <p>把 $x,y$ 各切成高低兩半：$x=x_1B+x_0$，$y=y_1B+y_0$。直接展開要四個半長乘積；Karatsuba（1962）注意到</p>
 $$x_1y_0+x_0y_1=(x_1+x_0)(y_1+y_0)-x_1y_1-x_0y_0,$$
-<p>所以只需要三個半長乘積 $x_1y_1$、$x_0y_0$、$(x_1+x_0)(y_1+y_0)$，代價是多幾次加減法。遞迴下去，$k$ 字組的乘法只要 $k^{\log_2 3}\approx k^{1.585}$ 次字組乘法，而不是 $k^2$：$k=4$ 時 9 對 16，$k=32$ 時 243 對 1024。</p>
+<p>所以只需要三個半長乘積 $x_1y_1$、$x_0y_0$、$(x_1+x_0)(y_1+y_0)$，代價是多幾次加減法。遞迴下去，字組乘法的次數是 $O(k^{\log_2 3})\approx O(k^{1.585})$，而不是 $k^2$。若忽略 $x_1+x_0$ 可能多出一個位元的問題，理想的遞迴計數是 $k=4$ 時 9 對 16、$k=32$ 時 243 對 1024；實作還要處理這個多出的位元。</p>
 <p>在 ECC 的大小（$k$ 只有 4 到 9），多出來的加減法、進位與分支往往把省下的乘法吃掉，所以常見的實作直接用 schoolbook，或只做一層 Karatsuba。RSA 這種上千位元的數才明顯受益（HMV §2.2.2）。</p>
 </div>
 <div class="code-block"><div class="code-cap">Karatsuba 乘法（遞迴到 32 位元以下改用直接相乘）</div><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">karatsuba</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
@@ -179,7 +179,7 @@ $$x_1y_0+x_0y_1=(x_1+x_0)(y_1+y_0)-x_1y_1-x_0y_0,$$
 <section id="refs" data-nav="本章文獻">
 <div class="section-number">REF</div>
 <h2>本章文獻</h2>
-<ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.2：Alg. 14.12, 14.16；Karatsuba 見 §14.8</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §2.2.2：Alg. 2.9, 2.10, 2.13</span></li></ul>
+<ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.2：Alg. 14.12, 14.16；Karatsuba 見 §14.8</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §2.2.2–2.2.3：Alg. 2.9, 2.10, 2.13；S ≈ 0.8M 的假設見 §3.3</span></li></ul>
 <p class="where">完整書目見 <a href="references.html">參考文獻</a>。</p>
 </section>
 <nav class="chapter-nav"><a class="prev" href="05_scalar.html"><div class="nav-dir">← 上一章</div><div class="nav-title">5. 純量乘法</div></a><a class="home" href="index.html"><div class="nav-dir">總覽</div><div class="nav-title">全部章節</div></a><a class="next" href="07_special.html"><div class="nav-dir">下一章 →</div><div class="nav-title">7. 特殊形式的模數</div></a></nav>

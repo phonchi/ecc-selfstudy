@@ -30,7 +30,7 @@
     <h1>座標與運算成本</h1>
     <div class="subtitle">把除法延到最後：多一個座標，換掉每一步的求反元素</div>
     <div class="big-formula">$(X:Y:Z)\ \mapsto\ (X/Z^2,\ Y/Z^3)$</div>
-    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer on" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer on" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
   </div>
 </header>
 <main class="container">
@@ -63,7 +63,7 @@ $$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
 <p>把仿射公式中的 $x_i=X_i/Z_i^2$、$y_i=Y_i/Z_i^3$ 代進去、通分，分母全部收進新的 $Z_3$，就得到只有乘法的公式。下表是 Explicit-Formulas Database（EFD）中常用的幾組，$\mathbf M$ 是乘法、$\mathbf S$ 是平方、$\mathbf I$ 是反元素，乘小常數與加減不計。</p>
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>運算</th><th>仿射座標</th><th>Jacobian</th><th>EFD 公式名</th></tr>
-<tr><td>倍點，一般的 $a$</td><td class="num">1I + 2M + 2S</td><td class="num">1M + 8S</td><td class="num">dbl-2007-bl</td></tr>
+<tr><td>倍點，一般的 $a$</td><td class="num">1I + 2M + 2S</td><td class="num">1M + 8S + 一次乘 $a$</td><td class="num">dbl-2007-bl</td></tr>
 <tr><td>倍點，$a=-3$</td><td class="num">1I + 2M + 2S</td><td class="num">3M + 5S</td><td class="num">dbl-2001-b</td></tr>
 <tr><td>加點（兩點都是 Jacobian）</td><td class="num">1I + 2M + 1S</td><td class="num">11M + 5S</td><td class="num">add-2007-bl</td></tr>
 <tr><td>混合加點（另一點 $Z=1$）</td><td class="num">—</td><td class="num">7M + 4S</td><td class="num">madd-2007-bl</td></tr>
@@ -72,7 +72,7 @@ $$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
 <p>兩個常見的技巧：</p>
 <ul>
 <li><strong>混合加法</strong>（mixed addition）：double-and-add 裡加上的永遠是同一個 $P$，它可以保持仿射形式（$Z=1$），省下好幾次乘法。</li>
-<li><strong>$a=-3$</strong>：倍點要算 $3X^2+aZ^4$。當 $a=-3$ 時，它等於 $3(X-Z^2)(X+Z^2)$，可以少一次平方。這就是 NIST 曲線都取 $a=-3$ 的原因。</li>
+<li><strong>$a=-3$</strong>：倍點要算 $3X^2+aZ^4$。當 $a=-3$ 時，它等於 $3(X-Z^2)(X+Z^2)$，不必乘 $a$，也不必算 $Z^4$；倍點從 1M + 8S（再乘一次 $a$）變成 3M + 5S。這就是 NIST 曲線都取 $a=-3$ 的原因。</li>
 </ul>
 <p>Hankerson–Menezes–Vanstone 的表 3.3 列出的數字略有不同（$a=-3$ 時 Jacobian 倍點 4M + 4S、混合加點 8M + 3S），因為公式在乘法與平方之間有不同取捨，總量差不多。</p>
 <div class="code-block"><div class="code-cap">Jacobian 座標的倍點與混合加點（為了清楚，不追求最少的乘法次數）</div><button class="copy" type="button">複製</button><pre class="hl"><code><span class="c1"># Jacobian 座標：(X : Y : Z) 代表仿射點 (X/Z^2, Y/Z^3)；Z = 0 代表 O。</span>
@@ -177,7 +177,7 @@ $$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
 <section id="summary" data-nav="小結">
 <div class="section-number">§4.6</div>
 <h2>小結：成本鏈往下走一層</h2>
-<p>換成 Jacobian 座標之後，一次 256 位元的純量乘法大約只要三千多次 $\mathbb F_p$ 乘法，再加上最後一次反元素。只要反元素比大約 5 次乘法還貴（實際上一定是），投影座標就划算。於是整個 ECC 的速度，幾乎完全取決於<strong>一次 $\mathbb F_p$ 乘法有多快</strong>：這就是第 6 到第 9 章的主題。第 5 章先把純量乘法本身的排程講清楚。</p>
+<p>換成 Jacobian 座標之後，一次 256 位元的純量乘法大約只要三千多次 $\mathbb F_p$ 乘法，再加上最後一次反元素。只要反元素比大約 5 次乘法還貴（實際上一定是），射影座標就划算。於是整個 ECC 的速度，幾乎完全取決於<strong>一次 $\mathbb F_p$ 乘法有多快</strong>：這就是第 6 到第 9 章的主題。第 5 章先把純量乘法本身的排程講清楚。</p>
 </section>
 
 <section id="refs" data-nav="本章文獻">

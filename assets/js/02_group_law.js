@@ -61,13 +61,16 @@ HC.ready(() => {
     const x3 = lam * lam - x1 - x2, y3 = lam * (x1 - x3) - y1;
     return { x1, y1, x2, y2, lam, x3, y3 };
   }
-  let hP, hQ;
+  const hl = sv.layer('handles');
+  const hP = sv.add('circle', { cls: 'pt P', r: 9 }, hl), hQ = sv.add('circle', { cls: 'pt Q', r: 9 }, hl);
+  HC.drag(hP, sv, d => { P = snap(d); drawPts(); });
+  HC.drag(hQ, sv, d => { Q = snap(d); drawPts(); });
   function drawPts() {
     const g = sv.clearLayer('pts'), c = compute();
     const vals = $('w02vals');
     if (c.O) {
       sv.seg(c.x1, -6, c.x1, 6, { cls: 'chord' }, g);
-      $('w02status').innerHTML = 'P 與 −P 在同一條鉛直線上：第三個交點是無窮遠點，所以 <b>P + (−P) = O</b>。';
+      $('w02status').innerHTML = mode === 'dbl' ? 'P 在 x 軸上（y = 0），切線是鉛直線：第三個交點是無窮遠點，所以 <b>2P = O</b>，P 是 2 階點。' : 'P 與 −P 在同一條鉛直線上：第三個交點是無窮遠點，所以 <b>P + (−P) = O</b>。';
       vals.innerHTML = `<div class="ic-row"><span class="ic-label">P</span><span class="ic-value">(${fmt(c.x1)}, ${fmt(c.y1)})</span></div><div class="ic-row"><span class="ic-label">−P</span><span class="ic-value">(${fmt(c.x2)}, ${fmt(c.y2)})</span></div><div class="ic-row"><span class="ic-label">和</span><span class="ic-value hl">O</span></div>`;
     } else {
       const { lam, x3, y3 } = c, L = x => lam * (x - c.x1) + c.y1;
@@ -86,18 +89,21 @@ HC.ready(() => {
         + `<div class="ic-row"><span class="ic-label">x₃ = λ² − x₁ − x₂</span><span class="ic-value">${fmt(x3)}</span></div>`
         + `<div class="ic-row"><span class="ic-label">y₃</span><span class="ic-value hl">${fmt(y3)}</span></div>`;
     }
-    hP = sv.dot(P.x, yOf(P), { cls: 'pt P', r: 9 }, g);
-    sv.txt(P.x, yOf(P), mode === 'neg' ? 'P' : 'P', { dx: -14, dy: -10 }, g);
-    if (mode === 'add') { hQ = sv.dot(Q.x, yOf(Q), { cls: 'pt Q', r: 9 }, g); sv.txt(Q.x, yOf(Q), 'Q', { dx: 14, dy: -10 }, g); HC.drag(hQ, sv, d => { Q = snap(d); drawPts(); }); }
     if (mode === 'neg') { sv.dot(P.x, -yOf(P), { cls: 'pt Q', r: 7 }, g); sv.txt(P.x, -yOf(P), '−P', { dx: 16, dy: 4 }, g); }
-    HC.drag(hP, sv, d => { P = snap(d); drawPts(); });
+    sv.txt(P.x, yOf(P), 'P', { dx: -14, dy: -10 }, g);
+    if (mode === 'add') sv.txt(Q.x, yOf(Q), 'Q', { dx: 14, dy: -10 }, g);
+    // 拖曳把手只建立一次，之後只更新座標，拖曳中不會被重建而中斷
+    hP.setAttribute('cx', sv.X(P.x)); hP.setAttribute('cy', sv.Y(yOf(P)));
+    hQ.setAttribute('cx', sv.X(Q.x)); hQ.setAttribute('cy', sv.Y(yOf(Q)));
+    hQ.style.display = mode === 'add' ? '' : 'none';
+    sv.el.appendChild(sv.layer('handles'));   // 把手永遠在最上層
   }
   function onCurveChange() {
     a = Number(aIn.value); b = Number(bIn.value);
     $('w02aV').textContent = a.toFixed(1); $('w02bV').textContent = b.toFixed(1);
     const D = 4 * a ** 3 + 27 * b ** 2;
-    $('w02disc').innerHTML = `<div class="ic-row"><span class="ic-label">4a³ + 27b²</span><span class="ic-value${Math.abs(D) < 0.05 ? ' hl' : ''}">${D.toFixed(3)}</span></div>`
-      + `<div class="ic-note">${Math.abs(D) < 0.05 ? '接近 0：曲線出現尖點或自交點，不是橢圓曲線。' : D < 0 ? '小於 0：三次式有三個實根，曲線有兩個分支。' : '大於 0：只有一個實根，曲線只有一個分支。'}</div>`;
+    $('w02disc').innerHTML = `<div class="ic-row"><span class="ic-label">4a³ + 27b²</span><span class="ic-value${Math.abs(D) < 1e-9 ? ' hl' : ''}">${D.toFixed(3)}</span></div>`
+      + `<div class="ic-note">${Math.abs(D) < 1e-9 ? '等於 0：三次式有重根，曲線出現尖點或自交點，不是橢圓曲線。' : Math.abs(D) < 0.05 ? '接近 0：曲線仍然光滑，但已經很接近奇異的情形。' : D < 0 ? '小於 0：三次式有三個實根，曲線有兩個分支。' : '大於 0：只有一個實根，曲線只有一個分支。'}</div>`;
     drawCurve();
     P = snap({ x: P.x, y: P.s }); Q = snap({ x: Q.x, y: Q.s });
     drawPts();

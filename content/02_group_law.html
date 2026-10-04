@@ -10,7 +10,7 @@
 <p>本站的曲線都寫成</p>
 $$E:\ y^2 = x^3 + ax + b ,\qquad 4a^3+27b^2 \ne 0 .$$
 <p>只要體的特徵不是 2 或 3（$\mathbb F_p$ 中 $p&gt;3$），任何橢圓曲線都能換成這個形式。條件 $4a^3+27b^2\ne0$ 是說右邊的三次式沒有重根，曲線因此是光滑的（nonsingular）：每一點都有唯一的切線。若條件不成立，曲線會出現尖點或自交點，下面的加法就定義不好。下面的互動元件可以把 $a,b$ 調到奇異的位置看看。</p>
-<p>NIST 的曲線 P-256 與 P-521 都取 $a=-3$，原因是倍點公式在 $a=-3$ 時可以少算一次乘法（第 4 章）。</p>
+<p>NIST 的曲線 P-256 與 P-521 都取 $a=-3$，原因是倍點公式在 $a=-3$ 時可以省掉乘 $a$ 的一步，並少算幾次平方（第 4 章）。</p>
 </section>
 
 <section id="chord" data-nav="割線與切線">
@@ -24,9 +24,9 @@ $$P+Q+R=\mathcal O \quad\Longleftrightarrow\quad P,Q,R\ \text{在同一條直線
 <li>$P$ 與 $\mathcal O$ 的連線是過 $P$ 的鉛直線，第三點是 $-P$，鏡射回來得 $P+\mathcal O=P$。</li>
 </ul>
 <p>把直線 $y=\lambda(x-x_1)+y_1$ 代入曲線，得到一個首項為 $x^3$ 的三次方程；三個根的和是 $\lambda^2$（看 $x^2$ 項的係數）。已知兩個根 $x_1,x_2$，第三個根就是 $\lambda^2-x_1-x_2$，完全不用解方程。這就是加法公式：</p>
-$$\lambda=\begin{cases}\dfrac{y_2-y_1}{x_2-x_1}, &amp; P\ne Q,\\[2mm] \dfrac{3x_1^2+a}{2y_1}, &amp; P=Q,\end{cases}\qquad
+$$\lambda=\begin{cases}\dfrac{y_2-y_1}{x_2-x_1}, &amp; x_1\ne x_2,\\[2mm] \dfrac{3x_1^2+a}{2y_1}, &amp; P=Q,\ y_1\ne0,\end{cases}\qquad
 \begin{aligned} x_3&amp;=\lambda^2-x_1-x_2,\\ y_3&amp;=\lambda(x_1-x_3)-y_1 .\end{aligned}$$
-<p>注意 $b$ 沒有出現在公式裡，而<strong>每一次加法都有一次除法</strong>（算 $\lambda$）。</p>
+<p>剩下的情形不需要公式：$x_1=x_2$ 而 $Q=-P$ 時，和是 $\mathcal O$；$P=Q$ 且 $y_1=0$ 時（2 階點，切線鉛直），$2P=\mathcal O$。注意 $b$ 沒有出現在公式裡，而<strong>每一次加法都有一次除法</strong>（算 $\lambda$）。</p>
 </section>
 
 <section id="real" data-nav="實數圖">

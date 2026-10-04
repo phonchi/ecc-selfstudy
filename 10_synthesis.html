@@ -31,7 +31,7 @@
     <h1>總整：何時用哪一種</h1>
     <div class="subtitle">從 ECDH 一路往下到字組乘法，各層的選擇與取捨</div>
     <div class="big-formula">$\text{ECDH}\to kP\to \text{點運算}\to \bmod p\to \text{字組}$</div>
-    <div class="chain" aria-label="成本鏈"><a class="layer on" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer on" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
   </div>
 </header>
 <main class="container">
@@ -45,8 +45,8 @@
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>層</th><th>問題</th><th>本站的答案</th><th>章</th></tr>
 <tr><td>協定</td><td>為什麼用橢圓曲線</td><td>同樣安全強度下金鑰短；ECDH 只需要 $kP$</td><td class="num"><a href="00_why_ecc.html">0</a>、<a href="03_ecdlp.html">3</a></td></tr>
-<tr><td>純量乘法</td><td>$kP$ 怎麼算</td><td>double-and-add、NAF、階梯：約 $\ell$ 次倍點加 $\ell/2$ 到 $\ell$ 次加點</td><td class="num"><a href="05_scalar.html">5</a></td></tr>
-<tr><td>點運算</td><td>怎麼避開反元素</td><td>Jacobian 座標：每次只用 10 到 16 次乘法，最後一次反元素</td><td class="num"><a href="02_group_law.html">2</a>、<a href="04_coordinates.html">4</a></td></tr>
+<tr><td>純量乘法</td><td>$kP$ 怎麼算</td><td>double-and-add、NAF、階梯：約 $\ell$ 次倍點，加上約 $\ell/3$（NAF）、$\ell/2$（二進位）或 $\ell$ 次（階梯）加點</td><td class="num"><a href="05_scalar.html">5</a></td></tr>
+<tr><td>點運算</td><td>怎麼避開反元素</td><td>Jacobian 座標：每次只用 8 到 16 次乘法與平方，最後一次反元素</td><td class="num"><a href="02_group_law.html">2</a>、<a href="04_coordinates.html">4</a></td></tr>
 <tr><td>模乘</td><td>怎麼避開除法</td><td>特殊模數折疊、Barrett、Montgomery</td><td class="num"><a href="07_special.html">7</a>–<a href="09_montgomery.html">9</a></td></tr>
 <tr><td>字組乘法</td><td>大數怎麼乘</td><td>schoolbook 的 $k^2$ 次字組乘法；平方約一半</td><td class="num"><a href="06_multiprecision.html">6</a></td></tr>
 </table></div>
@@ -64,7 +64,7 @@
 <tr><td>表示法</td><td>普通</td><td>普通</td><td>要進出 Montgomery 表示</td></tr>
 <tr><td>適合</td><td>標準曲線的底體運算</td><td>模數常換、只算幾次</td><td>長串乘法（純量乘法、RSA 冪次）</td></tr>
 </table></div>
-<p>實際的函式庫常常混用：底體 $\mathbb F_p$ 用折疊或 Montgomery，群階 $n$ 上的運算（例如 ECDSA）用 Montgomery 或 Barrett。沒有單一的最佳解，要看模數、平台與是否需要常數時間。</p>
+<p>實際的函式庫常常混用：底體 $\mathbb F_p$ 用折疊或 Montgomery，基點的階 $n$ 上的運算（例如 ECDSA）用 Montgomery 或 Barrett。沒有單一的最佳解，要看模數、平台與是否需要常數時間。</p>
 </section>
 
 <section id="ledger" data-nav="總帳">

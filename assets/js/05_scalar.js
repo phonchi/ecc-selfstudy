@@ -7,17 +7,17 @@ HC.ready(() => {
   function build() {
     let k = BigInt(Math.max(1, Math.min(106, Math.round(Number(kin.value) || 1))));
     kin.value = String(k);
-    const m = msel.value, t = ECC.scalarTrace(k, P, a, p, m);
+    const m = msel.value, t = ECC.scalarTrace(k, P, a, p, m, m === 'ladder' ? 7 : 0);   // 階梯固定跑 7 位（群階 107 的位元數）
     // 已讀數字代表的整數
     let v = 0n;
     t.frames.forEach(f => {
       const d = f.digit === '1̄' ? -1n : BigInt(f.digit);
       v = 2n * v + d; f.prefix = v;
     });
-    const digits = m === 'naf' ? ECC.naf(k).reverse().map(d => (d === -1 ? '1̄' : String(d))) : [...k.toString(2)];
+    const digits = m === 'naf' ? ECC.naf(k).reverse().map(d => (d === -1 ? '1̄' : String(d))) : [...k.toString(2).padStart(m === 'ladder' ? 7 : 0, '0')];
     return { k, m, t, digits };
   }
-  const opsHTML = f => f.ops.map(o => `<span class="${o.includes('2R') ? 'tr-d' : 'tr-a'}">${o.includes('2R') ? 'D' : 'A'}</span>`).join('');
+  const opsHTML = f => f.ops.map(o => (o.includes('起點') ? '<span class="lbl">起點</span>' : `<span class="${o.includes('2R') ? 'tr-d' : 'tr-a'}">${o.includes('2R') ? 'D' : 'A'}</span>`)).join('');
   function apply(f, i) {
     const rows = run.t.frames.slice(0, i + 1);
     const ladder = run.m === 'ladder';

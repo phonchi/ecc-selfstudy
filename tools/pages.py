@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 CHAIN = [
     ("協定 ECDH", "00_why_ecc.html"),
     ("純量乘法 kP", "05_scalar.html"),
-    ("點加／倍點", "04_coordinates.html"),
+    ("加點／倍點", "04_coordinates.html"),
     ("模乘 mod p", "07_special.html"),
     ("字組乘法", "06_multiprecision.html"),
 ]
@@ -63,7 +63,7 @@ PAGES = [
          "256 位元的數放不進一個暫存器：先切成字組，再逐格相乘",
          r"$x\cdot y=\sum_{i,j} x_j y_i\, b^{\,i+j},\quad b=2^{w}$", 4,
          "字組表示、schoolbook 乘法與進位、平方的對稱性，以及 Karatsuba 的想法。",
-         [("HAC", "§14.2：Alg. 14.12, 14.16；Karatsuba 見 §14.8"), ("HMV", "§2.2.2：Alg. 2.9, 2.10, 2.13")]),
+         [("HAC", "§14.2：Alg. 14.12, 14.16；Karatsuba 見 §14.8"), ("HMV", "§2.2.2–2.2.3：Alg. 2.9, 2.10, 2.13；S ≈ 0.8M 的假設見 §3.3")]),
     Page(7, "07_special", "特殊形式的模數", "Special Moduli",
          "選一個「長得好看」的 p，讓 mod p 只剩加減與移位",
          r"$2^{521}\equiv 1,\qquad 2^{255}\equiv 19 \pmod p$", 3,

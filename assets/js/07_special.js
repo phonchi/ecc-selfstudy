@@ -48,10 +48,11 @@ HC.ready(() => {
     fr.push(finalFrame(cur, A, M, k));
     return fr;
   }
-  function finalFrame(r, A, M, k) {
+  function finalFrame(r, A, M, k, adds = 0) {
     const good = r === A % M.p;
-    return { rows: [row(k ? `減 ${k} 次 p` : '已小於 p', show(r, M), good)],
-      msg: `${k ? `再減 ${k} 次 p，` : '結果已在 [0, p)，'}得到 ${M.bits ? r : HC.hexShort(r, 8)}。與 A % p 比對：<b>${good ? '相同 ✓' : '不同 ✗'}</b>` };
+    const what = adds ? `加 ${adds} 次 p` : k ? `減 ${k} 次 p` : '';
+    return { rows: [row(what || '已在 [0, p)', show(r, M), good)],
+      msg: `${what ? `再${what}，` : '結果已在 [0, p)，'}得到 ${M.bits ? r : HC.hexShort(r, 8)}。與 A % p 比對：<b>${good ? '相同 ✓' : '不同 ✗'}</b>` };
   }
   function fr448(A, M) {
     const t = ECC.fold448(A), fr = [];
@@ -78,7 +79,7 @@ HC.ready(() => {
     }
     fr.push({ rows: [row('組合 U', (t.raw < 0n ? '−' : '') + show(t.raw < 0n ? -t.raw : t.raw, M))],
       msg: `U = T + 2S₁ + 2S₂ + S₃ + S₄ − D₁ − D₂ − D₃ − D₄ ${t.raw < 0n ? '是負數' : t.raw >= M.p ? '比 p 大' : '已在 [0,p)'}。` });
-    fr.push(finalFrame(t.r, A, M, t.fixes));
+    fr.push(finalFrame(t.r, A, M, t.subs, t.adds));
     return fr;
   }
 

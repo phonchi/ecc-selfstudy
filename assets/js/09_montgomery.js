@@ -30,7 +30,7 @@ HC.ready(() => {
     const base = (A, zeroUpTo, cur) => rowHTML(A, c.b, n, (i, d) => (i < zeroUpTo ? 'zero' : i === cur ? 'cur' : i >= S.k ? 'hi' : ''));
     f.push({ html: [['T', base(T, 0, 0)]], msg: `T = ${show(T, c)} 小於 mR。藍色是高 ${S.k + 1} 個字組，最低 ${S.k} 個字組要逐一消成 0。` });
     t.rounds.forEach((r, i) => {
-      f.push({ html: [[`第 ${i} 輪`, base(r.A, i + 1, -1)]],
+      f.push({ html: [[`第 ${i} 輪`, base(r.A, i + 1, i + 1 < S.k ? i + 1 : -1)]],
         msg: `a${i} = ${show(r.ai, c)}，u${i} = a${i}·m' mod b = ${show(r.ui, c)}；加上 u${i}·m·b^${i} 後，第 ${i} 個字組變成 0。` });
     });
     f.push({ html: [['÷ R', rowHTML(t.shifted, c.b, S.k + 1, () => '')]], msg: `低 ${S.k} 個字組全是 0，右移 ${S.k} 個字組（除以 R）。結果 ${show(t.shifted, c)} 小於 2m。` });
@@ -71,14 +71,14 @@ HC.ready(() => {
   function compute() {
     const c = C[fsel.value];
     let x, y;
-    try { x = parse(xin.value) % c.m; y = parse(yin.value) % c.m; }
+    try { x = ECC.mod(parse(xin.value), c.m); y = ECC.mod(parse(yin.value), c.m); }
     catch (_) { $('w09fstatus').innerHTML = '請輸入整數（十進位或 0x 開頭的十六進位）。'; return; }
     const S = ECC.montSetupB(c.m, c.b), sh = v => show(v, c);
     const xt = ECC.redc(x * S.R2, S), yt = ECC.redc(y * S.R2, S);
     const zt = ECC.redc(xt * yt, S), z = ECC.redc(zt, S);
     $('w09mont').innerHTML = '<div class="flow-head">MONTGOMERY</div>'
-      + step('進入：x̃ = REDC(x·R² mod m)', sh(xt))
-      + step('進入：ỹ = REDC(y·R² mod m)', sh(yt))
+      + step('進入：x̃ = REDC(x·(R² mod m))', sh(xt))
+      + step('進入：ỹ = REDC(y·(R² mod m))', sh(yt))
       + step('相乘：REDC(x̃·ỹ) = (xy)~', sh(zt))
       + step('離開：REDC((xy)~)', `<b>${sh(z)}</b>`);
     const B = ECC.barrettSetupB(c.m, c.b), t = ECC.barrettTrace(x * y, B);

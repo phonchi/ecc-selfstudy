@@ -15,8 +15,8 @@
 <p>全站沿著一條鏈組織：上一層的每一個運算，都由下一層的運算組成。頁首那一列膠囊就是它。</p>
 <ol class="ix-chain">
 <li><span class="lv">協定</span><strong>ECDH 金鑰交換</strong>：每一方一到兩次純量乘法。<span class="chs"><a href="00_why_ecc.html">第 0 章</a></span></li>
-<li><span class="lv">純量乘法</span><strong>$kP$</strong>：幾百次倍點與點加，合計幾千次模乘。<span class="chs"><a href="03_ecdlp.html">第 3 章</a>（為什麼難倒推）・<a href="05_scalar.html">第 5 章</a></span></li>
-<li><span class="lv">點運算</span><strong>點加／倍點</strong>：每次是十來次模乘，座標選得好就不必求反元素。<span class="chs"><a href="02_group_law.html">第 2 章</a>・<a href="04_coordinates.html">第 4 章</a></span></li>
+<li><span class="lv">純量乘法</span><strong>$kP$</strong>：幾百次倍點與加點，合計幾千次模乘。<span class="chs"><a href="03_ecdlp.html">第 3 章</a>（為什麼難倒推）・<a href="05_scalar.html">第 5 章</a></span></li>
+<li><span class="lv">點運算</span><strong>加點／倍點</strong>：每次是十來次模乘，座標選得好就不必求反元素。<span class="chs"><a href="02_group_law.html">第 2 章</a>・<a href="04_coordinates.html">第 4 章</a></span></li>
 <li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：乘出兩倍長的積，再化簡回 $[0,p)$。<span class="chs"><a href="01_finite_field.html">第 1 章</a>・<a href="07_special.html">第 7 章</a>・<a href="08_barrett.html">第 8 章</a>・<a href="09_montgomery.html">第 9 章</a></span></li>
 <li><span class="lv">字組</span><strong>字組乘法</strong>：把幾百位元的數切成 64 位元字組逐格相乘。<span class="chs"><a href="06_multiprecision.html">第 6 章</a></span></li>
 </ol>

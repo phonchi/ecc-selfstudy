@@ -1,7 +1,7 @@
 <section id="why" data-nav="動機">
 <h2>當模數沒有好看的形狀</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 7 章的折疊只對特殊的 $p$ 有效。可是很多模數是別人給的：ECDSA 簽章要在<strong>群階 $n$</strong> 下做運算，而 P-256 的 $n$ 是一串看不出規律的 256 位元數；RSA 的模數更是兩個隨機質數的乘積。這時我們仍然想避開長除法。</p>
+<p>第 7 章的折疊只對特殊的 $p$ 有效。可是很多模數是別人給的：ECDSA 簽章要在<strong>基點的階 $n$</strong> 下做運算，而 P-256 的 $n$ 是一串看不出規律的 256 位元數；RSA 的模數更是兩個隨機質數的乘積。這時我們仍然想避開長除法。</p>
 <p>Barrett（1986）的想法是：<strong>除法很貴，但「除以同一個數」可以預先準備。</strong>同一個模數 $m$ 會被用上幾千次，那就先花一次功夫算出 $1/m$ 的近似值，之後每一次化簡都只用乘法和移位。</p>
 </div>
 <p>先看實數的版本。$x \bmod m = x - m\lfloor x/m\rfloor$，問題只在商 $Q=\lfloor x/m\rfloor$。若事先知道 $1/m$ 的近似值，商就能用一次乘法估出來。在電腦上，「近似 $1/m$」要寫成整數：取基底 $b$（實作上 $b=2^{32}$ 或 $2^{64}$，手算用 $b=10$），令 $m$ 有 $k$ 位（$b^{k-1}\le m&lt;b^k$），預先算</p>
@@ -34,7 +34,7 @@ $$q_1=\lfloor 57855/4^3\rfloor = 903,\quad q_2 = 903\cdot271=244713,\quad q_3=\l
 
 <section id="lab" data-nav="逐步演示">
 <h2>互動：Barrett 逐步演示</h2>
-<p>選一個模數與基底。上方是每一步的數值；下方的數線以 $m$ 為單位，標出 $q_3m$、真正的 $Qm$ 和 $x$：箭頭的長度就是 $r=x-q_3m$，它最多跨過兩格。</p>
+<p>選一個模數與基底。上方是每一步的數值；下方的數線以 $m$ 為單位，標出 $q_3m$、真正的 $Qm$ 和 $x$：箭頭的長度就是 $r=x-q_3m$，它小於三格，所以至多減兩次 $m$。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">BARRETT</div>
@@ -42,7 +42,7 @@ $$q_1=\lfloor 57855/4^3\rfloor = 903,\quad q_2 = 903\cdot271=244713,\quad q_3=\l
       <label>模數 <select id="w08mod">
         <option value="t241">m = 241，b = 4（兩次修正的例子）</option>
         <option value="t4567">m = 4567，b = 10（十進位）</option>
-        <option value="n256">P-256 的群階 n，b = 2^64</option>
+        <option value="n256">P-256 的基點階 n，b = 2^64</option>
         <option value="p256">P-256 的 p，b = 2^64</option>
         <option value="p521">P-521 的 p，b = 2^64</option>
       </select></label>

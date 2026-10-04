@@ -11,7 +11,7 @@
 <h2>離散對數：容易的方向與困難的方向</h2>
 <p>設 $G$ 是一個循環群，生成元為 $g$，階為 $n$。給定整數 $k$，算</p>
 $$h = g^k$$
-<p>很容易：<strong>反覆平方法</strong>（square-and-multiply）依 $k$ 的二進位逐位處理，每一位做一次平方，遇到 1 再乘一次 $g$。$k$ 有 $\ell$ 個位元時，最多 $2\ell$ 次群運算；$k$ 有 256 位元，就是幾百次，而不是 $2^{256}$ 次。</p>
+<p>很容易：<strong>平方-乘</strong>（square-and-multiply）（square-and-multiply）依 $k$ 的二進位逐位處理，每一位做一次平方，遇到 1 再乘一次 $g$。$k$ 有 $\ell$ 個位元時，最多 $2\ell$ 次群運算；$k$ 有 256 位元，就是幾百次，而不是 $2^{256}$ 次。</p>
 <p>反方向，給定 $g$ 與 $h$ 求 $k$，叫做<strong>離散對數問題</strong>（discrete logarithm problem，DLP）。對一般的群，已知最好的通用演算法（Pollard rho、baby-step giant-step）大約要 $\sqrt n$ 次群運算。$n\approx2^{256}$ 時就是約 $2^{128}$ 次，遠超出任何可行的計算量。</p>
 <h3>同一個問題，不同的群</h3>
 <p>難度不只取決於 $n$ 的大小，還取決於<strong>群是怎麼表示的</strong>。</p>
@@ -21,7 +21,7 @@ $$h = g^k$$
 </ul>
 <p>對應地，橢圓曲線上的單向運算是<strong>純量乘法</strong>（scalar multiplication）</p>
 $$k \ \longmapsto\ Q = kG ,$$
-<p>反方向的「已知 $G,Q$ 求 $k$」稱為 <strong>ECDLP</strong>。反覆平方法在這裡變成 double-and-add：平方換成倍點 $2R$，乘以 $g$ 換成加上 $G$。</p>
+<p>反方向的「已知 $G,Q$ 求 $k$」稱為 <strong>ECDLP</strong>。平方-乘在這裡變成 double-and-add：平方換成倍點 $2R$，乘以 $g$ 換成加上 $G$。</p>
 <div class="info-box"><span class="info-label">注意</span>
 <p>「沒有已知的次指數攻擊」是經驗事實，不是定理。有些特殊曲線確實較弱（例如超奇異曲線可以用配對轉到有限體上，異常曲線可以在多項式時間內解）；標準曲線的參數就是為了避開這些情形而選的。第 3 章會列出要避開的條件。另外，上面所有的難度估計都只針對<strong>古典電腦</strong>；大型量子電腦上的 Shor 演算法對 $\mathbb F_p^{*}$ 與橢圓曲線都能在多項式時間內解出離散對數。</p>
 </div>
@@ -38,7 +38,7 @@ $$k \ \longmapsto\ Q = kG ,$$
 <tr><td>256</td><td class="num">15360</td><td class="num">15360</td><td class="num">512 以上</td></tr>
 </table></div>
 <p class="where">資料來源：NIST SP 800-57 Part 1 Rev. 5，§5.6.1.1 Table 2（只考慮古典攻擊）。FFC 一欄另有子群階 $N$ 的大小（224／256／384／512 位元），這裡省略。</p>
-<p>ECC 一欄是曲線群階 $n$ 的位元數，大約是安全強度的兩倍，這正是 $\sqrt n$ 攻擊的直接結果。RSA 與 FFC 一欄則因為次指數攻擊而增長得快得多：從 112 位元到 256 位元的強度，ECC 的大小約變為 2.3 倍（224 到 512），RSA 卻變為 7.5 倍（2048 到 15360）。</p>
+<p>ECC 一欄是基點 $G$ 的階 $n$ 的位元數（餘因子 $h=1$ 的曲線，例如 P-256，$n$ 就等於整個群的點數），大約是安全強度的兩倍，這正是 $\sqrt n$ 攻擊的直接結果。RSA 與 FFC 一欄則因為次指數攻擊而增長得快得多：從 112 位元到 256 位元的強度，ECC 的大小約變為 2.3 倍（224 到 512），RSA 卻變為 7.5 倍（2048 到 15360）。</p>
 <p>所以常聽到的說法「<strong>P-256 約等於 RSA-3072</strong>」就是表中 128 位元那一列：P-256 的群階有 256 位元，落在 256–383 的範圍內。金鑰短，意味著傳輸的公鑰短、儲存小，而且（第 5 章會看到）運算量也小。</p>
 </section>
 
@@ -55,7 +55,7 @@ $$k \ \longmapsto\ Q = kG ,$$
 <p>因為群是交換的，</p>
 $$aB = a(bG) = (ab)G = b(aG) = bA ,$$
 <p>兩人得到同一個點 $S=(ab)G$。竊聽者看得到 $G,A,B$，要算 $S$ 就得解出 $a$ 或 $b$（或者解所謂的計算 Diffie–Hellman 問題，目前沒有比解 ECDLP 更好的方法）。</p>
-<p>實務上不直接拿 $S$ 當金鑰，而是取它的 <strong>$x$ 座標</strong>，送進<strong>金鑰導出函數</strong>（key derivation function，KDF）產生固定長度、分布均勻的對稱金鑰。RFC 7748 §6 的 X25519 也是同樣的流程，只是用另一種曲線形式和只算 $x$（在那裡叫 $u$）座標的 Montgomery ladder（第 5 章）。</p>
+<p>實務上不直接拿 $S$ 當金鑰，而是取它的 <strong>$x$ 座標</strong>，送進<strong>金鑰衍生函數</strong>（key derivation function，KDF）產生固定長度、分布均勻的對稱金鑰。RFC 7748 §6 的 X25519 也是同樣的流程，只是用另一種曲線形式和只算 $x$（在那裡叫 $u$）座標的 Montgomery ladder（第 5 章）。</p>
 <div class="example"><div class="ex-label">小例：曲線 $y^2=x^3-3x+6$，$\mathbb F_{97}$，共 107 個點</div>
 <p>107 是質數，所以除了 $\mathcal O$ 以外每一點都是生成元。取 $G=(0,43)$、$a=23$、$b=61$：</p>
 $$A=23G=(78,73),\qquad B=61G=(35,22),$$
@@ -106,11 +106,11 @@ $$23B = 61A = (72,49) = 12\,G ,$$
 <p>一次 ECDH 的成本，可以沿著下面這條鏈一層一層往下拆。每一層都由下一層的運算組成，也剛好對應本站的章節：</p>
 <ol class="w00-chain">
 <li><span class="lv">協定</span><strong>ECDH</strong>：每一方一到兩次純量乘法。<span class="where">本章</span></li>
-<li><span class="lv">純量乘法</span><strong>$kP$</strong>：$k$ 有幾百位元，double-and-add 要做幾百次倍點與點加；換算下來是<strong>幾千次 $\mathbb F_p$ 乘法</strong>。<span class="where"><a href="05_scalar.html">第 5 章</a>；為什麼難倒推見 <a href="03_ecdlp.html">第 3 章</a></span></li>
-<li><span class="lv">點運算</span><strong>點加／倍點</strong>：仿射公式每步要一次求反元素；換成 Jacobian 座標後只剩十來次乘法。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
+<li><span class="lv">純量乘法</span><strong>$kP$</strong>：$k$ 有幾百位元，double-and-add 要做幾百次倍點與加點；換算下來是<strong>幾千次 $\mathbb F_p$ 乘法</strong>。<span class="where"><a href="05_scalar.html">第 5 章</a>；為什麼難倒推見 <a href="03_ecdlp.html">第 3 章</a></span></li>
+<li><span class="lv">點運算</span><strong>加點／倍點</strong>：仿射公式每步要一次求反元素；換成 Jacobian 座標後只剩十來次乘法。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
 <li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：先得到兩倍長的乘積，再化簡回 $[0,p)$。特殊形狀的 $p$ 用折疊，一般的 $p$ 用 Barrett 或 Montgomery。<span class="where"><a href="01_finite_field.html">第 1 章</a>、<a href="07_special.html">第 7 章</a>、<a href="08_barrett.html">第 8 章</a>、<a href="09_montgomery.html">第 9 章</a></span></li>
 <li><span class="lv">字組</span><strong>字組乘法</strong>：256 位元的數切成 4 個 64 位元字組，逐格相乘並處理進位。<span class="where"><a href="06_multiprecision.html">第 6 章</a></span></li>
 </ol>
 <p>讀法有兩種。<strong>由上往下</strong>是「為什麼」：協定需要 $kP$，$kP$ 需要點運算，點運算需要模乘。<strong>由下往上</strong>是「花多少」：字組乘法的次數乘上去，就得到一次 ECDH 的總成本。每章頁首的那條膠囊列就是這條鏈，亮起的那一格是該章所在的層。</p>
-<p>本站的章節順序是先打數學基礎（第 1–3 章：有限體、群律、群結構與 ECDLP），再從曲線走到運算成本（第 4–5 章），然後花三章處理最底層、也最常被執行的模乘法（第 6–9 章），最後在 <a href="10_synthesis.html">第 10 章</a>把各層的選擇放在一起比較。</p>
+<p>本站的章節順序是先打數學基礎（第 1–3 章：有限體、群律、群結構與 ECDLP），再從曲線走到運算成本（第 4–5 章），然後花四章處理最底層、也最常被執行的模乘法（第 6–9 章），最後在 <a href="10_synthesis.html">第 10 章</a>把各層的選擇放在一起比較。</p>
 </section>

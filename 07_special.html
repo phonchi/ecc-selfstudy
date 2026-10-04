@@ -30,7 +30,7 @@
     <h1>特殊形式的模數</h1>
     <div class="subtitle">選一個「長得好看」的 p，讓 mod p 只剩加減與移位</div>
     <div class="big-formula">$2^{521}\equiv 1,\qquad 2^{255}\equiv 19 \pmod p$</div>
-    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer on" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer on" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
   </div>
 </header>
 <main class="container">
@@ -195,7 +195,7 @@ $$A \equiv T + 2S_1 + 2S_2 + S_3 + S_4 - D_1 - D_2 - D_3 - D_4 \pmod p ,$$
 <h2>特殊模數的代價</h2>
 <p>折疊這麼快，為什麼還需要第 8、9 章的一般方法？</p>
 <ul>
-<li><strong>模數是給定的，不一定能挑。</strong>曲線的群階 $n$（ECDSA 簽章要在模 $n$ 下計算）由曲線決定，通常沒有特殊形狀；RSA 的模數更是兩個隨機質數的乘積。</li>
+<li><strong>模數是給定的，不一定能挑。</strong>基點的階 $n$（ECDSA 簽章要在模 $n$ 下計算）由曲線決定，通常沒有特殊形狀；RSA 的模數更是兩個隨機質數的乘積。</li>
 <li><strong>每個模數要一套專用程式。</strong>折疊規則是為某一個 $p$ 量身打造的；一般方法只要換掉預先算好的常數就能用在任何模數上。</li>
 <li><strong>平台不同，最佳選擇不同。</strong>P-521 的 521 位元不在字組邊界上；在某些硬體上，Montgomery 乘法即使用在特殊模數上也不輸給折疊。</li>
 </ul>

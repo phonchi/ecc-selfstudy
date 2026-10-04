@@ -106,17 +106,18 @@
     return d; // 由低到高
   };
 
-  // method: 'dbladd' | 'naf' | 'ladder'
-  ECC.scalarTrace = (k, P, a, p, method = 'dbladd') => {
+  // method: 'dbladd' | 'naf' | 'ladder'。bits：階梯補零到固定長度（公開的位元長度）。
+  // D、A 只計真正的點運算：double-and-add 與 NAF 開頭的 2·O 與 O + P 不算。
+  ECC.scalarTrace = (k, P, a, p, method = 'dbladd', bits = 0) => {
     k = B(k);
     const frames = [];
     let D = 0, A = 0;
     if (method === 'ladder') {
       let R0 = null, R1 = P;
-      for (const bit of k.toString(2)) {
+      for (const bit of k.toString(2).padStart(bits, '0')) {
         if (bit === '0') { R1 = ECC.add(R0, R1, a, p); R0 = ECC.add(R0, R0, a, p); }
         else { R0 = ECC.add(R0, R1, a, p); R1 = ECC.add(R1, R1, a, p); }
-        D++; A++;
+        D++; A++;                       // 階梯每一位都執行一次加點與一次倍點
         frames.push({ digit: bit, ops: bit === '0' ? ['R1←R0+R1', 'R0←2R0'] : ['R0←R0+R1', 'R1←2R1'], R: R0, R1, D, A });
       }
       return { R: R0, frames, D, A };
@@ -126,9 +127,13 @@
     let R = null;
     for (const dgt of digits) {
       const ops = [];
-      R = ECC.add(R, R, a, p); D++; ops.push('R←2R');
-      if (dgt === 1) { R = ECC.add(R, P, a, p); A++; ops.push('R←R+P'); }
-      else if (dgt === -1) { R = ECC.add(R, minusP, a, p); A++; ops.push('R←R−P'); }
+      if (R !== null) { R = ECC.add(R, R, a, p); D++; ops.push('R←2R'); }
+      if (dgt !== 0) {
+        const Q = dgt === 1 ? P : minusP;
+        if (R !== null) A++;
+        R = ECC.add(R, Q, a, p);
+        ops.push(R === Q || (ops.length === 0) ? 'R←P（起點）' : dgt === 1 ? 'R←R+P' : 'R←R−P');
+      }
       frames.push({ digit: dgt === -1 ? '1̄' : String(dgt), ops, R, D, A });
     }
     return { R, frames, D, A };
@@ -248,10 +253,10 @@
       return { name, coef, idx, value: ECC.fromWords(ws.slice().reverse(), 32) };
     });
     let Bv = terms.reduce((s, t) => s + B(t.coef) * t.value, 0n);
-    const raw = Bv; let fixes = 0;
-    while (Bv < 0n) { Bv += p; fixes++; }
-    while (Bv >= p) { Bv -= p; fixes++; }
-    return { r: Bv, words: a, terms, raw, fixes };
+    const raw = Bv; let adds = 0, subs = 0;
+    while (Bv < 0n) { Bv += p; adds++; }
+    while (Bv >= p) { Bv -= p; subs++; }
+    return { r: Bv, words: a, terms, raw, adds, subs, fixes: adds + subs };
   };
 
   /* ---------- Barrett（HAC 14.42）：基底 b 可以是 10 或 2^w ---------- */

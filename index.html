@@ -29,7 +29,7 @@
     <h1>橢圓曲線密碼<br><span class="green">從曲線</span>到<span class="orange">模乘法</span></h1>
     <div class="subtitle">給數學背景讀者的互動導覽：先問為什麼，再看數學，最後動手算</div>
     <div class="big-formula">$y^2 = x^3 + ax + b\quad\text{over}\ \mathbb F_p$</div>
-    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
   </div>
 </header>
 <main class="container">
@@ -50,8 +50,8 @@
 <p>全站沿著一條鏈組織：上一層的每一個運算，都由下一層的運算組成。頁首那一列膠囊就是它。</p>
 <ol class="ix-chain">
 <li><span class="lv">協定</span><strong>ECDH 金鑰交換</strong>：每一方一到兩次純量乘法。<span class="chs"><a href="00_why_ecc.html">第 0 章</a></span></li>
-<li><span class="lv">純量乘法</span><strong>$kP$</strong>：幾百次倍點與點加，合計幾千次模乘。<span class="chs"><a href="03_ecdlp.html">第 3 章</a>（為什麼難倒推）・<a href="05_scalar.html">第 5 章</a></span></li>
-<li><span class="lv">點運算</span><strong>點加／倍點</strong>：每次是十來次模乘，座標選得好就不必求反元素。<span class="chs"><a href="02_group_law.html">第 2 章</a>・<a href="04_coordinates.html">第 4 章</a></span></li>
+<li><span class="lv">純量乘法</span><strong>$kP$</strong>：幾百次倍點與加點，合計幾千次模乘。<span class="chs"><a href="03_ecdlp.html">第 3 章</a>（為什麼難倒推）・<a href="05_scalar.html">第 5 章</a></span></li>
+<li><span class="lv">點運算</span><strong>加點／倍點</strong>：每次是十來次模乘，座標選得好就不必求反元素。<span class="chs"><a href="02_group_law.html">第 2 章</a>・<a href="04_coordinates.html">第 4 章</a></span></li>
 <li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：乘出兩倍長的積，再化簡回 $[0,p)$。<span class="chs"><a href="01_finite_field.html">第 1 章</a>・<a href="07_special.html">第 7 章</a>・<a href="08_barrett.html">第 8 章</a>・<a href="09_montgomery.html">第 9 章</a></span></li>
 <li><span class="lv">字組</span><strong>字組乘法</strong>：把幾百位元的數切成 64 位元字組逐格相乘。<span class="chs"><a href="06_multiprecision.html">第 6 章</a></span></li>
 </ol>
@@ -62,9 +62,9 @@
 <div class="part-title">序章</div>
 <div class="ch-grid"><a class="ch-card" href="00_why_ecc.html"><span class="ch-layer">協定 ECDH</span><div class="ch-num">CHAPTER 00</div><h3>為什麼是橢圓曲線</h3><p>公開金鑰的需求、RSA 與 ECC 的金鑰長度、ECDH 交換，以及整個網站的成本鏈。</p></a></div>
 <div class="part-title">第一部　數學基礎</div>
-<div class="ch-grid"><a class="ch-card" href="01_finite_field.html"><span class="ch-layer">模乘 mod p</span><div class="ch-num">CHAPTER 01</div><h3>有限體 F_p</h3><p>模運算、反元素的兩種算法（延伸歐幾里得、Fermat），以及為什麼求反元素比乘法貴。</p></a><a class="ch-card" href="02_group_law.html"><span class="ch-layer">點加／倍點</span><div class="ch-num">CHAPTER 02</div><h3>曲線與群律</h3><p>實數圖像上的割線與切線、無窮遠點、加法公式，再搬到 F_p 上變成一片點雲。</p></a><a class="ch-card" href="03_ecdlp.html"><span class="ch-layer">純量乘法 kP</span><div class="ch-num">CHAPTER 03</div><h3>群結構與 ECDLP</h3><p>Hasse 定理、循環子群與餘因子、Pollard rho 的平方根界，以及要避開的弱曲線。</p></a></div>
+<div class="ch-grid"><a class="ch-card" href="01_finite_field.html"><span class="ch-layer">模乘 mod p</span><div class="ch-num">CHAPTER 01</div><h3>有限體 F_p</h3><p>模運算、反元素的兩種算法（延伸歐幾里得、Fermat），以及為什麼求反元素比乘法貴。</p></a><a class="ch-card" href="02_group_law.html"><span class="ch-layer">加點／倍點</span><div class="ch-num">CHAPTER 02</div><h3>曲線與群律</h3><p>實數圖像上的割線與切線、無窮遠點、加法公式，再搬到 F_p 上變成一片點雲。</p></a><a class="ch-card" href="03_ecdlp.html"><span class="ch-layer">純量乘法 kP</span><div class="ch-num">CHAPTER 03</div><h3>群結構與 ECDLP</h3><p>Hasse 定理、循環子群與餘因子、Pollard rho 的平方根界，以及要避開的弱曲線。</p></a></div>
 <div class="part-title">第二部　從曲線到運算成本</div>
-<div class="ch-grid"><a class="ch-card" href="04_coordinates.html"><span class="ch-layer">點加／倍點</span><div class="ch-num">CHAPTER 04</div><h3>座標與運算成本</h3><p>仿射座標每步都要反元素；Jacobian 座標只用乘法。用 I/M 比例比較總成本。</p></a><a class="ch-card" href="05_scalar.html"><span class="ch-layer">純量乘法 kP</span><div class="ch-num">CHAPTER 05</div><h3>純量乘法</h3><p>double-and-add、NAF、Montgomery ladder，旁通道與常數時間，以及一次 kP 的成本帳。</p></a></div>
+<div class="ch-grid"><a class="ch-card" href="04_coordinates.html"><span class="ch-layer">加點／倍點</span><div class="ch-num">CHAPTER 04</div><h3>座標與運算成本</h3><p>仿射座標每步都要反元素；Jacobian 座標只用乘法。用 I/M 比例比較總成本。</p></a><a class="ch-card" href="05_scalar.html"><span class="ch-layer">純量乘法 kP</span><div class="ch-num">CHAPTER 05</div><h3>純量乘法</h3><p>double-and-add、NAF、Montgomery ladder，旁通道與常數時間，以及一次 kP 的成本帳。</p></a></div>
 <div class="part-title">第三部　模乘法</div>
 <div class="ch-grid"><a class="ch-card" href="06_multiprecision.html"><span class="ch-layer">字組乘法</span><div class="ch-num">CHAPTER 06</div><h3>大整數乘法</h3><p>字組表示、schoolbook 乘法與進位、平方的對稱性，以及 Karatsuba 的想法。</p></a><a class="ch-card" href="07_special.html"><span class="ch-layer">模乘 mod p</span><div class="ch-num">CHAPTER 07</div><h3>特殊形式的模數</h3><p>Mersenne、偽 Mersenne 與 Solinas 質數：P-521、2^255−19、Goldilocks、P-256 的折疊。</p></a><a class="ch-card" href="08_barrett.html"><span class="ch-layer">模乘 mod p</span><div class="ch-num">CHAPTER 08</div><h3>Barrett 化簡</h3><p>估商的想法、HAC Alg. 14.42、為什麼最多修正兩次，逐步數線演示。</p></a><a class="ch-card" href="09_montgomery.html"><span class="ch-layer">模乘 mod p</span><div class="ch-num">CHAPTER 09</div><h3>Montgomery 乘法</h3><p>Montgomery 表示、REDC 逐字組歸零、交錯式乘法，與 Barrett 同一組輸入並排比較。</p></a></div>
 <div class="part-title">總整</div>

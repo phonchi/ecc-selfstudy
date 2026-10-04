@@ -31,7 +31,7 @@
     <h1>純量乘法</h1>
     <div class="subtitle">kP 是 ECC 的核心運算；它把幾百位元的 k 變成幾千次模乘</div>
     <div class="big-formula">$kP = \underbrace{P+P+\cdots+P}_{k}$</div>
-    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer on" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer on" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
   </div>
 </header>
 <main class="container">
@@ -40,7 +40,7 @@
 <div class="section-number">§5.1</div>
 <h2>把 $k$ 個 $P$ 加起來，但不能真的加 $k$ 次</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>ECC 的公開金鑰是 $Q=kG$，ECDH 的共同秘密是 $a(bG)$：所有協定的核心都是<strong>純量乘法</strong> $kP$。$k$ 是 256 位元左右的整數，大約 $2^{256}$，一個一個加顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法，而且要算清楚：一次 $kP$ 到底要多少次 $\mathbb F_p$ 乘法？這個數字決定了後面四章為什麼值得花力氣。</p>
+<p>ECC 的公開金鑰是 $Q=kG$，ECDH 的共同祕密是 $a(bG)$：所有協定的核心都是<strong>純量乘法</strong> $kP$。$k$ 是 256 位元左右的整數，大約 $2^{256}$，一個一個加顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法，而且要算清楚：一次 $kP$ 到底要多少次 $\mathbb F_p$ 乘法？這個數字決定了後面四章為什麼值得花力氣。</p>
 </div>
 </section>
 
@@ -115,7 +115,7 @@ $$k=(\cdots((k_{\ell-1})\,2+k_{\ell-2})\,2+\cdots)\,2+k_0 .$$
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>方法</th><th>倍點</th><th>加點</th><th>約略總成本</th></tr>
 <tr><td>double-and-add</td><td class="num">255</td><td class="num">約 128</td><td class="num">約 3 200 M</td></tr>
-<tr><td>NAF</td><td class="num">255</td><td class="num">約 85</td><td class="num">約 2 800 M</td></tr>
+<tr><td>NAF</td><td class="num">255</td><td class="num">約 86</td><td class="num">約 2 800 M</td></tr>
 <tr><td>Montgomery ladder</td><td class="num">256</td><td class="num">256（一般加點）</td><td class="num">約 5 700 M</td></tr>
 </table></div>
 <p>結論是：<strong>一次純量乘法 ≈ 三千到六千次 $\mathbb F_p$ 乘法</strong>。一次 ECDH 每一方要做一兩次純量乘法。把一次 $\mathbb F_p$ 乘法加快 20%，整個協定大約就快 20%。這就是成本鏈的下一層：第 6 章算整數乘積，第 7 到 9 章做化簡。</p>
@@ -127,9 +127,9 @@ $$k=(\cdots((k_{\ell-1})\,2+k_{\ell-2})\,2+\cdots)\,2+k_0 .$$
 <p>double-and-add 有一個實際的弱點：讀到 0 只做倍點，讀到 1 多做一次加點。攻擊者若能量測晶片的耗電或時間（<strong>旁通道</strong>，side channel），就能從「倍點、倍點加點、倍點……」的節奏直接讀出 $k$ 的位元。這叫簡單功率分析（simple power analysis，SPA）。下面的互動元件會畫出這條「節奏」。</p>
 <p><strong>Montgomery 階梯</strong>（Montgomery ladder）讓每一位做的事都一樣：同時維護兩個點 $R_0,R_1$，並保持</p>
 $$R_1-R_0=P .$$
-<p>讀到 0 時令 $(R_0,R_1)\leftarrow(2R_0,\ R_0+R_1)$，讀到 1 時令 $(R_0,R_1)\leftarrow(R_0+R_1,\ 2R_1)$。兩種情形都是一次加點加一次倍點，而且不變量保持成立；最後 $R_0=kP$。差別只在「哪一個被倍點」，實作上用一個與資料無關的條件交換（cswap）處理。</p>
+<p>讀到 0 時令 $(R_0,R_1)\leftarrow(2R_0,\ R_0+R_1)$，讀到 1 時令 $(R_0,R_1)\leftarrow(R_0+R_1,\ 2R_1)$。兩種情形都是一次加點加一次倍點，而且不變量保持成立；最後 $R_0=kP$。實作上要把 $k$ 補 0 到固定的公開長度（通常是基點階 $n$ 的位元數），否則迴圈次數本身就洩漏了 $k$ 的長度。差別只在「哪一個被倍點」，實作上用一個與資料無關的條件交換（cswap）處理。</p>
 <div class="info-box red"><span class="info-label">規則的排程還不夠</span>
-<p>操作順序固定只是第一步。常數時間的實作還要求：不能有依賴秘密的分支或記憶體位址（cswap 要用遮罩做），底層的 $\mathbb F_p$ 運算本身也必須是常數時間（第 8、9 章最後的條件減法就是一個例子）。本站的 JavaScript BigInt 示範<strong>不是</strong>常數時間，只用來說明演算法。</p>
+<p>操作順序固定只是第一步。常數時間的實作還要求：不能有依賴祕密的分支或記憶體位址（cswap 要用遮罩做），底層的 $\mathbb F_p$ 運算本身也必須是常數時間（第 8、9 章最後的條件減法就是一個例子）。本站的 JavaScript BigInt 示範<strong>不是</strong>常數時間，只用來說明演算法。</p>
 </div>
 <p>階梯和第 9 章的 Montgomery 乘法、以及 Montgomery 形式的曲線是三件不同的事；它在 $y^2=x^3+ax+b$ 上同樣可以用（HECC §13.2.3），在 Montgomery 曲線上則可以只用 $x$ 座標，特別省（RFC 7748 §5）。</p>
 </section>
@@ -161,7 +161,7 @@ $$R_1-R_0=P .$$
   <div class="side-panel">
     <div class="info-card"><div class="ic-title">計數</div><div id="w05count"></div></div>
     <div class="info-card"><div class="ic-title">看節奏</div><div class="ic-note">
-      double-and-add 與 NAF 的條帶裡，「D 後面有沒有 A」直接洩漏了數字。換成 ladder，每一格都是 DA，條帶與 $k$ 無關。
+      double-and-add 與 NAF 的條帶裡，「D 後面有沒有 A」直接洩漏了數字。換成 ladder，每一格都是一次 A 加一次 D。這裡的 ladder 固定跑 7 位（$n=107$ 的位元數），不足的前面補 0，所以條帶連 $k$ 的位元長度也不洩漏。
     </div></div>
   </div>
 </div>

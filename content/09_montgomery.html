@@ -6,13 +6,13 @@
 </div>
 <p>這個方法有兩個前提：$\gcd(m,R)=1$（否則 $R^{-1}$ 不存在），以及輸入 $T&lt;mR$。$R$ 取 2 的冪時，第一個條件就是「$m$ 為奇數」；密碼學用的質數模數當然符合。</p>
 <div class="info-box red"><span class="info-label">三個同名的東西</span>
-<p>密碼學裡有三個都叫 Montgomery 的概念，彼此無關：</p>
+<p>密碼學裡有三個都叫 Montgomery 的概念，它們是不同的東西：</p>
 <ul>
 <li><strong>Montgomery 乘法／REDC</strong>（本章）：一種模乘的化簡方法，用在任何奇數模數上。</li>
 <li><strong>Montgomery 階梯</strong>（Montgomery ladder，第 5 章）：一種純量乘法的排程，每一位都做一次加點和一次倍點。</li>
 <li><strong>Montgomery 曲線</strong>：形如 $By^2=x^3+Ax^2+x$ 的曲線（例如 Curve25519）。</li>
 </ul>
-<p>它們可以一起用，也可以分開用。</p>
+<p>它們可以一起用，也可以分開用。後兩者關係最近：Montgomery 曲線上的「差分加法」正好配合階梯，只需要 $x$ 座標。</p>
 </div>
 </section>
 
@@ -34,7 +34,7 @@ $$\mathrm{REDC}(\tilde x\,\tilde y) = (xR)(yR)R^{-1} = (xy)R \equiv \widetilde{x
 
 <section id="redc" data-nav="REDC">
 <h2>REDC：一次消掉一個字組</h2>
-<p>要算 $TR^{-1}\bmod m$，就要把 $T$ 加上 $m$ 的某個倍數，讓結果被 $R=b^k$ 整除。一次處理一個字組：設目前的數最低的非零字組是 $a_i$（第 $i$ 位），想找 $u_i$ 使</p>
+<p>要算 $TR^{-1}\bmod m$，就要把 $T$ 加上 $m$ 的某個倍數，讓結果被 $R=b^k$ 整除。一次處理一個字組：第 $i$ 輪看目前的數的第 $i$ 個字組 $a_i$（更低的字組前幾輪已經消成 0），想找 $u_i$ 使</p>
 $$a_i + u_i m \equiv 0 \pmod b .$$
 <p>解是 $u_i = a_i\, m' \bmod b$，其中 $m' = -m^{-1}\bmod b$ 也是預先算好的常數。注意 $u_i$ 只需要<strong>模 $b$ 的乘法</strong>，也就是一個字組乘一個字組。把 $u_i m b^i$ 加上去，第 $i$ 個字組就變成 0，而且不影響更低的字組（它們已經是 0）。做完 $k$ 輪，低 $k$ 個字組全為 0，右移 $k$ 個字組就是除以 $R$。</p>
 <div class="example"><div class="ex-label">手算小例：十進位，$m=4567$，$b=10$，$R=10^4$</div>
@@ -57,7 +57,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 
 <section id="lab" data-nav="逐輪演示">
 <h2>互動：REDC 逐輪演示</h2>
-<p>每一輪把目前最低的非零字組（<span class="pill-cur">橙色</span>）消成 0（灰色），最後整段右移。選十進位可以對照上面的手算；選 P-256 或 P-521 則是實際的 64 位元字組。</p>
+<p>第 $i$ 輪把第 $i$ 個字組消成 0（灰色）；<span class="pill-cur">橙色</span>是下一輪要處理的字組。若某個字組本來就是 0，該輪的 $u_i=0$，什麼都不加。最後整段右移。選十進位可以對照上面的手算；選 P-256 或 P-521 則是實際的 64 位元字組。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">REDC</div>
@@ -66,7 +66,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
         <option value="t4567">m = 4567，b = 10</option>
         <option value="t241">m = 241，b = 16</option>
         <option value="p256">P-256 的 p，b = 2^64</option>
-        <option value="n256">P-256 的群階 n，b = 2^64</option>
+        <option value="n256">P-256 的基點階 n，b = 2^64</option>
         <option value="p521">P-521 的 p，b = 2^64</option>
       </select></label>
       <button class="btn btn-ghost" id="w09rand" type="button">隨機 T = x·y</button>
@@ -99,7 +99,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
       <label>模數 <select id="w09fmod">
         <option value="t4567">m = 4567，b = 10</option>
         <option value="p256">P-256 的 p，b = 2^64</option>
-        <option value="n256">P-256 的群階 n，b = 2^64</option>
+        <option value="n256">P-256 的基點階 n，b = 2^64</option>
         <option value="p521">P-521 的 p，b = 2^64</option>
       </select></label>
       <label>x <input type="text" id="w09x" value="1234" size="10"></label>
