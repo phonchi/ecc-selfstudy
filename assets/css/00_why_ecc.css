@@ -1,0 +1,15 @@
+/* 第 0 章：ECDH 點雲的角色顏色、圖例、成本鏈清單 */
+.pt.w00G{fill:var(--accent2);opacity:1;}
+.pt.w00A{fill:var(--accent);opacity:1;}
+.pt.w00B{fill:var(--accent3);opacity:1;}
+.pt.w00S{fill:var(--amber);opacity:1;stroke:var(--ink);stroke-width:1.5;}
+.w00lab{font-size:15px;paint-order:stroke;stroke:var(--canvas);stroke-width:3px;}
+.w00-legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.5rem;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--muted);}
+.w00-legend span{display:inline-flex;align-items:center;gap:.35rem;}
+.w00-legend .lg{display:inline-block;width:10px;height:10px;border-radius:50%;}
+.lg.G{background:var(--accent2);} .lg.A{background:var(--accent);} .lg.B{background:var(--accent3);} .lg.S{background:var(--amber);}
+ol.w00-chain{list-style:none;padding:0;margin:1rem 0 1.4rem;counter-reset:lv;}
+ol.w00-chain li{position:relative;background:var(--card);border:1px solid var(--card-border);border-left:4px solid var(--accent2);border-radius:8px;padding:.6rem .9rem .6rem 1rem;margin:0 0 1.1rem;}
+ol.w00-chain li:not(:last-child)::after{content:'↓';position:absolute;left:50%;bottom:-1.15rem;color:var(--muted);font-size:.85rem;line-height:1;}
+ol.w00-chain .lv{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--amber);border:1px solid var(--amber);border-radius:999px;padding:0 .5rem;margin-right:.5rem;}
+ol.w00-chain .where{display:block;font-size:.82rem;}

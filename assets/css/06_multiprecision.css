@@ -1,0 +1,9 @@
+/* 第 6 章：schoolbook 逐格演示 */
+.sbgrid{border-collapse:separate;border-spacing:3px;font-family:'JetBrains Mono',monospace;font-size:.72rem;margin:.2rem auto;}
+.sbgrid th{color:var(--muted);font-weight:600;padding:.15rem .35rem;white-space:nowrap;}
+.sbgrid td{min-width:3.6rem;height:2.1rem;text-align:center;border:1px solid var(--card-border);border-radius:5px;background:var(--card);color:var(--muted);padding:.15rem .3rem;white-space:nowrap;}
+.sbgrid td.done{background:var(--box-blue);color:var(--ink);}
+.sbgrid td.cur{background:var(--amber);color:#1a1a2e;border-color:var(--amber);font-weight:700;}
+.sbgrid td .ij{display:block;font-size:.62rem;opacity:.7;}
+.io-row{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:.15rem 0;}
+.io-row .row-label{min-width:2.4rem;}

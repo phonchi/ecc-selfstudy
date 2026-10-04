@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="有限體 F_p（The Prime Field）：曲線上的座標住在這裡：加減乘除都取模 p">
+<title>1. 有限體 F_p — 橢圓曲線密碼：從曲線到模乘法</title>
+<script>
+  try { const t = localStorage.getItem('ecc-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (_) {}
+  MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+             options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] },
+             chtml: { scale: 0.98 } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ecc.css?v=20261004">
+<link rel="stylesheet" href="assets/css/01_finite_field.css?v=20261004">
+</head>
+<body>
+<nav class="float-nav" id="floatNav" aria-label="本章導覽"><a href="#why" data-target="why"><span class="fn-num">1.1</span><span class="fn-name">動機</span></a><a href="#arith" data-target="arith"><span class="fn-num">1.2</span><span class="fn-name">模運算</span></a><a href="#euclid" data-target="euclid"><span class="fn-num">1.3</span><span class="fn-name">延伸歐幾里得</span></a><a href="#fermat" data-target="fermat"><span class="fn-num">1.4</span><span class="fn-name">Fermat</span></a><a href="#lab" data-target="lab"><span class="fn-num">1.5</span><span class="fn-name">乘法表</span></a><a href="#cost" data-target="cost"><span class="fn-num">1.6</span><span class="fn-name">成本</span></a><a href="#refs" data-target="refs"><span class="fn-num">REF</span><span class="fn-name">本章文獻</span></a></nav>
+<header class="hero small" id="top">
+  <div class="hero-grid"></div>
+  <svg class="hero-curve" width="300" height="300" viewBox="-2.2 -3.2 5 6.4" aria-hidden="true">
+  <path d="M2.591,3.770 L2.571,3.722 L2.551,3.674 L2.531,3.626 L2.511,3.579 L2.491,3.532 L2.471,3.485 L2.451,3.438 L2.431,3.392 L2.411,3.346 L2.391,3.300 L2.371,3.254 L2.351,3.208 L2.331,3.163 L2.311,3.118 L2.291,3.073 L2.271,3.028 L2.251,2.984 L2.231,2.940 L2.211,2.896 L2.191,2.852 L2.171,2.809 L2.151,2.766 L2.131,2.723 L2.111,2.681 L2.091,2.638 L2.071,2.596 L2.051,2.555 L2.031,2.513 L2.011,2.472 L1.991,2.431 L1.971,2.391 L1.951,2.350 L1.931,2.310 L1.911,2.271 L1.891,2.232 L1.871,2.193 L1.851,2.154 L1.831,2.116 L1.811,2.078 L1.791,2.040 L1.771,2.003 L1.751,1.966 L1.731,1.930 L1.711,1.894 L1.691,1.858 L1.671,1.823 L1.651,1.788 L1.631,1.754 L1.611,1.720 L1.591,1.687 L1.571,1.654 L1.551,1.621 L1.531,1.590 L1.511,1.558 L1.491,1.527 L1.471,1.497 L1.451,1.467 L1.431,1.438 L1.411,1.410 L1.391,1.382 L1.371,1.355 L1.351,1.328 L1.331,1.302 L1.311,1.277 L1.291,1.253 L1.271,1.229 L1.251,1.207 L1.231,1.185 L1.211,1.164 L1.191,1.143 L1.171,1.124 L1.151,1.106 L1.131,1.088 L1.111,1.072 L1.091,1.057 L1.071,1.042 L1.051,1.029 L1.031,1.017 L1.011,1.006 L0.991,0.996 L0.971,0.987 L0.951,0.979 L0.931,0.972 L0.911,0.966 L0.891,0.962 L0.871,0.959 L0.851,0.956 L0.831,0.955 L0.811,0.955 L0.791,0.955 L0.771,0.957 L0.751,0.960 L0.731,0.964 L0.711,0.968 L0.691,0.974 L0.671,0.980 L0.651,0.987 L0.631,0.995 L0.611,1.003 L0.591,1.012 L0.571,1.022 L0.551,1.032 L0.531,1.043 L0.511,1.054 L0.491,1.066 L0.471,1.078 L0.451,1.091 L0.431,1.104 L0.411,1.117 L0.391,1.130 L0.371,1.144 L0.351,1.158 L0.331,1.172 L0.311,1.187 L0.291,1.201 L0.271,1.216 L0.251,1.230 L0.231,1.245 L0.211,1.260 L0.191,1.275 L0.171,1.290 L0.151,1.304 L0.131,1.319 L0.111,1.334 L0.091,1.349 L0.071,1.363 L0.051,1.378 L0.031,1.392 L0.011,1.406 L-0.009,1.421 L-0.029,1.435 L-0.049,1.448 L-0.069,1.462 L-0.089,1.476 L-0.109,1.489 L-0.129,1.502 L-0.149,1.515 L-0.169,1.527 L-0.189,1.540 L-0.209,1.552 L-0.229,1.564 L-0.249,1.576 L-0.269,1.587 L-0.289,1.598 L-0.309,1.609 L-0.329,1.619 L-0.349,1.630 L-0.369,1.639 L-0.389,1.649 L-0.409,1.658 L-0.429,1.667 L-0.449,1.676 L-0.469,1.684 L-0.489,1.691 L-0.509,1.699 L-0.529,1.706 L-0.549,1.712 L-0.569,1.719 L-0.589,1.724 L-0.609,1.730 L-0.629,1.735 L-0.649,1.739 L-0.669,1.743 L-0.689,1.747 L-0.709,1.750 L-0.729,1.752 L-0.749,1.754 L-0.769,1.756 L-0.789,1.757 L-0.809,1.757 L-0.829,1.757 L-0.849,1.757 L-0.869,1.755 L-0.889,1.754 L-0.909,1.751 L-0.929,1.748 L-0.949,1.745 L-0.969,1.740 L-0.989,1.735 L-1.009,1.729 L-1.029,1.723 L-1.049,1.716 L-1.069,1.708 L-1.089,1.699 L-1.109,1.689 L-1.129,1.679 L-1.149,1.668 L-1.169,1.655 L-1.189,1.642 L-1.209,1.628 L-1.229,1.613 L-1.249,1.597 L-1.269,1.579 L-1.289,1.561 L-1.309,1.541 L-1.329,1.520 L-1.349,1.498 L-1.369,1.474 L-1.389,1.449 L-1.409,1.422 L-1.429,1.393 L-1.449,1.362 L-1.469,1.330 L-1.489,1.295 L-1.509,1.258 L-1.529,1.218 L-1.549,1.175 L-1.569,1.129 L-1.589,1.080 L-1.609,1.026 L-1.629,0.967 L-1.649,0.902 L-1.669,0.830 L-1.689,0.748 L-1.709,0.653 L-1.729,0.538 L-1.749,0.384 L-1.769,0.046 L-1.769,-0.046 L-1.749,-0.384 L-1.729,-0.538 L-1.709,-0.653 L-1.689,-0.748 L-1.669,-0.830 L-1.649,-0.902 L-1.629,-0.967 L-1.609,-1.026 L-1.589,-1.080 L-1.569,-1.129 L-1.549,-1.175 L-1.529,-1.218 L-1.509,-1.258 L-1.489,-1.295 L-1.469,-1.330 L-1.449,-1.362 L-1.429,-1.393 L-1.409,-1.422 L-1.389,-1.449 L-1.369,-1.474 L-1.349,-1.498 L-1.329,-1.520 L-1.309,-1.541 L-1.289,-1.561 L-1.269,-1.579 L-1.249,-1.597 L-1.229,-1.613 L-1.209,-1.628 L-1.189,-1.642 L-1.169,-1.655 L-1.149,-1.668 L-1.129,-1.679 L-1.109,-1.689 L-1.089,-1.699 L-1.069,-1.708 L-1.049,-1.716 L-1.029,-1.723 L-1.009,-1.729 L-0.989,-1.735 L-0.969,-1.740 L-0.949,-1.745 L-0.929,-1.748 L-0.909,-1.751 L-0.889,-1.754 L-0.869,-1.755 L-0.849,-1.757 L-0.829,-1.757 L-0.809,-1.757 L-0.789,-1.757 L-0.769,-1.756 L-0.749,-1.754 L-0.729,-1.752 L-0.709,-1.750 L-0.689,-1.747 L-0.669,-1.743 L-0.649,-1.739 L-0.629,-1.735 L-0.609,-1.730 L-0.589,-1.724 L-0.569,-1.719 L-0.549,-1.712 L-0.529,-1.706 L-0.509,-1.699 L-0.489,-1.691 L-0.469,-1.684 L-0.449,-1.676 L-0.429,-1.667 L-0.409,-1.658 L-0.389,-1.649 L-0.369,-1.639 L-0.349,-1.630 L-0.329,-1.619 L-0.309,-1.609 L-0.289,-1.598 L-0.269,-1.587 L-0.249,-1.576 L-0.229,-1.564 L-0.209,-1.552 L-0.189,-1.540 L-0.169,-1.527 L-0.149,-1.515 L-0.129,-1.502 L-0.109,-1.489 L-0.089,-1.476 L-0.069,-1.462 L-0.049,-1.448 L-0.029,-1.435 L-0.009,-1.421 L0.011,-1.406 L0.031,-1.392 L0.051,-1.378 L0.071,-1.363 L0.091,-1.349 L0.111,-1.334 L0.131,-1.319 L0.151,-1.304 L0.171,-1.290 L0.191,-1.275 L0.211,-1.260 L0.231,-1.245 L0.251,-1.230 L0.271,-1.216 L0.291,-1.201 L0.311,-1.187 L0.331,-1.172 L0.351,-1.158 L0.371,-1.144 L0.391,-1.130 L0.411,-1.117 L0.431,-1.104 L0.451,-1.091 L0.471,-1.078 L0.491,-1.066 L0.511,-1.054 L0.531,-1.043 L0.551,-1.032 L0.571,-1.022 L0.591,-1.012 L0.611,-1.003 L0.631,-0.995 L0.651,-0.987 L0.671,-0.980 L0.691,-0.974 L0.711,-0.968 L0.731,-0.964 L0.751,-0.960 L0.771,-0.957 L0.791,-0.955 L0.811,-0.955 L0.831,-0.955 L0.851,-0.956 L0.871,-0.959 L0.891,-0.962 L0.911,-0.966 L0.931,-0.972 L0.951,-0.979 L0.971,-0.987 L0.991,-0.996 L1.011,-1.006 L1.031,-1.017 L1.051,-1.029 L1.071,-1.042 L1.091,-1.057 L1.111,-1.072 L1.131,-1.088 L1.151,-1.106 L1.171,-1.124 L1.191,-1.143 L1.211,-1.164 L1.231,-1.185 L1.251,-1.207 L1.271,-1.229 L1.291,-1.253 L1.311,-1.277 L1.331,-1.302 L1.351,-1.328 L1.371,-1.355 L1.391,-1.382 L1.411,-1.410 L1.431,-1.438 L1.451,-1.467 L1.471,-1.497 L1.491,-1.527 L1.511,-1.558 L1.531,-1.590 L1.551,-1.621 L1.571,-1.654 L1.591,-1.687 L1.611,-1.720 L1.631,-1.754 L1.651,-1.788 L1.671,-1.823 L1.691,-1.858 L1.711,-1.894 L1.731,-1.930 L1.751,-1.966 L1.771,-2.003 L1.791,-2.040 L1.811,-2.078 L1.831,-2.116 L1.851,-2.154 L1.871,-2.193 L1.891,-2.232 L1.911,-2.271 L1.931,-2.310 L1.951,-2.350 L1.971,-2.391 L1.991,-2.431 L2.011,-2.472 L2.031,-2.513 L2.051,-2.555 L2.071,-2.596 L2.091,-2.638 L2.111,-2.681 L2.131,-2.723 L2.151,-2.766 L2.171,-2.809 L2.191,-2.852 L2.211,-2.896 L2.231,-2.940 L2.251,-2.984 L2.271,-3.028 L2.291,-3.073 L2.311,-3.118 L2.331,-3.163 L2.351,-3.208 L2.371,-3.254 L2.391,-3.300 L2.411,-3.346 L2.431,-3.392 L2.451,-3.438 L2.471,-3.485 L2.491,-3.532 L2.511,-3.579 L2.531,-3.626 L2.551,-3.674 L2.571,-3.722 L2.591,-3.770" fill="none" stroke="#fff" stroke-width="0.05"/>
+</svg>
+  <a class="home-link" href="index.html">← 總覽</a>
+  <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
+  <div class="hero-content">
+    <div class="eyebrow">CHAPTER 01 · THE PRIME FIELD</div>
+    <h1>有限體 F_p</h1>
+    <div class="subtitle">曲線上的座標住在這裡：加減乘除都取模 p</div>
+    <div class="big-formula">$a\cdot a^{-1}\equiv 1 \pmod p,\qquad a^{-1}=a^{p-2}\bmod p$</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer on" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+  </div>
+</header>
+<main class="container">
+<div class="toc"><div class="toc-title">本章內容</div><div class="toc-grid"><a href="#why"><span class="toc-num">1.1</span>為什麼座標要放在有限體裡</a><a href="#arith"><span class="toc-num">1.2</span>加、減、乘：先算整數，再取模</a><a href="#euclid"><span class="toc-num">1.3</span>反元素之一：延伸歐幾里得演算法</a><a href="#fermat"><span class="toc-num">1.4</span>反元素之二：Fermat 小定理</a><a href="#lab"><span class="toc-num">1.5</span>互動：乘法表與反元素</a><a href="#cost"><span class="toc-num">1.6</span>為什麼反元素讓人頭痛</a><a href="#refs"><span class="toc-num">REF</span>本章文獻</a></div></div>
+<section id="why" data-nav="動機">
+<div class="section-number">§1.1</div>
+<h2>為什麼座標要放在有限體裡</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>橢圓曲線的加法公式（第 2 章）要用到加、減、乘、除。若座標是實數，電腦只能存近似值，誤差會一路累積，密碼學無法接受。我們需要一個<strong>有限</strong>的集合，在裡面四則運算都<strong>精確</strong>而且封閉：這就是有限體。</p>
+<p>本站只用最簡單的一種：質數 $p$ 所定的 $\mathbb F_p=\{0,1,\dots,p-1\}$，運算都取模 $p$。實際使用的 $p$ 有 256 到 521 位元。本章說明四則運算各自怎麼做、哪一個最貴；「除法最貴」這件事會一路影響到第 4 章的座標選擇。</p>
+</div>
+</section>
+
+<section id="arith" data-nav="模運算">
+<div class="section-number">§1.2</div>
+<h2>加、減、乘：先算整數，再取模</h2>
+<p>對 $a,b\in\mathbb F_p$，</p>
+$$a\oplus b=(a+b)\bmod p,\qquad a\ominus b=(a-b)\bmod p,\qquad a\otimes b=(ab)\bmod p .$$
+<p>$\mathbb Z/p\mathbb Z$ 是一個體（field），正是因為 $p$ 是質數：每個非零元素都有乘法反元素。若模數是合數 $m$，與 $m$ 不互質的元素就沒有反元素。</p>
+<ul>
+<li><strong>加法與減法很便宜。</strong>$0\le a+b&lt;2p$，所以只要算整數和，若 $\ge p$ 就減一次 $p$。減法同理：結果為負就加一次 $p$。成本與字組數 $k$ 成正比。</li>
+<li><strong>乘法是主角。</strong>整數乘積 $ab$ 有 $2k$ 個字組，第 6 章算它；接著要把它化簡回 $[0,p)$，第 7–9 章處理。本站把這一整套（乘積加化簡）記成一次 $\mathbf M$，平方記成 $\mathbf S$。平方可以利用對稱性少算一些部分積，所以常假設 $\mathbf S\approx 0.8\,\mathbf M$。</li>
+<li><strong>除法是乘上反元素。</strong>$a/b=a\cdot b^{-1}$，問題就變成：$b^{-1}$ 怎麼算、要花多少？</li>
+</ul>
+</section>
+
+<section id="euclid" data-nav="延伸歐幾里得">
+<div class="section-number">§1.3</div>
+<h2>反元素之一：延伸歐幾里得演算法</h2>
+<p>因為 $\gcd(a,p)=1$，Bézout 定理保證存在整數 $s,t$ 使 $sa+tp=1$。兩邊模 $p$，就得到 $sa\equiv1$，所以 $a^{-1}=s\bmod p$。延伸歐幾里得演算法在做輾轉相除的同時，記下每一個餘數如何寫成 $a$ 與 $p$ 的組合。</p>
+<div class="example"><div class="ex-label">手算小例：$5^{-1}\bmod 7$</div>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>商 $q$</th><th>餘數 $r$</th><th>7 的係數</th><th>5 的係數</th><th>關係</th></tr>
+<tr><td>—</td><td class="num">7</td><td class="num">1</td><td class="num">0</td><td class="num">7 = 7·1 + 5·0</td></tr>
+<tr><td>—</td><td class="num">5</td><td class="num">0</td><td class="num">1</td><td class="num">5 = 7·0 + 5·1</td></tr>
+<tr><td class="num">1</td><td class="num">2</td><td class="num">1</td><td class="num">−1</td><td class="num">2 = 7·1 + 5·(−1)</td></tr>
+<tr><td class="num">2</td><td class="num">1</td><td class="num">−2</td><td class="num">3</td><td class="num">1 = 7·(−2) + 5·3</td></tr>
+</table></div>
+<p>每一列等於「上上列 − $q$ × 上一列」。餘數到 1 時，5 的係數是 3，所以 $5^{-1}\equiv3\pmod 7$。驗算：$5\cdot3=15=2\cdot7+1$。</p>
+</div>
+<p>步數大約與 $\log p$ 成正比（Lamé 定理），但<strong>每一步都是一次多字組的除法</strong>，而且步數與商都隨輸入而變。這兩點讓它在實作上不如看起來便宜，也不容易做成常數時間。</p>
+<div class="code-block"><div class="code-cap">兩種求反元素的方法</div><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">egcd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;回傳 (g, s, t)，使 s*a + t*b = g = gcd(a, b)。&quot;&quot;&quot;</span>
+    <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">b</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">a</span> <span class="o">//</span> <span class="n">b</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s0</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">s1</span>
+        <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t0</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">t1</span>
+    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">s0</span><span class="p">,</span> <span class="n">t0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">inv_euclid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">egcd</span><span class="p">(</span><span class="n">a</span> <span class="o">%</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">g</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ZeroDivisionError</span><span class="p">(</span><span class="s2">&quot;a 在模 p 下沒有反元素&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">%</span> <span class="n">p</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">inv_fermat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="c1"># p 是質數：a^(p-1) = 1，所以 a^(p-2) 就是 a 的反元素</span>
+    <span class="k">return</span> <span class="nb">pow</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</code></pre></div>
+</section>
+
+<section id="fermat" data-nav="Fermat">
+<div class="section-number">§1.4</div>
+<h2>反元素之二：Fermat 小定理</h2>
+<p>對 $a\ne0$，$a^{p-1}\equiv1\pmod p$，所以</p>
+$$a^{-1}\equiv a^{p-2}\pmod p .$$
+<p>冪次用<strong>平方-乘</strong>（square-and-multiply）計算：把 $p-2$ 寫成二進位，由高位讀起，每讀一位先平方，讀到 1 再乘上 $a$。所需次數大約是 $\log_2 p$ 次平方，加上 $p-2$ 中 1 的個數那麼多次乘法。</p>
+<p>以 P-256 為例，直接照二進位做，大約是 255 次平方加 127 次乘法。實作上會針對固定的 $p-2$ 設計<strong>加法鏈</strong>（addition chain），把乘法次數壓到十幾次，但平方還是約 255 次。好處是步驟完全固定、只用到乘法，所以容易做成常數時間；缺點是很多次乘法。</p>
+<div class="info-box green"><span class="info-label">順帶一提：平方數</span>
+<p>同樣的冪次技巧還能判斷 $r$ 是不是平方數：$r^{(p-1)/2}\equiv1$ 或 $-1$（Euler 判別法）。$\mathbb F_p^*$ 中恰好一半的元素是平方數。第 2 章要從 $x$ 求曲線上的 $y$（$y^2=x^3+ax+b$），第 3 章要估計曲線上有幾個點，都會用到這個事實。</p>
+</div>
+</section>
+
+<section id="lab" data-nav="乘法表">
+<div class="section-number">§1.5</div>
+<h2>互動：乘法表與反元素</h2>
+<p>下表是 $\mathbb F_p$ 的乘法表，顏色越深代表值越大，<span class="pill-one">紅框</span>是乘積等於 1 的格子，也就是互為反元素的兩個數。點任一格，右邊會顯示該列的數 $a$ 的反元素用兩種方法怎麼算。注意每一列、每一行都恰好有一個 1：這就是「每個非零元素都有唯一反元素」。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">MULTIPLICATION TABLE</div>
+    <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
+      <label>p <select id="w01p">
+        <option>7</option><option>11</option><option selected>13</option><option>17</option><option>19</option><option>23</option>
+        <option value="12">12（合數，對照用）</option>
+      </select></label>
+    </div>
+    <div class="stage pad" id="w01table"></div>
+    <div class="status-banner" id="w01status">點表格中的任一格。</div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title" id="w01eTitle">延伸歐幾里得</div><div id="w01euclid"></div></div>
+    <div class="info-card"><div class="ic-title" id="w01fTitle">Fermat：平方-乘</div><div id="w01fermat"></div></div>
+  </div>
+</div>
+</section>
+
+<section id="cost" data-nav="成本">
+<div class="section-number">§1.6</div>
+<h2>為什麼反元素讓人頭痛</h2>
+<p>不管用哪一種方法，一次反元素都比一次乘法貴得多。工程上用一個比值 $\mathbf I/\mathbf M$ 來描述它：一次反元素相當於幾次乘法。這個數字隨平台、模數大小與實作方式而變，常見的假設在 80 到 100 之間（Explicit-Formulas Database 在比較公式時用 $\mathbf I=100\,\mathbf M$），有些硬體上也可能只有 10 到 20。</p>
+<p>第 2 章會看到，曲線上每加一次點，仿射公式就要算一次除法。一次純量乘法要加幾百次點，若每次都付一次反元素，成本會被反元素主導。第 4 章的解法是：<strong>把除法全部延到最後只做一次</strong>。</p>
+</section>
+
+<section id="refs" data-nav="本章文獻">
+<div class="section-number">REF</div>
+<h2>本章文獻</h2>
+<ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §2.4：Alg. 2.107, Fact 2.127, Alg. 2.142–2.143</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §2.2：Alg. 2.19–2.20</span></li><li>J. Hoffstein, J. Pipher, J. H. Silverman, <cite>An Introduction to Mathematical Cryptography</cite>, 2nd ed., Springer, 2014. <span class="where">— §1.3</span></li><li>C. Paar, J. Pelzl, <cite>Understanding Cryptography</cite>, Springer, 2010. <span class="where">— §6.3</span></li></ul>
+<p class="where">完整書目見 <a href="references.html">參考文獻</a>。</p>
+</section>
+<nav class="chapter-nav"><a class="prev" href="00_why_ecc.html"><div class="nav-dir">← 上一章</div><div class="nav-title">0. 為什麼是橢圓曲線</div></a><a class="home" href="index.html"><div class="nav-dir">總覽</div><div class="nav-title">全部章節</div></a><a class="next" href="02_group_law.html"><div class="nav-dir">下一章 →</div><div class="nav-title">2. 曲線與群律</div></a></nav>
+</main>
+<footer>橢圓曲線密碼：從曲線到模乘法・<a href="https://github.com/phonchi/ecc-selfstudy">原始碼</a>・所有互動元件在瀏覽器以 BigInt 計算，僅供教學，不是常數時間實作</footer>
+<script src="assets/ecc-core.js?v=20261004"></script>
+<script src="assets/ecc-ui.js?v=20261004"></script>
+<script src="assets/js/01_finite_field.js?v=20261004"></script>
+</body>
+</html>

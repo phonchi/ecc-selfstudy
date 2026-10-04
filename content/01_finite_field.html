@@ -1,0 +1,75 @@
+<section id="why" data-nav="動機">
+<h2>為什麼座標要放在有限體裡</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>橢圓曲線的加法公式（第 2 章）要用到加、減、乘、除。若座標是實數，電腦只能存近似值，誤差會一路累積，密碼學無法接受。我們需要一個<strong>有限</strong>的集合，在裡面四則運算都<strong>精確</strong>而且封閉：這就是有限體。</p>
+<p>本站只用最簡單的一種：質數 $p$ 所定的 $\mathbb F_p=\{0,1,\dots,p-1\}$，運算都取模 $p$。實際使用的 $p$ 有 256 到 521 位元。本章說明四則運算各自怎麼做、哪一個最貴；「除法最貴」這件事會一路影響到第 4 章的座標選擇。</p>
+</div>
+</section>
+
+<section id="arith" data-nav="模運算">
+<h2>加、減、乘：先算整數，再取模</h2>
+<p>對 $a,b\in\mathbb F_p$，</p>
+$$a\oplus b=(a+b)\bmod p,\qquad a\ominus b=(a-b)\bmod p,\qquad a\otimes b=(ab)\bmod p .$$
+<p>$\mathbb Z/p\mathbb Z$ 是一個體（field），正是因為 $p$ 是質數：每個非零元素都有乘法反元素。若模數是合數 $m$，與 $m$ 不互質的元素就沒有反元素。</p>
+<ul>
+<li><strong>加法與減法很便宜。</strong>$0\le a+b&lt;2p$，所以只要算整數和，若 $\ge p$ 就減一次 $p$。減法同理：結果為負就加一次 $p$。成本與字組數 $k$ 成正比。</li>
+<li><strong>乘法是主角。</strong>整數乘積 $ab$ 有 $2k$ 個字組，第 6 章算它；接著要把它化簡回 $[0,p)$，第 7–9 章處理。本站把這一整套（乘積加化簡）記成一次 $\mathbf M$，平方記成 $\mathbf S$。平方可以利用對稱性少算一些部分積，所以常假設 $\mathbf S\approx 0.8\,\mathbf M$。</li>
+<li><strong>除法是乘上反元素。</strong>$a/b=a\cdot b^{-1}$，問題就變成：$b^{-1}$ 怎麼算、要花多少？</li>
+</ul>
+</section>
+
+<section id="euclid" data-nav="延伸歐幾里得">
+<h2>反元素之一：延伸歐幾里得演算法</h2>
+<p>因為 $\gcd(a,p)=1$，Bézout 定理保證存在整數 $s,t$ 使 $sa+tp=1$。兩邊模 $p$，就得到 $sa\equiv1$，所以 $a^{-1}=s\bmod p$。延伸歐幾里得演算法在做輾轉相除的同時，記下每一個餘數如何寫成 $a$ 與 $p$ 的組合。</p>
+<div class="example"><div class="ex-label">手算小例：$5^{-1}\bmod 7$</div>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>商 $q$</th><th>餘數 $r$</th><th>7 的係數</th><th>5 的係數</th><th>關係</th></tr>
+<tr><td>—</td><td class="num">7</td><td class="num">1</td><td class="num">0</td><td class="num">7 = 7·1 + 5·0</td></tr>
+<tr><td>—</td><td class="num">5</td><td class="num">0</td><td class="num">1</td><td class="num">5 = 7·0 + 5·1</td></tr>
+<tr><td class="num">1</td><td class="num">2</td><td class="num">1</td><td class="num">−1</td><td class="num">2 = 7·1 + 5·(−1)</td></tr>
+<tr><td class="num">2</td><td class="num">1</td><td class="num">−2</td><td class="num">3</td><td class="num">1 = 7·(−2) + 5·3</td></tr>
+</table></div>
+<p>每一列等於「上上列 − $q$ × 上一列」。餘數到 1 時，5 的係數是 3，所以 $5^{-1}\equiv3\pmod 7$。驗算：$5\cdot3=15=2\cdot7+1$。</p>
+</div>
+<p>步數大約與 $\log p$ 成正比（Lamé 定理），但<strong>每一步都是一次多字組的除法</strong>，而且步數與商都隨輸入而變。這兩點讓它在實作上不如看起來便宜，也不容易做成常數時間。</p>
+<!-- code: egcd 兩種求反元素的方法 -->
+</section>
+
+<section id="fermat" data-nav="Fermat">
+<h2>反元素之二：Fermat 小定理</h2>
+<p>對 $a\ne0$，$a^{p-1}\equiv1\pmod p$，所以</p>
+$$a^{-1}\equiv a^{p-2}\pmod p .$$
+<p>冪次用<strong>平方-乘</strong>（square-and-multiply）計算：把 $p-2$ 寫成二進位，由高位讀起，每讀一位先平方，讀到 1 再乘上 $a$。所需次數大約是 $\log_2 p$ 次平方，加上 $p-2$ 中 1 的個數那麼多次乘法。</p>
+<p>以 P-256 為例，直接照二進位做，大約是 255 次平方加 127 次乘法。實作上會針對固定的 $p-2$ 設計<strong>加法鏈</strong>（addition chain），把乘法次數壓到十幾次，但平方還是約 255 次。好處是步驟完全固定、只用到乘法，所以容易做成常數時間；缺點是很多次乘法。</p>
+<div class="info-box green"><span class="info-label">順帶一提：平方數</span>
+<p>同樣的冪次技巧還能判斷 $r$ 是不是平方數：$r^{(p-1)/2}\equiv1$ 或 $-1$（Euler 判別法）。$\mathbb F_p^*$ 中恰好一半的元素是平方數。第 2 章要從 $x$ 求曲線上的 $y$（$y^2=x^3+ax+b$），第 3 章要估計曲線上有幾個點，都會用到這個事實。</p>
+</div>
+</section>
+
+<section id="lab" data-nav="乘法表">
+<h2>互動：乘法表與反元素</h2>
+<p>下表是 $\mathbb F_p$ 的乘法表，顏色越深代表值越大，<span class="pill-one">紅框</span>是乘積等於 1 的格子，也就是互為反元素的兩個數。點任一格，右邊會顯示該列的數 $a$ 的反元素用兩種方法怎麼算。注意每一列、每一行都恰好有一個 1：這就是「每個非零元素都有唯一反元素」。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">MULTIPLICATION TABLE</div>
+    <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
+      <label>p <select id="w01p">
+        <option>7</option><option>11</option><option selected>13</option><option>17</option><option>19</option><option>23</option>
+        <option value="12">12（合數，對照用）</option>
+      </select></label>
+    </div>
+    <div class="stage pad" id="w01table"></div>
+    <div class="status-banner" id="w01status">點表格中的任一格。</div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title" id="w01eTitle">延伸歐幾里得</div><div id="w01euclid"></div></div>
+    <div class="info-card"><div class="ic-title" id="w01fTitle">Fermat：平方-乘</div><div id="w01fermat"></div></div>
+  </div>
+</div>
+</section>
+
+<section id="cost" data-nav="成本">
+<h2>為什麼反元素讓人頭痛</h2>
+<p>不管用哪一種方法，一次反元素都比一次乘法貴得多。工程上用一個比值 $\mathbf I/\mathbf M$ 來描述它：一次反元素相當於幾次乘法。這個數字隨平台、模數大小與實作方式而變，常見的假設在 80 到 100 之間（Explicit-Formulas Database 在比較公式時用 $\mathbf I=100\,\mathbf M$），有些硬體上也可能只有 10 到 20。</p>
+<p>第 2 章會看到，曲線上每加一次點，仿射公式就要算一次除法。一次純量乘法要加幾百次點，若每次都付一次反元素，成本會被反元素主導。第 4 章的解法是：<strong>把除法全部延到最後只做一次</strong>。</p>
+</section>

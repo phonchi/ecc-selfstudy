@@ -1,0 +1,99 @@
+<section id="why" data-nav="動機">
+<h2>一個暫存器裝不下的數</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>P-256 的座標是 256 位元的整數，但處理器的一個暫存器只有 64 位元（嵌入式晶片常常只有 32 位元，甚至 8 位元）。硬體的乘法指令一次只能把兩個 $w$ 位元的數相乘，得到 $2w$ 位元的乘積。</p>
+<p>所以「在 $\mathbb F_p$ 裡乘兩個數」實際上分兩步：</p>
+<ol>
+<li><strong>整數乘法</strong>：把兩個多字組的整數相乘，得到兩倍長的乘積（本章）。</li>
+<li><strong>化簡</strong>：把乘積化簡到 $[0,p)$（第 7、8、9 章）。</li>
+</ol>
+<p>一次純量乘法需要幾千次這樣的乘法（第 5 章），所以第一步的每一個字組乘法都算數。成本鏈走到最底層，就是本章要數的「字組乘法」。</p>
+</div>
+</section>
+
+<section id="words" data-nav="字組">
+<h2>字組表示：以 $2^w$ 為基底</h2>
+<p>取基底 $b=2^w$，其中 $w$ 是字組（word）的位元數，實務上 $w=32$ 或 $64$。小於 $b^k$ 的非負整數 $x$ 可以唯一寫成</p>
+$$x=\sum_{i=0}^{k-1}x_i\,b^{\,i},\qquad 0\le x_i&lt;b .$$
+<p>這就是以 $b$ 為基底的進位表示，每個「位數」$x_i$ 正好放進一個暫存器。因為 $b$ 是 2 的冪，切出字組只是取出連續的位元，不用任何除法。需要的字組數是 $k=\lceil(\text{位元數})/w\rceil$：</p>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>模數</th><th>位元數</th><th>$w=64$</th><th>$w=32$</th></tr>
+<tr><td>P-256</td><td class="num">256</td><td class="num">4</td><td class="num">8</td></tr>
+<tr><td>P-384</td><td class="num">384</td><td class="num">6</td><td class="num">12</td></tr>
+<tr><td>P-521</td><td class="num">521</td><td class="num">9</td><td class="num">17</td></tr>
+</table></div>
+<p>P-521 的 521 位元比 8 個 64 位元字組多出 9 個位元，就得用上第 9 個字組；第 7 章提過的跨字組移位就是這樣來的。</p>
+</section>
+
+<section id="schoolbook" data-nav="Schoolbook">
+<h2>Schoolbook 乘法：小學直式乘法</h2>
+<p>兩個 $k$ 字組的數相乘：</p>
+$$x\cdot y=\sum_{i=0}^{k-1}\sum_{j=0}^{k-1}x_j\,y_i\,b^{\,i+j}.$$
+<p>每一項 $x_jy_i$ 是一次硬體乘法，結果要加到輸出的第 $i+j$ 個字組上。HAC 演算法 14.12 的做法和小學直式乘法完全相同：拿 $y$ 的一個字組 $y_i$，從低到高乘遍 $x$ 的每個字組，邊乘邊進位，再換下一個 $y_{i+1}$。內層的一步是</p>
+$$(u,v)\leftarrow w_{i+j}+x_j\,y_i+c,\qquad w_{i+j}\leftarrow v,\quad c\leftarrow u,$$
+<p>其中 $(u,v)$ 表示一個兩字組的數，$v$ 是低字組、$u$ 是高字組（新的進位）。</p>
+<div class="info-box green"><span class="info-label">為什麼兩個字組一定夠</span>
+<p>三個加數都不超過字組的最大值：$w_{i+j}\le b-1$、$c\le b-1$、$x_jy_i\le(b-1)^2$。所以</p>
+$$w_{i+j}+x_jy_i+c\ \le\ (b-1)^2+2(b-1)\ =\ b^2-1 .$$
+<p>結果剛好塞進兩個字組，不會溢位；進位 $u$ 也一定小於 $b$，下一步仍然成立。以 $w=8$ 為例，$255^2+2\cdot255=65535=2^{16}-1$。處理器的「乘法得雙字組結果」加上「帶進位的加法」指令，就是為這一步設計的。</p>
+</div>
+<div class="example"><div class="ex-label">手算小例：十進位，$b=10$，$87\times96$</div>
+<p>$x=(x_1,x_0)=(8,7)$，$y=(y_1,y_0)=(9,6)$。</p>
+<ul>
+<li>$i=0$（乘 $y_0=6$）：$0+7\cdot6+0=42$，寫 2 進 4；$0+8\cdot6+4=52$，寫 2 進 5。這一列得到 $0522$。</li>
+<li>$i=1$（乘 $y_1=9$）：$2+7\cdot9+0=65$，寫 5 進 6；$5+8\cdot9+6=83$，寫 3 進 8。結果 $8352$。</li>
+</ul>
+<p>每一步的值最多是 $9^2+2\cdot9=99$，兩位數放得下。驗算：$87\cdot96=8352$。</p>
+</div>
+<p>兩個 $k$ 字組的數相乘，共做 $k^2$ 次字組乘法。P-256 在 64 位元機器上是 $4^2=16$ 次；P-521 是 $9^2=81$ 次。</p>
+<!-- code: words 字組表示與 schoolbook 乘法（HAC 演算法 14.12） -->
+</section>
+
+<section id="square" data-nav="平方">
+<h2>平方：對稱讓工作量減半</h2>
+<p>當 $x=y$ 時，交叉項成對出現：$x_ix_j$ 與 $x_jx_i$ 相同。所以</p>
+$$x^2=\sum_{i}x_i^2\,b^{\,2i}+2\sum_{i&lt;j}x_ix_j\,b^{\,i+j}.$$
+<p>不同的乘積只有 $k$ 個平方加上 $k(k-1)/2$ 個交叉項，共 $k(k+1)/2$ 個，而不是 $k^2$ 個。$k=4$ 時是 10 對 16；$k=9$ 時是 45 對 81。乘以 2 只是左移一位，幾乎不花時間（但 $2x_ix_j$ 可能比兩個字組多一個位元，實作要多留一個進位位元，見 HAC 演算法 14.16）。</p>
+<p>加法、進位與記憶體存取並沒有減半，所以實際的節省少於一半。估算成本時常用的假設是一次平方 $S\approx0.8M$（$M$ 為一次乘法；HMV §2.2.2）。第 4 章的點運算公式會分開數 $M$ 和 $S$，就是這個原因。</p>
+</section>
+
+<section id="karatsuba" data-nav="Karatsuba">
+<h2>Karatsuba：少一次乘法</h2>
+<div class="info-box purple"><span class="info-label">三個半長乘積取代四個</span>
+<p>把 $x,y$ 各切成高低兩半：$x=x_1B+x_0$，$y=y_1B+y_0$。直接展開要四個半長乘積；Karatsuba（1962）注意到</p>
+$$x_1y_0+x_0y_1=(x_1+x_0)(y_1+y_0)-x_1y_1-x_0y_0,$$
+<p>所以只需要三個半長乘積 $x_1y_1$、$x_0y_0$、$(x_1+x_0)(y_1+y_0)$，代價是多幾次加減法。遞迴下去，$k$ 字組的乘法只要 $k^{\log_2 3}\approx k^{1.585}$ 次字組乘法，而不是 $k^2$：$k=4$ 時 9 對 16，$k=32$ 時 243 對 1024。</p>
+<p>在 ECC 的大小（$k$ 只有 4 到 9），多出來的加減法、進位與分支往往把省下的乘法吃掉，所以常見的實作直接用 schoolbook，或只做一層 Karatsuba。RSA 這種上千位元的數才明顯受益（HMV §2.2.2）。</p>
+</div>
+<!-- code: karatsuba Karatsuba 乘法（遞迴到 32 位元以下改用直接相乘） -->
+</section>
+
+<section id="lab" data-nav="逐格演示">
+<h2>互動：schoolbook 乘法逐格演示</h2>
+<p>選字組大小 $w$ 與字組數 $k$，按「隨機 x, y」產生兩個 $k$ 字組的數。格子的第 $i$ 列、第 $j$ 行是部分積 $x_j\cdot y_i$，它加到輸出的第 $i+j$ 個字組。播放時目前的格子以<span class="pill-cur">黃色</span>標出，下方的輸出列同步更新；每一列結束時，最後的進位寫入第 $i+k$ 個字組。「全部取最大值」讓 $x=y=b^k-1$，可以看到每一步都逼近 $b^2-1$ 的上界。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">SCHOOLBOOK</div>
+    <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
+      <label>w <select id="w06w"><option value="8">8 位元</option><option value="16">16 位元</option><option value="64">64 位元</option></select></label>
+      <label>k <select id="w06k"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select></label>
+      <button class="btn btn-ghost" id="w06rand" type="button">隨機 x, y</button>
+      <button class="btn btn-ghost" id="w06max" type="button">全部取最大值</button>
+    </div>
+    <div class="stage pad" id="w06io"></div>
+    <div class="tbl-wrap"><table class="sbgrid" id="w06grid"></table></div>
+    <div class="stage pad" id="w06out"></div>
+    <div class="status-banner" id="w06status"></div>
+    <div class="controls-bar">
+      <button class="btn btn-play" id="w06play" type="button">▶ 播放</button>
+      <button class="btn btn-step" id="w06step" type="button">下一步</button>
+      <button class="btn btn-reset" id="w06reset" type="button">重來</button>
+    </div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">計數</div><div id="w06count"></div>
+      <div class="ic-note" style="margin-top:.4rem">每一格恰好一次字組乘法，總數是 k²；進位的傳遞只用加法。</div></div>
+    <div class="info-card"><div class="ic-title">驗算</div><div id="w06check"></div></div>
+  </div>
+</div>
+</section>

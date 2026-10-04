@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="純量乘法（Scalar Multiplication）：kP 是 ECC 的核心運算；它把幾百位元的 k 變成幾千次模乘">
+<title>5. 純量乘法 — 橢圓曲線密碼：從曲線到模乘法</title>
+<script>
+  try { const t = localStorage.getItem('ecc-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (_) {}
+  MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+             options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] },
+             chtml: { scale: 0.98 } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ecc.css?v=20261004">
+<link rel="stylesheet" href="assets/css/05_scalar.css?v=20261004">
+</head>
+<body>
+<nav class="float-nav" id="floatNav" aria-label="本章導覽"><a href="#why" data-target="why"><span class="fn-num">5.1</span><span class="fn-name">動機</span></a><a href="#dbladd" data-target="dbladd"><span class="fn-num">5.2</span><span class="fn-name">double-and-add</span></a><a href="#naf" data-target="naf"><span class="fn-num">5.3</span><span class="fn-name">NAF</span></a><a href="#cost" data-target="cost"><span class="fn-num">5.4</span><span class="fn-name">成本帳</span></a><a href="#ladder" data-target="ladder"><span class="fn-num">5.5</span><span class="fn-name">旁通道與階梯</span></a><a href="#lab" data-target="lab"><span class="fn-num">5.6</span><span class="fn-name">逐位演示</span></a><a href="#refs" data-target="refs"><span class="fn-num">REF</span><span class="fn-name">本章文獻</span></a></nav>
+<header class="hero small" id="top">
+  <div class="hero-grid"></div>
+  <svg class="hero-curve" width="300" height="300" viewBox="-2.2 -3.2 5 6.4" aria-hidden="true">
+  <path d="M2.591,3.770 L2.571,3.722 L2.551,3.674 L2.531,3.626 L2.511,3.579 L2.491,3.532 L2.471,3.485 L2.451,3.438 L2.431,3.392 L2.411,3.346 L2.391,3.300 L2.371,3.254 L2.351,3.208 L2.331,3.163 L2.311,3.118 L2.291,3.073 L2.271,3.028 L2.251,2.984 L2.231,2.940 L2.211,2.896 L2.191,2.852 L2.171,2.809 L2.151,2.766 L2.131,2.723 L2.111,2.681 L2.091,2.638 L2.071,2.596 L2.051,2.555 L2.031,2.513 L2.011,2.472 L1.991,2.431 L1.971,2.391 L1.951,2.350 L1.931,2.310 L1.911,2.271 L1.891,2.232 L1.871,2.193 L1.851,2.154 L1.831,2.116 L1.811,2.078 L1.791,2.040 L1.771,2.003 L1.751,1.966 L1.731,1.930 L1.711,1.894 L1.691,1.858 L1.671,1.823 L1.651,1.788 L1.631,1.754 L1.611,1.720 L1.591,1.687 L1.571,1.654 L1.551,1.621 L1.531,1.590 L1.511,1.558 L1.491,1.527 L1.471,1.497 L1.451,1.467 L1.431,1.438 L1.411,1.410 L1.391,1.382 L1.371,1.355 L1.351,1.328 L1.331,1.302 L1.311,1.277 L1.291,1.253 L1.271,1.229 L1.251,1.207 L1.231,1.185 L1.211,1.164 L1.191,1.143 L1.171,1.124 L1.151,1.106 L1.131,1.088 L1.111,1.072 L1.091,1.057 L1.071,1.042 L1.051,1.029 L1.031,1.017 L1.011,1.006 L0.991,0.996 L0.971,0.987 L0.951,0.979 L0.931,0.972 L0.911,0.966 L0.891,0.962 L0.871,0.959 L0.851,0.956 L0.831,0.955 L0.811,0.955 L0.791,0.955 L0.771,0.957 L0.751,0.960 L0.731,0.964 L0.711,0.968 L0.691,0.974 L0.671,0.980 L0.651,0.987 L0.631,0.995 L0.611,1.003 L0.591,1.012 L0.571,1.022 L0.551,1.032 L0.531,1.043 L0.511,1.054 L0.491,1.066 L0.471,1.078 L0.451,1.091 L0.431,1.104 L0.411,1.117 L0.391,1.130 L0.371,1.144 L0.351,1.158 L0.331,1.172 L0.311,1.187 L0.291,1.201 L0.271,1.216 L0.251,1.230 L0.231,1.245 L0.211,1.260 L0.191,1.275 L0.171,1.290 L0.151,1.304 L0.131,1.319 L0.111,1.334 L0.091,1.349 L0.071,1.363 L0.051,1.378 L0.031,1.392 L0.011,1.406 L-0.009,1.421 L-0.029,1.435 L-0.049,1.448 L-0.069,1.462 L-0.089,1.476 L-0.109,1.489 L-0.129,1.502 L-0.149,1.515 L-0.169,1.527 L-0.189,1.540 L-0.209,1.552 L-0.229,1.564 L-0.249,1.576 L-0.269,1.587 L-0.289,1.598 L-0.309,1.609 L-0.329,1.619 L-0.349,1.630 L-0.369,1.639 L-0.389,1.649 L-0.409,1.658 L-0.429,1.667 L-0.449,1.676 L-0.469,1.684 L-0.489,1.691 L-0.509,1.699 L-0.529,1.706 L-0.549,1.712 L-0.569,1.719 L-0.589,1.724 L-0.609,1.730 L-0.629,1.735 L-0.649,1.739 L-0.669,1.743 L-0.689,1.747 L-0.709,1.750 L-0.729,1.752 L-0.749,1.754 L-0.769,1.756 L-0.789,1.757 L-0.809,1.757 L-0.829,1.757 L-0.849,1.757 L-0.869,1.755 L-0.889,1.754 L-0.909,1.751 L-0.929,1.748 L-0.949,1.745 L-0.969,1.740 L-0.989,1.735 L-1.009,1.729 L-1.029,1.723 L-1.049,1.716 L-1.069,1.708 L-1.089,1.699 L-1.109,1.689 L-1.129,1.679 L-1.149,1.668 L-1.169,1.655 L-1.189,1.642 L-1.209,1.628 L-1.229,1.613 L-1.249,1.597 L-1.269,1.579 L-1.289,1.561 L-1.309,1.541 L-1.329,1.520 L-1.349,1.498 L-1.369,1.474 L-1.389,1.449 L-1.409,1.422 L-1.429,1.393 L-1.449,1.362 L-1.469,1.330 L-1.489,1.295 L-1.509,1.258 L-1.529,1.218 L-1.549,1.175 L-1.569,1.129 L-1.589,1.080 L-1.609,1.026 L-1.629,0.967 L-1.649,0.902 L-1.669,0.830 L-1.689,0.748 L-1.709,0.653 L-1.729,0.538 L-1.749,0.384 L-1.769,0.046 L-1.769,-0.046 L-1.749,-0.384 L-1.729,-0.538 L-1.709,-0.653 L-1.689,-0.748 L-1.669,-0.830 L-1.649,-0.902 L-1.629,-0.967 L-1.609,-1.026 L-1.589,-1.080 L-1.569,-1.129 L-1.549,-1.175 L-1.529,-1.218 L-1.509,-1.258 L-1.489,-1.295 L-1.469,-1.330 L-1.449,-1.362 L-1.429,-1.393 L-1.409,-1.422 L-1.389,-1.449 L-1.369,-1.474 L-1.349,-1.498 L-1.329,-1.520 L-1.309,-1.541 L-1.289,-1.561 L-1.269,-1.579 L-1.249,-1.597 L-1.229,-1.613 L-1.209,-1.628 L-1.189,-1.642 L-1.169,-1.655 L-1.149,-1.668 L-1.129,-1.679 L-1.109,-1.689 L-1.089,-1.699 L-1.069,-1.708 L-1.049,-1.716 L-1.029,-1.723 L-1.009,-1.729 L-0.989,-1.735 L-0.969,-1.740 L-0.949,-1.745 L-0.929,-1.748 L-0.909,-1.751 L-0.889,-1.754 L-0.869,-1.755 L-0.849,-1.757 L-0.829,-1.757 L-0.809,-1.757 L-0.789,-1.757 L-0.769,-1.756 L-0.749,-1.754 L-0.729,-1.752 L-0.709,-1.750 L-0.689,-1.747 L-0.669,-1.743 L-0.649,-1.739 L-0.629,-1.735 L-0.609,-1.730 L-0.589,-1.724 L-0.569,-1.719 L-0.549,-1.712 L-0.529,-1.706 L-0.509,-1.699 L-0.489,-1.691 L-0.469,-1.684 L-0.449,-1.676 L-0.429,-1.667 L-0.409,-1.658 L-0.389,-1.649 L-0.369,-1.639 L-0.349,-1.630 L-0.329,-1.619 L-0.309,-1.609 L-0.289,-1.598 L-0.269,-1.587 L-0.249,-1.576 L-0.229,-1.564 L-0.209,-1.552 L-0.189,-1.540 L-0.169,-1.527 L-0.149,-1.515 L-0.129,-1.502 L-0.109,-1.489 L-0.089,-1.476 L-0.069,-1.462 L-0.049,-1.448 L-0.029,-1.435 L-0.009,-1.421 L0.011,-1.406 L0.031,-1.392 L0.051,-1.378 L0.071,-1.363 L0.091,-1.349 L0.111,-1.334 L0.131,-1.319 L0.151,-1.304 L0.171,-1.290 L0.191,-1.275 L0.211,-1.260 L0.231,-1.245 L0.251,-1.230 L0.271,-1.216 L0.291,-1.201 L0.311,-1.187 L0.331,-1.172 L0.351,-1.158 L0.371,-1.144 L0.391,-1.130 L0.411,-1.117 L0.431,-1.104 L0.451,-1.091 L0.471,-1.078 L0.491,-1.066 L0.511,-1.054 L0.531,-1.043 L0.551,-1.032 L0.571,-1.022 L0.591,-1.012 L0.611,-1.003 L0.631,-0.995 L0.651,-0.987 L0.671,-0.980 L0.691,-0.974 L0.711,-0.968 L0.731,-0.964 L0.751,-0.960 L0.771,-0.957 L0.791,-0.955 L0.811,-0.955 L0.831,-0.955 L0.851,-0.956 L0.871,-0.959 L0.891,-0.962 L0.911,-0.966 L0.931,-0.972 L0.951,-0.979 L0.971,-0.987 L0.991,-0.996 L1.011,-1.006 L1.031,-1.017 L1.051,-1.029 L1.071,-1.042 L1.091,-1.057 L1.111,-1.072 L1.131,-1.088 L1.151,-1.106 L1.171,-1.124 L1.191,-1.143 L1.211,-1.164 L1.231,-1.185 L1.251,-1.207 L1.271,-1.229 L1.291,-1.253 L1.311,-1.277 L1.331,-1.302 L1.351,-1.328 L1.371,-1.355 L1.391,-1.382 L1.411,-1.410 L1.431,-1.438 L1.451,-1.467 L1.471,-1.497 L1.491,-1.527 L1.511,-1.558 L1.531,-1.590 L1.551,-1.621 L1.571,-1.654 L1.591,-1.687 L1.611,-1.720 L1.631,-1.754 L1.651,-1.788 L1.671,-1.823 L1.691,-1.858 L1.711,-1.894 L1.731,-1.930 L1.751,-1.966 L1.771,-2.003 L1.791,-2.040 L1.811,-2.078 L1.831,-2.116 L1.851,-2.154 L1.871,-2.193 L1.891,-2.232 L1.911,-2.271 L1.931,-2.310 L1.951,-2.350 L1.971,-2.391 L1.991,-2.431 L2.011,-2.472 L2.031,-2.513 L2.051,-2.555 L2.071,-2.596 L2.091,-2.638 L2.111,-2.681 L2.131,-2.723 L2.151,-2.766 L2.171,-2.809 L2.191,-2.852 L2.211,-2.896 L2.231,-2.940 L2.251,-2.984 L2.271,-3.028 L2.291,-3.073 L2.311,-3.118 L2.331,-3.163 L2.351,-3.208 L2.371,-3.254 L2.391,-3.300 L2.411,-3.346 L2.431,-3.392 L2.451,-3.438 L2.471,-3.485 L2.491,-3.532 L2.511,-3.579 L2.531,-3.626 L2.551,-3.674 L2.571,-3.722 L2.591,-3.770" fill="none" stroke="#fff" stroke-width="0.05"/>
+</svg>
+  <a class="home-link" href="index.html">← 總覽</a>
+  <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
+  <div class="hero-content">
+    <div class="eyebrow">CHAPTER 05 · SCALAR MULTIPLICATION</div>
+    <h1>純量乘法</h1>
+    <div class="subtitle">kP 是 ECC 的核心運算；它把幾百位元的 k 變成幾千次模乘</div>
+    <div class="big-formula">$kP = \underbrace{P+P+\cdots+P}_{k}$</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer on" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+  </div>
+</header>
+<main class="container">
+<div class="toc"><div class="toc-title">本章內容</div><div class="toc-grid"><a href="#why"><span class="toc-num">5.1</span>把 k 個 P 加起來，但不能真的加 k 次</a><a href="#dbladd"><span class="toc-num">5.2</span>double-and-add</a><a href="#naf"><span class="toc-num">5.3</span>NAF：減法是免費的</a><a href="#cost"><span class="toc-num">5.4</span>一次 kP 的成本帳</a><a href="#ladder"><span class="toc-num">5.5</span>旁通道與 Montgomery 階梯</a><a href="#lab"><span class="toc-num">5.6</span>互動：逐位執行三種方法</a><a href="#refs"><span class="toc-num">REF</span>本章文獻</a></div></div>
+<section id="why" data-nav="動機">
+<div class="section-number">§5.1</div>
+<h2>把 $k$ 個 $P$ 加起來，但不能真的加 $k$ 次</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>ECC 的公開金鑰是 $Q=kG$，ECDH 的共同秘密是 $a(bG)$：所有協定的核心都是<strong>純量乘法</strong> $kP$。$k$ 是 256 位元左右的整數，大約 $2^{256}$，一個一個加顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法，而且要算清楚：一次 $kP$ 到底要多少次 $\mathbb F_p$ 乘法？這個數字決定了後面四章為什麼值得花力氣。</p>
+</div>
+</section>
+
+<section id="dbladd" data-nav="double-and-add">
+<div class="section-number">§5.2</div>
+<h2>double-and-add</h2>
+<p>這和第 1 章計算 $a^{p-2}$ 的平方-乘是同一個演算法，只是群運算寫成加法：把 $k$ 寫成二進位，由最高位往下讀，每讀一位先把目前的點<strong>倍點</strong>，讀到 1 再<strong>加上 $P$</strong>。正確性來自 Horner 形式：</p>
+$$k=(\cdots((k_{\ell-1})\,2+k_{\ell-2})\,2+\cdots)\,2+k_0 .$$
+<p>讀完前 $j$ 位時，手上的點恰好是「這 $j$ 位所代表的整數」乘上 $P$。$\ell$ 位元的 $k$ 需要 $\ell-1$ 次倍點，以及（$k$ 中 1 的個數減 1）次加點。隨機的 $k$ 平均約一半位元是 1，所以大約 $\ell/2$ 次加點。</p>
+<div class="code-block"><div class="code-cap">三種純量乘法</div><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">scalar_mult</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;由左而右的 double-and-add：每讀一位先倍點，位元為 1 再加 P。&quot;&quot;&quot;</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">O</span>
+    <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">bin</span><span class="p">(</span><span class="n">k</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>          <span class="c1"># 倍點</span>
+        <span class="k">if</span> <span class="n">bit</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>      <span class="c1"># 加點</span>
+    <span class="k">return</span> <span class="n">R</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">naf</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;非相鄰形式：數字取 -1, 0, 1，且沒有兩個相鄰的非零位。由低位到高位。&quot;&quot;&quot;</span>
+    <span class="n">digits</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">k</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span>             <span class="c1"># k = 1 (mod 4) 取 1，k = 3 (mod 4) 取 -1</span>
+            <span class="n">k</span> <span class="o">-=</span> <span class="n">d</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">digits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">//=</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">digits</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">scalar_mult_naf</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">O</span>
+    <span class="n">minusP</span> <span class="o">=</span> <span class="n">ec_neg</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">naf</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">minusP</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ladder</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Montgomery ladder：每一位都做一次加點與一次倍點，並保持 R1 - R0 = P。&quot;&quot;&quot;</span>
+    <span class="n">R0</span><span class="p">,</span> <span class="n">R1</span> <span class="o">=</span> <span class="n">O</span><span class="p">,</span> <span class="n">P</span>
+    <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">bin</span><span class="p">(</span><span class="n">k</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="n">bit</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
+            <span class="n">R0</span><span class="p">,</span> <span class="n">R1</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R0</span><span class="p">,</span> <span class="n">R0</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R0</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">R0</span><span class="p">,</span> <span class="n">R1</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R0</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R1</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R0</span>
+</code></pre></div>
+</section>
+
+<section id="naf" data-nav="NAF">
+<div class="section-number">§5.3</div>
+<h2>NAF：減法是免費的</h2>
+<p>橢圓曲線上取負號幾乎不花成本：$-(x,y)=(x,-y)$。所以「減 $P$」和「加 $P$」一樣便宜，可以允許 $k$ 的數字是 $-1,0,1$。這樣的表示法很多，其中<strong>非相鄰形式</strong>（non-adjacent form，NAF）要求任兩個相鄰的數字不同時為非零。每個正整數恰有一個 NAF，而且它的非零數字最少。</p>
+<div class="example"><div class="ex-label">小例</div>
+<p>$7=(111)_2$ 要加兩次；它的 NAF 是 $(1\,0\,0\,\bar1)=8-1$，只要減一次。$45=(101101)_2$ 有 4 個 1，NAF 是 $(1\,0\,\bar1\,0\,\bar1\,0\,1)=64-16-4+1$，非零數字也是 4 個，但長度多一位。</p>
+</div>
+<p>平均而言，NAF 的非零數字約佔 $1/3$（隨機 256 位元的 $k$ 平均約 86 個，二進位則約 128 個），所以加點次數從約 $\ell/2$ 降到約 $\ell/3$。更進一步的 wNAF 預先算好 $3P,5P,\dots$，非零數字更稀疏（HMV 演算法 3.36）。</p>
+</section>
+
+<section id="cost" data-nav="成本帳">
+<div class="section-number">§5.4</div>
+<h2>一次 $kP$ 的成本帳</h2>
+<p>用第 4 章的 Jacobian 公式（$a=-3$ 倍點 3M + 5S，混合加點 7M + 4S，最後一次反元素約 100M），假設 $\mathbf S=0.8\,\mathbf M$，256 位元的 $k$：</p>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>方法</th><th>倍點</th><th>加點</th><th>約略總成本</th></tr>
+<tr><td>double-and-add</td><td class="num">255</td><td class="num">約 128</td><td class="num">約 3 200 M</td></tr>
+<tr><td>NAF</td><td class="num">255</td><td class="num">約 85</td><td class="num">約 2 800 M</td></tr>
+<tr><td>Montgomery ladder</td><td class="num">256</td><td class="num">256（一般加點）</td><td class="num">約 5 700 M</td></tr>
+</table></div>
+<p>結論是：<strong>一次純量乘法 ≈ 三千到六千次 $\mathbb F_p$ 乘法</strong>。一次 ECDH 每一方要做一兩次純量乘法。把一次 $\mathbb F_p$ 乘法加快 20%，整個協定大約就快 20%。這就是成本鏈的下一層：第 6 章算整數乘積，第 7 到 9 章做化簡。</p>
+</section>
+
+<section id="ladder" data-nav="旁通道與階梯">
+<div class="section-number">§5.5</div>
+<h2>旁通道與 Montgomery 階梯</h2>
+<p>double-and-add 有一個實際的弱點：讀到 0 只做倍點，讀到 1 多做一次加點。攻擊者若能量測晶片的耗電或時間（<strong>旁通道</strong>，side channel），就能從「倍點、倍點加點、倍點……」的節奏直接讀出 $k$ 的位元。這叫簡單功率分析（simple power analysis，SPA）。下面的互動元件會畫出這條「節奏」。</p>
+<p><strong>Montgomery 階梯</strong>（Montgomery ladder）讓每一位做的事都一樣：同時維護兩個點 $R_0,R_1$，並保持</p>
+$$R_1-R_0=P .$$
+<p>讀到 0 時令 $(R_0,R_1)\leftarrow(2R_0,\ R_0+R_1)$，讀到 1 時令 $(R_0,R_1)\leftarrow(R_0+R_1,\ 2R_1)$。兩種情形都是一次加點加一次倍點，而且不變量保持成立；最後 $R_0=kP$。差別只在「哪一個被倍點」，實作上用一個與資料無關的條件交換（cswap）處理。</p>
+<div class="info-box red"><span class="info-label">規則的排程還不夠</span>
+<p>操作順序固定只是第一步。常數時間的實作還要求：不能有依賴秘密的分支或記憶體位址（cswap 要用遮罩做），底層的 $\mathbb F_p$ 運算本身也必須是常數時間（第 8、9 章最後的條件減法就是一個例子）。本站的 JavaScript BigInt 示範<strong>不是</strong>常數時間，只用來說明演算法。</p>
+</div>
+<p>階梯和第 9 章的 Montgomery 乘法、以及 Montgomery 形式的曲線是三件不同的事；它在 $y^2=x^3+ax+b$ 上同樣可以用（HECC §13.2.3），在 Montgomery 曲線上則可以只用 $x$ 座標，特別省（RFC 7748 §5）。</p>
+</section>
+
+<section id="lab" data-nav="逐位演示">
+<div class="section-number">§5.6</div>
+<h2>互動：逐位執行三種方法</h2>
+<p>曲線是 $E: y^2=x^3-3x+6$ over $\mathbb F_{97}$（107 個點，質數階），$P=(0,43)$。每一步顯示讀到的數字、做了哪些運算、目前的點，以及「已讀的數字代表的整數」：目前的點永遠等於這個整數乘上 $P$。下方的條帶是運算節奏：<span class="pill-dbl">D</span> 倍點、<span class="pill-add">A</span> 加點。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">SCALAR MULTIPLICATION</div>
+    <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
+      <label>方法 <select id="w05m">
+        <option value="dbladd">double-and-add</option>
+        <option value="naf">NAF</option>
+        <option value="ladder">Montgomery ladder</option>
+      </select></label>
+      <label>k <input type="number" id="w05k" min="1" max="106" value="45" style="width:5rem"></label>
+    </div>
+    <div class="stage pad" id="w05table"></div>
+    <div class="stage pad" style="margin-top:.6rem"><div class="trace" id="w05trace"></div></div>
+    <div class="status-banner" id="w05status"></div>
+    <div class="controls-bar">
+      <button class="btn btn-play" id="w05play" type="button">▶ 播放</button>
+      <button class="btn btn-step" id="w05step" type="button">下一步</button>
+      <button class="btn btn-reset" id="w05reset" type="button">重來</button>
+    </div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">計數</div><div id="w05count"></div></div>
+    <div class="info-card"><div class="ic-title">看節奏</div><div class="ic-note">
+      double-and-add 與 NAF 的條帶裡，「D 後面有沒有 A」直接洩漏了數字。換成 ladder，每一格都是 DA，條帶與 $k$ 無關。
+    </div></div>
+  </div>
+</div>
+</section>
+
+<section id="refs" data-nav="本章文獻">
+<div class="section-number">REF</div>
+<h2>本章文獻</h2>
+<ul class="refs"><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §3.3（Alg. 3.26–3.31, 3.35–3.36）, §5.3</span></li><li>H. Cohen, G. Frey (eds.), <cite>Handbook of Elliptic and Hyperelliptic Curve Cryptography</cite>, CRC Press, 2006. <span class="where">— §13.2.3</span></li><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.6, §14.7.1</span></li><li>A. Langley, M. Hamburg, S. Turner, <a href="https://www.rfc-editor.org/rfc/rfc7748" target="_blank" rel="noopener"><cite>RFC 7748: Elliptic Curves for Security</cite></a>, IETF, 2016. <span class="where">— §5</span></li></ul>
+<p class="where">完整書目見 <a href="references.html">參考文獻</a>。</p>
+</section>
+<nav class="chapter-nav"><a class="prev" href="04_coordinates.html"><div class="nav-dir">← 上一章</div><div class="nav-title">4. 座標與運算成本</div></a><a class="home" href="index.html"><div class="nav-dir">總覽</div><div class="nav-title">全部章節</div></a><a class="next" href="06_multiprecision.html"><div class="nav-dir">下一章 →</div><div class="nav-title">6. 大整數乘法</div></a></nav>
+</main>
+<footer>橢圓曲線密碼：從曲線到模乘法・<a href="https://github.com/phonchi/ecc-selfstudy">原始碼</a>・所有互動元件在瀏覽器以 BigInt 計算，僅供教學，不是常數時間實作</footer>
+<script src="assets/ecc-core.js?v=20261004"></script>
+<script src="assets/ecc-ui.js?v=20261004"></script>
+<script src="assets/js/05_scalar.js?v=20261004"></script>
+</body>
+</html>

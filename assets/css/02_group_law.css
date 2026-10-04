@@ -1,0 +1,4 @@
+#w02fp .pt{opacity:.45;}
+#w02fp .pt.line{fill:var(--amber);opacity:.75;}
+#w02fp .pt.P,#w02fp .pt.Q,#w02fp .pt.R{opacity:1;}
+#w02fp .pt.third{opacity:1;}

@@ -1,0 +1,10 @@
+/* 第 3 章：點雲軌跡與 Hasse 直方圖 */
+.pill-anom{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;padding:1px 8px;border-radius:4px;color:#fff;background:var(--accent);}
+.hasse-band{fill:var(--accent3);opacity:.12;}
+.hasse-edge{stroke:var(--accent3);stroke-width:1.2;stroke-dasharray:4 3;opacity:.8;}
+.trail-line{stroke:var(--violet);stroke-width:1.4;opacity:.55;fill:none;}
+.trail-line.last{opacity:1;stroke-width:2;}
+#w03cloud .pt{cursor:pointer;}
+#w03hist .bar{cursor:pointer;}
+#w03hist .bar.sel{stroke:var(--ink);stroke-width:1.5;}
+.ord-row.cur .ic-label,.ord-row.cur .ic-value{color:var(--accent);}

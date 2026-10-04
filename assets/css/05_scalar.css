@@ -1,0 +1,7 @@
+.pill-dbl,.pill-add,.tr-d,.tr-a{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;padding:1px 7px;border-radius:4px;color:#fff;}
+.pill-dbl,.tr-d{background:var(--accent2);} .pill-add,.tr-a{background:var(--accent);}
+:root[data-theme="dark"] .pill-dbl,:root[data-theme="dark"] .tr-d{color:#15161d;}
+.trace{display:flex;flex-wrap:wrap;gap:3px;min-height:26px;align-items:center;}
+.trace .grp{display:inline-flex;gap:1px;padding:2px;border-radius:5px;border:1px solid var(--card-border);}
+.trace .grp.cur{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber);}
+.trace .lbl{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);margin-right:.4rem;}

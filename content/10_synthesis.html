@@ -1,0 +1,84 @@
+<section id="why" data-nav="動機">
+<h2>把整條成本鏈接起來</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>前面九章各自回答了一個「為什麼」：為什麼要有限體、為什麼要射影座標、為什麼要 NAF 或階梯、為什麼要挑模數的形狀。這一章把它們串成一筆總帳：<strong>一次純量乘法，最後到底是多少次 CPU 的字組乘法？</strong>每一層的選擇，又各自省下了多少？</p>
+</div>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>層</th><th>問題</th><th>本站的答案</th><th>章</th></tr>
+<tr><td>協定</td><td>為什麼用橢圓曲線</td><td>同樣安全強度下金鑰短；ECDH 只需要 $kP$</td><td class="num"><a href="00_why_ecc.html">0</a>、<a href="03_ecdlp.html">3</a></td></tr>
+<tr><td>純量乘法</td><td>$kP$ 怎麼算</td><td>double-and-add、NAF、階梯：約 $\ell$ 次倍點加 $\ell/2$ 到 $\ell$ 次加點</td><td class="num"><a href="05_scalar.html">5</a></td></tr>
+<tr><td>點運算</td><td>怎麼避開反元素</td><td>Jacobian 座標：每次只用 10 到 16 次乘法，最後一次反元素</td><td class="num"><a href="02_group_law.html">2</a>、<a href="04_coordinates.html">4</a></td></tr>
+<tr><td>模乘</td><td>怎麼避開除法</td><td>特殊模數折疊、Barrett、Montgomery</td><td class="num"><a href="07_special.html">7</a>–<a href="09_montgomery.html">9</a></td></tr>
+<tr><td>字組乘法</td><td>大數怎麼乘</td><td>schoolbook 的 $k^2$ 次字組乘法；平方約一半</td><td class="num"><a href="06_multiprecision.html">6</a></td></tr>
+</table></div>
+</section>
+
+<section id="compare" data-nav="三種化簡">
+<h2>三種化簡方法的比較</h2>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th></th><th>特殊模數折疊</th><th>Barrett</th><th>Montgomery</th></tr>
+<tr><td>適用的模數</td><td>只有設計好的 $p$（P-256、P-521、$2^{255}-19$…）</td><td>任何模數</td><td>任何與 $b$ 互質的模數（奇數）</td></tr>
+<tr><td>預先計算</td><td>無（規則寫死在程式裡）</td><td>$\mu=\lfloor b^{2k}/m\rfloor$</td><td>$m'=-m^{-1}\bmod b$、$R^2\bmod m$</td></tr>
+<tr><td>每次化簡的字組乘法</td><td>幾乎沒有（只有加減與移位，或乘小常數）</td><td>約 $k^2+4k$（HAC Note 14.45）</td><td>$k(k+1)$（HAC Note 14.34）</td></tr>
+<tr><td>輸出</td><td>$x\bmod p$，加減幾次 $p$ 修正</td><td>$x\bmod m$，至多修正兩次</td><td>$xR^{-1}\bmod m$，至多修正一次</td></tr>
+<tr><td>表示法</td><td>普通</td><td>普通</td><td>要進出 Montgomery 表示</td></tr>
+<tr><td>適合</td><td>標準曲線的底體運算</td><td>模數常換、只算幾次</td><td>長串乘法（純量乘法、RSA 冪次）</td></tr>
+</table></div>
+<p>實際的函式庫常常混用：底體 $\mathbb F_p$ 用折疊或 Montgomery，群階 $n$ 上的運算（例如 ECDSA）用 Montgomery 或 Barrett。沒有單一的最佳解，要看模數、平台與是否需要常數時間。</p>
+</section>
+
+<section id="ledger" data-nav="總帳">
+<h2>互動：一次 $kP$ 的總帳</h2>
+<p>選一個模數、化簡方法與純量乘法方法，下面從上到下列出每一層的次數。字組大小固定為 64 位元，反元素以 $100\,\mathbf M$ 計，加減法與移位不計。這是<strong>粗估</strong>，用來看量級與比例，不是任何實作的實測值。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">FROM kP DOWN TO WORDS</div>
+    <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
+      <label>模數 <select id="w10mod">
+        <option value="4|256">P-256（k = 4 字組）</option>
+        <option value="4|255">2^255 − 19（k = 4）</option>
+        <option value="7|448">Goldilocks（k = 7）</option>
+        <option value="9|521">P-521（k = 9）</option>
+      </select></label>
+      <label>化簡 <select id="w10red">
+        <option value="fold">特殊模數折疊</option>
+        <option value="barrett">Barrett</option>
+        <option value="mont">Montgomery</option>
+      </select></label>
+      <label>純量乘法 <select id="w10sm">
+        <option value="dbladd">double-and-add</option>
+        <option value="naf">NAF</option>
+        <option value="ladder">Montgomery ladder</option>
+      </select></label>
+    </div>
+    <div class="stage pad" id="w10chain"></div>
+    <div class="status-banner" id="w10status"></div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">假設</div><div class="ic-note">
+      倍點 $3\mathbf M+5\mathbf S$、混合加點 $7\mathbf M+4\mathbf S$、一般加點 $11\mathbf M+5\mathbf S$（第 4 章）。<br>
+      乘積 $k^2$、平方 $(k^2+k)/2$ 次字組乘法（第 6 章）。<br>
+      化簡：折疊 0；Barrett $k^2+4k+1$；Montgomery $k(k+1)$（第 7–9 章、HAC）。
+    </div></div>
+  </div>
+</div>
+</section>
+
+<section id="next" data-nav="延伸閱讀">
+<h2>延伸閱讀與本站沒有談的事</h2>
+<p>建議的閱讀順序：</p>
+<ol>
+<li><strong>全貌</strong>：Paar–Pelzl 第 9 章；Hoffstein–Pipher–Silverman 第 6 章。</li>
+<li><strong>曲線的數學</strong>：Washington 第 2 章（群律、結合律的證明）、第 4 章（有限體上的曲線、Hasse 定理）、第 5 章（離散對數的攻擊）。</li>
+<li><strong>實作</strong>：Hankerson–Menezes–Vanstone 第 2 章（有限體運算，含 NIST 化簡）、第 3 章（座標與純量乘法）；HAC 第 14 章（Barrett、Montgomery，可從官網免費下載）。</li>
+<li><strong>標準與公式</strong>：NIST SP 800-186（曲線參數與附錄 G 的化簡）、RFC 7748（Curve25519、Curve448）、Explicit-Formulas Database。</li>
+</ol>
+<p>本站刻意略過的主題，以及去哪裡讀：</p>
+<ul>
+<li><strong>簽章與完整協定</strong>（ECDSA、EdDSA、金鑰衍生）：HMV 第 4 章、SP 800-186 的姊妹標準。</li>
+<li><strong>點數計算</strong>（Schoof、SEA）：Washington 第 4.5 節、HECC 第 17 章。</li>
+<li><strong>二元體</strong> $\mathbb F_{2^m}$ 上的曲線與 Koblitz 曲線：HMV 第 2.3 節、第 3.4 節。</li>
+<li><strong>配對</strong>（pairing）與以身分為基礎的密碼：Washington §3.3–3.4、§6.9、第 11 章；HECC 第 16 章。</li>
+<li><strong>其他曲線形式</strong>（Edwards、Montgomery 曲線的完整公式）：RFC 7748、EFD。</li>
+</ul>
+</section>

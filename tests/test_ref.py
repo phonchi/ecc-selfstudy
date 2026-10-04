@@ -139,3 +139,23 @@ def test_mprime_is_one_for_minus_one_mod_b():
     # 低 64 位全為 1 的模數（P-521、2^448-2^224-1）有 m' = 1；P-256 也是
     for name in ["P-521", "2^448-2^224-1", "P-256"]:
         assert E.mont_setup(H(name, "p"), 64)[1] == 1
+
+
+def test_ecdlp_counts_and_orders():
+    from collections import Counter
+    assert E.count_points(2, 3, 97) == 100
+    assert E.count_points(-3, 6, 97) == 107
+    assert E.count_points(-3, 5, 127) == 127                 # anomalous: #E = p
+    pts = E.curve_points(2, 3, 97)
+    orders = Counter(E.point_order(P, 2, 97) for P in pts[1:])
+    assert orders == Counter({2: 3, 5: 4, 10: 12, 25: 20, 50: 60})   # Z/2 x Z/50
+    for P in E.curve_points(-3, 6, 97)[1:]:
+        assert E.point_order(P, -3, 97) == 107
+
+
+def test_bsgs():
+    a, p, n = -3, 97, 107
+    G = E.curve_points(-3, 6, 97)[1]
+    for k in (0, 1, 2, 58, 106):
+        Q = E.scalar_mult(k, G, a, p)
+        assert E.bsgs(G, Q, n, a, p) == k

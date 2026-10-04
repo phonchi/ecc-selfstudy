@@ -1,0 +1,4 @@
+.pill-one{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;padding:0 7px;border:2px solid var(--accent);border-radius:4px;color:var(--accent);}
+.mtable td{color:var(--ink);}
+.mtable td.dark{color:var(--paper);}
+.mtable tr.selrow th,.mtable th.selcol{background:var(--amber);color:#1a1a2e;}

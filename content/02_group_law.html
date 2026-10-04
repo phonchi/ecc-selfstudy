@@ -1,0 +1,87 @@
+<section id="why" data-nav="動機">
+<h2>從一條三次曲線造出一個群</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>公開金鑰需要一個群，在裡面「重複做同一個運算」很容易，反推卻很難（第 0、3 章）。整數模 $p$ 的乘法群可以用，但第 3 章會看到它有比較快的攻擊。橢圓曲線提供另一種群，它的運算來自一個幾何事實：<strong>一條直線與三次曲線相交，恰有三個交點</strong>（重根要重複計算，另外要把無窮遠點算進去）。於是給定兩個點，連線就決定第三個點，這就是加法的來源。</p>
+</div>
+</section>
+
+<section id="curve" data-nav="曲線">
+<h2>短 Weierstrass 形式</h2>
+<p>本站的曲線都寫成</p>
+$$E:\ y^2 = x^3 + ax + b ,\qquad 4a^3+27b^2 \ne 0 .$$
+<p>只要體的特徵不是 2 或 3（$\mathbb F_p$ 中 $p&gt;3$），任何橢圓曲線都能換成這個形式。條件 $4a^3+27b^2\ne0$ 是說右邊的三次式沒有重根，曲線因此是光滑的（nonsingular）：每一點都有唯一的切線。若條件不成立，曲線會出現尖點或自交點，下面的加法就定義不好。下面的互動元件可以把 $a,b$ 調到奇異的位置看看。</p>
+<p>NIST 的曲線 P-256 與 P-521 都取 $a=-3$，原因是倍點公式在 $a=-3$ 時可以少算一次乘法（第 4 章）。</p>
+</section>
+
+<section id="chord" data-nav="割線與切線">
+<h2>割線、切線與無窮遠點</h2>
+<p>規則只有一句：<strong>三點共線時，它們的和是 0</strong>。</p>
+$$P+Q+R=\mathcal O \quad\Longleftrightarrow\quad P,Q,R\ \text{在同一條直線上}.$$
+<p>所以要算 $P+Q$：畫過 $P,Q$ 的直線，找出第三個交點 $R'$，再取 $P+Q=-R'$。在 $y^2=\cdots$ 這種曲線上，$-R'$ 就是 $R'$ 對 $x$ 軸的鏡射。$P=Q$ 時用切線。</p>
+<p><strong>無窮遠點</strong> $\mathcal O$ 是群的單位元。把曲線放進射影平面，寫成 $Y^2Z=X^3+aXZ^2+bZ^3$，就會多出一個 $Z=0$ 的點 $(0:1:0)$。直觀上它在 $y$ 軸方向的最遠處，所以<strong>每一條鉛直線都經過它</strong>。於是：</p>
+<ul>
+<li>$P$ 與 $-P$ 在同一條鉛直線上，第三個交點是 $\mathcal O$，所以 $P+(-P)=\mathcal O$。</li>
+<li>$P$ 與 $\mathcal O$ 的連線是過 $P$ 的鉛直線，第三點是 $-P$，鏡射回來得 $P+\mathcal O=P$。</li>
+</ul>
+<p>把直線 $y=\lambda(x-x_1)+y_1$ 代入曲線，得到一個首項為 $x^3$ 的三次方程；三個根的和是 $\lambda^2$（看 $x^2$ 項的係數）。已知兩個根 $x_1,x_2$，第三個根就是 $\lambda^2-x_1-x_2$，完全不用解方程。這就是加法公式：</p>
+$$\lambda=\begin{cases}\dfrac{y_2-y_1}{x_2-x_1}, &amp; P\ne Q,\\[2mm] \dfrac{3x_1^2+a}{2y_1}, &amp; P=Q,\end{cases}\qquad
+\begin{aligned} x_3&amp;=\lambda^2-x_1-x_2,\\ y_3&amp;=\lambda(x_1-x_3)-y_1 .\end{aligned}$$
+<p>注意 $b$ 沒有出現在公式裡，而<strong>每一次加法都有一次除法</strong>（算 $\lambda$）。</p>
+</section>
+
+<section id="real" data-nav="實數圖">
+<h2>互動：在實數平面上加點</h2>
+<p>拖曳紅色的 $P$ 與綠色的 $Q$（點會被吸到曲線上）。虛線是 $P,Q$ 的連線，空心圈是第三個交點，橙色點是鏡射後的 $P+Q$。調 $a,b$ 可以看到曲線有一個或兩個分支，以及判別式為 0 時的奇異情形。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">CHORD AND TANGENT</div>
+    <div class="stage"><svg id="w02real" role="img" aria-label="實數曲線上的加法"></svg></div>
+    <div class="slider-row"><span class="sl-label">a</span><input type="range" id="w02a" min="-3" max="2" step="0.1" value="-2"><span class="sl-val" id="w02aV">-2.0</span></div>
+    <div class="slider-row"><span class="sl-label">b</span><input type="range" id="w02b" min="-1.5" max="3" step="0.1" value="2"><span class="sl-val" id="w02bV">2.0</span></div>
+    <div class="controls-bar">
+      <button class="btn btn-ghost on" id="w02add" type="button">P + Q</button>
+      <button class="btn btn-ghost" id="w02dbl" type="button">2P（切線）</button>
+      <button class="btn btn-ghost" id="w02neg" type="button">P + (−P)</button>
+    </div>
+    <div class="status-banner" id="w02status"></div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">數值</div><div id="w02vals"></div></div>
+    <div class="info-card"><div class="ic-title">判別式</div><div id="w02disc"></div></div>
+  </div>
+</div>
+</section>
+
+<section id="group" data-nav="群公理">
+<h2>為什麼是交換群</h2>
+<ul>
+<li><strong>單位元</strong>：$\mathcal O$。<strong>反元素</strong>：$-P$ 是鏡射。</li>
+<li><strong>交換律</strong>：過 $P,Q$ 的直線與過 $Q,P$ 的是同一條。</li>
+<li><strong>封閉性</strong>：若 $a,b$ 以及 $P,Q$ 的座標都在某個體 $K$ 裡，$\lambda$ 與 $x_3,y_3$ 也在 $K$ 裡。所以 $K$ 上的點自成一個群 $E(K)$。</li>
+<li><strong>結合律</strong>：最不明顯，幾何上看不出來。可以用射影幾何的 Cayley–Bacharach 定理證明，也可以把公式展開，用電腦代數硬算。Washington 第 2.4 節有完整證明。</li>
+</ul>
+<p>本站的程式在測試中對小曲線上隨機的 $P,Q,R$ 檢查過 $(P+Q)+R=P+(Q+R)$。這不是證明，但可以確認公式抄對了。</p>
+<!-- code: affine 仿射座標的加法 -->
+</section>
+
+<section id="fp" data-nav="搬到 F_p">
+<h2>搬到 $\mathbb F_p$：幾何消失，代數留下</h2>
+<p>加法公式只用到四則運算，所以可以原封不動地在 $\mathbb F_p$ 裡計算，只是每一步都取模 $p$、除法換成乘反元素。這時曲線不再是一條線，而是 $p\times p$ 格子上的一堆點；「直線」也變成每碰到邊界就繞回來的一排點。神奇的是，割線的第三個交點仍然恰好落在這排點上。</p>
+<p>右圖是 $E: y^2=x^3+2x+3$ 在 $\mathbb F_{97}$ 上的全部點（加上 $\mathcal O$ 共 100 個）。注意點對 $y=97/2$ 上下對稱，那就是 $\mathbb F_p$ 版的「對 $x$ 軸鏡射」：$-(x,y)=(x,p-y)$。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">GROUP LAW OVER F₉₇</div>
+    <div class="stage"><svg id="w02fp" role="img" aria-label="F_97 上的點與加法"></svg></div>
+    <div class="controls-bar">
+      <button class="btn btn-ghost" id="w02fpDbl" type="button">令 Q = P</button>
+      <button class="btn btn-ghost" id="w02fpRnd" type="button">隨機 P、Q</button>
+      <label><input type="checkbox" id="w02fpLine" checked> 顯示模 p 的直線</label>
+    </div>
+    <div class="status-banner" id="w02fpStatus">點一下選 P，再點一下選 Q。</div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">計算過程（mod 97）</div><div id="w02fpCalc"></div></div>
+  </div>
+</div>
+<p>下一章接著問：這個群有多大、長什麼樣子，以及為什麼在裡面「解 $kP=Q$」很難。</p>
+</section>

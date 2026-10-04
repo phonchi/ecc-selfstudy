@@ -80,11 +80,11 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 <div class="example"><div class="ex-label">手算小例：十進位，$m=4567$，$b=10$，$R=10^4$</div>
 <p>$4567\equiv7\pmod{10}$，$7^{-1}\equiv3$，所以 $m'=-3\equiv7\pmod{10}$。對 $T=1234\cdot3211=3962374$：</p>
 <div class="tbl-wrap"><table class="cmp-table">
-<tr><th>輪 $i$</th><th>$a_i$</th><th>$u_i=7a_i\bmod 10$</th><th>加上 $u_i\cdot4567\cdot10^i$</th><th>結果</th></tr>
-<tr><td>0</td><td class="num">4</td><td class="num">8</td><td class="num">36 536</td><td class="num">3 998 91<b>0</b></td></tr>
-<tr><td>1</td><td class="num">1</td><td class="num">7</td><td class="num">319 690</td><td class="num">4 318 6<b>00</b></td></tr>
-<tr><td>2</td><td class="num">6</td><td class="num">2</td><td class="num">913 400</td><td class="num">5 23<b>2 000</b></td></tr>
-<tr><td>3</td><td class="num">2</td><td class="num">4</td><td class="num">18 268 000</td><td class="num">2 35<b>0 0000</b>→ 23 500 000</td></tr>
+<tr><th>輪 $i$</th><th>$a_i$</th><th>$u_i=7a_i\bmod 10$</th><th>加上 $u_i\cdot4567\cdot10^i$</th><th>結果（粗體是已消成 0 的位）</th></tr>
+<tr><td>0</td><td class="num">4</td><td class="num">8</td><td class="num">36536</td><td class="num">399891<b>0</b></td></tr>
+<tr><td>1</td><td class="num">1</td><td class="num">7</td><td class="num">319690</td><td class="num">43186<b>00</b></td></tr>
+<tr><td>2</td><td class="num">6</td><td class="num">2</td><td class="num">913400</td><td class="num">5232<b>000</b></td></tr>
+<tr><td>3</td><td class="num">2</td><td class="num">4</td><td class="num">18268000</td><td class="num">2350<b>0000</b></td></tr>
 </table></div>
 <p>低 4 位全為 0，去掉後得 $2350$。它小於 $m$，不必再減。驗算：$2350\cdot 10^4 \equiv 3962374 \pmod{4567}$。</p>
 </div>
@@ -204,7 +204,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 <section id="refs" data-nav="本章文獻">
 <div class="section-number">REF</div>
 <h2>本章文獻</h2>
-<ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.3.2（Alg. 14.32, 14.36）</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §2.2.4</span></li><li>P. L. Montgomery, <a href="https://doi.org/10.1090/S0025-5718-1985-0777282-X" target="_blank" rel="noopener"><cite>Modular multiplication without trial division</cite></a>, Mathematics of Computation 44 (1985), 519–521.</li></ul>
+<ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.3.2：Fact 14.29, Alg. 14.32, 14.36, Notes 14.33–14.39</span></li><li>H. Cohen, G. Frey (eds.), <cite>Handbook of Elliptic and Hyperelliptic Curve Cryptography</cite>, CRC Press, 2006. <span class="where">— §10.4.2</span></li><li>P. L. Montgomery, <a href="https://doi.org/10.1090/S0025-5718-1985-0777282-X" target="_blank" rel="noopener"><cite>Modular multiplication without trial division</cite></a>, Mathematics of Computation 44 (1985), 519–521.</li></ul>
 <p class="where">完整書目見 <a href="references.html">參考文獻</a>。</p>
 </section>
 <nav class="chapter-nav"><a class="prev" href="08_barrett.html"><div class="nav-dir">← 上一章</div><div class="nav-title">8. Barrett 化簡</div></a><a class="home" href="index.html"><div class="nav-dir">總覽</div><div class="nav-title">全部章節</div></a><a class="next" href="10_synthesis.html"><div class="nav-dir">下一章 →</div><div class="nav-title">10. 總整：何時用哪一種</div></a></nav>

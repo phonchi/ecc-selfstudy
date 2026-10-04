@@ -109,12 +109,12 @@ HC.svg = (id, o = {}) => {
   s.grid = (nx, ny, opt = {}) => {
     const g = s.clearLayer('grid');
     const f = opt.fmt || (v => String(Math.round(v * 100) / 100));
-    for (let i = 0; i <= nx; i++) {
+    for (let i = 0; nx > 0 && i <= nx; i++) {
       const v = s.xd[0] + (s.xd[1] - s.xd[0]) * i / nx, x = s.X(v);
       s.add('line', { cls: 'gridl', x1: x, y1: pad.t, x2: x, y2: pad.t + s.ih }, g);
       s.add('text', { cls: 'axlab', x, y: pad.t + s.ih + 14, 'text-anchor': 'middle' }, g).textContent = f(v);
     }
-    for (let i = 0; i <= ny; i++) {
+    for (let i = 0; ny > 0 && i <= ny; i++) {
       const v = s.yd[0] + (s.yd[1] - s.yd[0]) * i / ny, y = s.Y(v);
       s.add('line', { cls: 'gridl', x1: pad.l, y1: y, x2: pad.l + s.iw, y2: y }, g);
       s.add('text', { cls: 'axlab', x: pad.l - 5, y: y + 3.5, 'text-anchor': 'end' }, g).textContent = f(v);

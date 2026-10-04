@@ -59,7 +59,9 @@ def code_block(code, caption):
             f'<pre class="hl"><code>{body}</code></pre></div>')
 
 
-def head(title, desc):
+def head(title, desc, slug=None):
+    css = ROOT / "assets" / "css" / f"{slug}.css"
+    extra = f'\n<link rel="stylesheet" href="assets/css/{slug}.css?v={VER}">' if slug and css.exists() else ""
     return f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -76,7 +78,7 @@ def head(title, desc):
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/ecc.css?v={VER}">
+<link rel="stylesheet" href="assets/ecc.css?v={VER}">{extra}
 </head>"""
 
 
@@ -155,7 +157,7 @@ def build_chapter(p, snip):
     js = ROOT / "assets" / "js" / f"{p.slug}.js"
     page_js = f'<script src="assets/js/{p.slug}.js?v={VER}"></script>' if js.exists() else ""
 
-    return f"""{head(f"{p.num}. {p.title} — {SITE}", f"{p.title}（{p.en}）：{p.subtitle}")}
+    return f"""{head(f"{p.num}. {p.title} — {SITE}", f"{p.title}（{p.en}）：{p.subtitle}", p.slug)}
 <body>
 <nav class="float-nav" id="floatNav" aria-label="本章導覽">{nav}</nav>
 <header class="hero small" id="top">
@@ -192,6 +194,8 @@ def build_chapter(p, snip):
 
 
 def build_index():
+    index_js = (f'<script src="assets/js/index.js?v={VER}"></script>'
+                if (ROOT / "assets" / "js" / "index.js").exists() else "")
     raw = (ROOT / "content" / "index.html").read_text(encoding="utf-8")
     cards = {}
     for p in P.PAGES:
@@ -201,7 +205,7 @@ def build_index():
     body = re.sub(r"<!-- cards: ([\d,]+) -->",
                   lambda m: '<div class="ch-grid">' + "".join(cards[int(n)] for n in m.group(1).split(",")) + "</div>",
                   raw)
-    return f"""{head(SITE, "以互動元件介紹橢圓曲線密碼的數學基礎與模乘法：有限體、群律、ECDLP、座標、純量乘法、NIST 折疊、Barrett、Montgomery。")}
+    return f"""{head(SITE, slug="index", desc="以互動元件介紹橢圓曲線密碼的數學基礎與模乘法：有限體、群律、ECDLP、座標、純量乘法、NIST 折疊、Barrett、Montgomery。")}
 <body>
 <header class="hero" id="top">
   <div class="hero-grid"></div>
@@ -221,7 +225,7 @@ def build_index():
 <footer>{SITE}・<a href="{REPO}">原始碼</a>・互動元件僅供教學，不是常數時間實作</footer>
 <script src="assets/ecc-core.js?v={VER}"></script>
 <script src="assets/ecc-ui.js?v={VER}"></script>
-<script src="assets/js/index.js?v={VER}"></script>
+{index_js}
 </body>
 </html>
 """

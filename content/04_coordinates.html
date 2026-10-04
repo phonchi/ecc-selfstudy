@@ -1,0 +1,81 @@
+<section id="why" data-nav="動機">
+<h2>每一次加點都要付一次反元素</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>第 2 章的加法公式裡，$\lambda$ 是一個分數，所以每一次加點或倍點都要算一次 $\mathbb F_p$ 的反元素。第 1 章說過，一次反元素大約等於 80 到 100 次乘法。一次 256 位元的純量乘法要做約 255 次倍點與 128 次加點，光是反元素就要將近四萬次乘法。</p>
+<p>解法很像小學的分數運算：<strong>先不要約分</strong>。把分母另外存起來，一路只做乘法；等整個純量乘法做完，最後才做一次除法。代價是每一步要多做幾次乘法，但省下的反元素多得多。</p>
+</div>
+</section>
+
+<section id="jacobian" data-nav="Jacobian">
+<h2>Jacobian 座標</h2>
+<p>用三個數 $(X:Y:Z)$ 表示一個點，約定</p>
+$$(X:Y:Z)\ \longmapsto\ \left(\frac{X}{Z^2},\ \frac{Y}{Z^3}\right),\qquad Z\ne0 .$$
+<p>同一個點有很多種寫法：對任意 $\lambda\ne0$，$(\lambda^2X:\lambda^3Y:\lambda Z)$ 代表同一點。這是一個<strong>加權射影空間</strong>（權重 2, 3, 1），和第 2 章的普通射影座標 $(X:Y:Z)\mapsto(X/Z,Y/Z)$ 不同；兩種都可以用，Jacobian 的倍點公式比較省。$Z=0$ 的那一類（例如 $(1:1:0)$）就是無窮遠點 $\mathcal O$。代進曲線方程，Jacobian 座標滿足</p>
+$$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
+<ul>
+<li><strong>判斷相等不能直接比座標。</strong>$(X_1:Y_1:Z_1)$ 與 $(X_2:Y_2:Z_2)$ 是同一點，當且僅當 $X_1Z_2^2=X_2Z_1^2$ 且 $Y_1Z_2^3=Y_2Z_1^3$（交叉相乘）。</li>
+<li><strong>進入很便宜</strong>：$(x,y)\mapsto(x:y:1)$。<strong>離開要一次反元素</strong>：算 $Z^{-1}$，再算 $x=XZ^{-2}$、$y=YZ^{-3}$。</li>
+</ul>
+</section>
+
+<section id="formulas" data-nav="公式與成本">
+<h2>公式與成本</h2>
+<p>把仿射公式中的 $x_i=X_i/Z_i^2$、$y_i=Y_i/Z_i^3$ 代進去、通分，分母全部收進新的 $Z_3$，就得到只有乘法的公式。下表是 Explicit-Formulas Database（EFD）中常用的幾組，$\mathbf M$ 是乘法、$\mathbf S$ 是平方、$\mathbf I$ 是反元素，乘小常數與加減不計。</p>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>運算</th><th>仿射座標</th><th>Jacobian</th><th>EFD 公式名</th></tr>
+<tr><td>倍點，一般的 $a$</td><td class="num">1I + 2M + 2S</td><td class="num">1M + 8S</td><td class="num">dbl-2007-bl</td></tr>
+<tr><td>倍點，$a=-3$</td><td class="num">1I + 2M + 2S</td><td class="num">3M + 5S</td><td class="num">dbl-2001-b</td></tr>
+<tr><td>加點（兩點都是 Jacobian）</td><td class="num">1I + 2M + 1S</td><td class="num">11M + 5S</td><td class="num">add-2007-bl</td></tr>
+<tr><td>混合加點（另一點 $Z=1$）</td><td class="num">—</td><td class="num">7M + 4S</td><td class="num">madd-2007-bl</td></tr>
+<tr><td>轉回仿射</td><td class="num">—</td><td class="num">1I + 3M + 1S</td><td class="num">—</td></tr>
+</table></div>
+<p>兩個常見的技巧：</p>
+<ul>
+<li><strong>混合加法</strong>（mixed addition）：double-and-add 裡加上的永遠是同一個 $P$，它可以保持仿射形式（$Z=1$），省下好幾次乘法。</li>
+<li><strong>$a=-3$</strong>：倍點要算 $3X^2+aZ^4$。當 $a=-3$ 時，它等於 $3(X-Z^2)(X+Z^2)$，可以少一次平方。這就是 NIST 曲線都取 $a=-3$ 的原因。</li>
+</ul>
+<p>Hankerson–Menezes–Vanstone 的表 3.3 列出的數字略有不同（$a=-3$ 時 Jacobian 倍點 4M + 4S、混合加點 8M + 3S），因為公式在乘法與平方之間有不同取捨，總量差不多。</p>
+<!-- code: jacobian Jacobian 座標的倍點與混合加點（為了清楚，不追求最少的乘法次數） -->
+</section>
+
+<section id="lab" data-nav="成本比較">
+<h2>互動：反元素到底多貴才划算</h2>
+<p>假設 double-and-add 處理一個 $\ell$ 位元的 $k$：$\ell-1$ 次倍點，平均 $\ell/2$ 次加點（$a=-3$ 的曲線）。調整 $\mathbf I/\mathbf M$ 與 $\mathbf S/\mathbf M$，看三種做法的總成本（以 $\mathbf M$ 計）。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">COST OF ONE kP</div>
+    <div class="stage"><svg id="w04bars" role="img" aria-label="三種座標的總成本長條圖"></svg></div>
+    <div class="slider-row"><span class="sl-label">I / M</span><input type="range" id="w04I" min="1" max="200" step="1" value="100"><span class="sl-val" id="w04Iv">100</span></div>
+    <div class="slider-row"><span class="sl-label">S / M</span><input type="range" id="w04S" min="0.5" max="1" step="0.05" value="0.8"><span class="sl-val" id="w04Sv">0.80</span></div>
+    <div class="controls-bar">
+      <label>k 的位元數 <select id="w04l"><option>256</option><option>384</option><option>521</option></select></label>
+    </div>
+    <div class="status-banner" id="w04status"></div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">分解</div><div id="w04break"></div></div>
+  </div>
+</div>
+</section>
+
+<section id="repr" data-nav="同一點多種寫法">
+<h2>互動：同一個點，很多種寫法</h2>
+<p>在 $E: y^2=x^3-3x+6$（$\mathbb F_{97}$）上取一個點 $P$，用不同的 $\lambda$ 寫成 Jacobian 座標 $(\lambda^2x:\lambda^3y:\lambda)$。三個座標看起來毫無關係，但轉回仿射都是同一點；右邊用交叉相乘確認兩種寫法相等。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">ONE POINT, MANY COORDINATES</div>
+    <div class="slider-row"><span class="sl-label">λ₁</span><input type="range" id="w04l1" min="1" max="96" step="1" value="1"><span class="sl-val" id="w04l1v">1</span></div>
+    <div class="slider-row"><span class="sl-label">λ₂</span><input type="range" id="w04l2" min="1" max="96" step="1" value="5"><span class="sl-val" id="w04l2v">5</span></div>
+    <div class="controls-bar"><button class="btn btn-ghost" id="w04next" type="button">換一個點 P</button></div>
+    <div class="stage pad" id="w04repr"></div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">相等的檢查</div><div id="w04eq"></div></div>
+  </div>
+</div>
+</section>
+
+<section id="summary" data-nav="小結">
+<h2>小結：成本鏈往下走一層</h2>
+<p>換成 Jacobian 座標之後，一次 256 位元的純量乘法大約只要三千多次 $\mathbb F_p$ 乘法，再加上最後一次反元素。只要反元素比大約 5 次乘法還貴（實際上一定是），投影座標就划算。於是整個 ECC 的速度，幾乎完全取決於<strong>一次 $\mathbb F_p$ 乘法有多快</strong>：這就是第 6 到第 9 章的主題。第 5 章先把純量乘法本身的排程講清楚。</p>
+</section>

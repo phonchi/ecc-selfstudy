@@ -1,0 +1,45 @@
+<section id="about">
+<h2>這個網站在講什麼</h2>
+<p>橢圓曲線密碼（elliptic curve cryptography，ECC）的數學核心，數論背景的讀者大多很熟悉：有限體上的三次曲線、它的群律、Hasse 定理。陌生的往往是另一半：這些運算在電腦上<strong>怎麼算、花多少力氣</strong>，以及為什麼實作者會那麼在意模數 $p$ 長什麼樣子。</p>
+<p>本站把兩半接起來：先說明 ECC 的<strong>大觀念</strong>（為什麼需要它、為什麼金鑰比 RSA 短），再整理<strong>底層數學</strong>（有限體、群律、群結構與 ECDLP），最後一路往下拆到真正被執行幾千次的<strong>模乘法</strong>。證明以引用為主，重點放在直覺與可以動手驗算的例子。</p>
+<h3>怎麼讀</h3>
+<ul>
+<li>每一章的順序相同：先問<strong>為什麼</strong>（橘色的「動機」框），再講<strong>數學</strong>，然後是<strong>互動元件</strong>，最後附上 <strong>Python 參考碼</strong>與對應的教科書章節。</li>
+<li>互動元件多半用<strong>小質數</strong>，讓點雲與每一個位元都畫得出來；第 7–9 章的元件可以切換到 P-256、P-521 等<strong>真實大小的模數</strong>。</li>
+<li>所有互動計算都在瀏覽器裡用 JavaScript 的 BigInt 進行，只供教學，<strong>不是常數時間實作</strong>，不能拿來處理真正的金鑰。</li>
+</ul>
+</section>
+
+<section id="chain">
+<h2>成本鏈：從協定到字組</h2>
+<p>全站沿著一條鏈組織：上一層的每一個運算，都由下一層的運算組成。頁首那一列膠囊就是它。</p>
+<ol class="ix-chain">
+<li><span class="lv">協定</span><strong>ECDH 金鑰交換</strong>：每一方一到兩次純量乘法。<span class="chs"><a href="00_why_ecc.html">第 0 章</a></span></li>
+<li><span class="lv">純量乘法</span><strong>$kP$</strong>：幾百次倍點與點加，合計幾千次模乘。<span class="chs"><a href="03_ecdlp.html">第 3 章</a>（為什麼難倒推）・<a href="05_scalar.html">第 5 章</a></span></li>
+<li><span class="lv">點運算</span><strong>點加／倍點</strong>：每次是十來次模乘，座標選得好就不必求反元素。<span class="chs"><a href="02_group_law.html">第 2 章</a>・<a href="04_coordinates.html">第 4 章</a></span></li>
+<li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：乘出兩倍長的積，再化簡回 $[0,p)$。<span class="chs"><a href="01_finite_field.html">第 1 章</a>・<a href="07_special.html">第 7 章</a>・<a href="08_barrett.html">第 8 章</a>・<a href="09_montgomery.html">第 9 章</a></span></li>
+<li><span class="lv">字組</span><strong>字組乘法</strong>：把幾百位元的數切成 64 位元字組逐格相乘。<span class="chs"><a href="06_multiprecision.html">第 6 章</a></span></li>
+</ol>
+</section>
+
+<section id="chapters">
+<h2>章節</h2>
+<div class="part-title">序章</div>
+<!-- cards: 0 -->
+<div class="part-title">第一部　數學基礎</div>
+<!-- cards: 1,2,3 -->
+<div class="part-title">第二部　從曲線到運算成本</div>
+<!-- cards: 4,5 -->
+<div class="part-title">第三部　模乘法</div>
+<!-- cards: 6,7,8,9 -->
+<div class="part-title">總整</div>
+<!-- cards: 10 -->
+</section>
+
+<section id="scope">
+<h2>範圍與文獻</h2>
+<div class="info-box"><span class="info-label">範圍</span>
+<p>本站只處理質數體 $\mathbb F_p$ 上的短 Weierstrass 曲線與 ECDH。<strong>不涵蓋</strong>：配對（pairings）、二元體 $\mathrm{GF}(2^m)$ 上的曲線、點數計算演算法（例如 Schoof 演算法）、ECDH 以外的協定（簽章、加密、零知識等）。</p>
+</div>
+<p>內容取自標準教科書與公開標準（Hankerson–Menezes–Vanstone、Menezes–van Oorschot–Vanstone、Washington、NIST SP 800-186 等）。各章結尾列出對應的章節，完整書目與建議閱讀順序見 <a href="references.html">參考文獻</a>。</p>
+</section>

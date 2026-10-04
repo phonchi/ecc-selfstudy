@@ -339,3 +339,45 @@ def mont_mul(x, y, m, w, k, m_prime):
         A = (A + x_i * y + u_i * m) >> w
     return A - m if A >= m else A
 # <<<
+
+
+# >>> ecdlp
+from math import isqrt
+
+
+def count_points(a, b, p):
+    """#E(F_p) = p + 1 + sum_x (x^3+ax+b | p)：每個 x 貢獻 1 + Legendre 符號個點。"""
+    N = 1                                          # 無窮遠點 O
+    for x in range(p):
+        r = (x * x * x + a * x + b) % p
+        if r == 0:
+            N += 1                                 # y = 0，一個點
+        elif pow(r, (p - 1) // 2, p) == 1:
+            N += 2                                 # 平方剩餘，兩個點 (x, ±y)
+    return N
+
+
+def point_order(P, a, p):
+    """最小的 k >= 1 使 kP = O。依 Lagrange 定理，它整除 #E。"""
+    k, R = 1, P
+    while R is not O:
+        R = ec_add(R, P, a, p)
+        k += 1
+    return k
+
+
+def bsgs(G, Q, n, a, p):
+    """Baby-step giant-step：找 k 使 kG = Q，G 的階為 n。約 2*sqrt(n) 次點加法。"""
+    m = isqrt(n - 1) + 1                           # m = ceil(sqrt(n))
+    baby, R = {}, O
+    for j in range(m):                             # baby steps：jG
+        baby.setdefault(R, j)
+        R = ec_add(R, G, a, p)
+    step = ec_neg(scalar_mult(m, G, a, p), p)      # -mG
+    R = Q
+    for i in range(m):                             # giant steps：Q - i*mG
+        if R in baby:
+            return (i * m + baby[R]) % n
+        R = ec_add(R, step, a, p)
+    return None
+# <<<

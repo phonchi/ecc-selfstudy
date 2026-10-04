@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="群結構與 ECDLP（Group Structure and the ECDLP）：點的個數、子群，以及為什麼「從 kP 找回 k」很難">
+<title>3. 群結構與 ECDLP — 橢圓曲線密碼：從曲線到模乘法</title>
+<script>
+  try { const t = localStorage.getItem('ecc-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (_) {}
+  MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+             options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] },
+             chtml: { scale: 0.98 } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ecc.css?v=20261004">
+<link rel="stylesheet" href="assets/css/03_ecdlp.css?v=20261004">
+</head>
+<body>
+<nav class="float-nav" id="floatNav" aria-label="本章導覽"><a href="#why" data-target="why"><span class="fn-num">3.1</span><span class="fn-name">動機</span></a><a href="#hasse" data-target="hasse"><span class="fn-num">3.2</span><span class="fn-name">Hasse</span></a><a href="#subgroup" data-target="subgroup"><span class="fn-num">3.3</span><span class="fn-name">子群</span></a><a href="#attacks" data-target="attacks"><span class="fn-num">3.4</span><span class="fn-name">ECDLP</span></a><a href="#trail" data-target="trail"><span class="fn-num">3.5</span><span class="fn-name">kP 軌跡</span></a><a href="#hist" data-target="hist"><span class="fn-num">3.6</span><span class="fn-name">Hasse 直方圖</span></a><a href="#refs" data-target="refs"><span class="fn-num">REF</span><span class="fn-name">本章文獻</span></a></nav>
+<header class="hero small" id="top">
+  <div class="hero-grid"></div>
+  <svg class="hero-curve" width="300" height="300" viewBox="-2.2 -3.2 5 6.4" aria-hidden="true">
+  <path d="M2.591,3.770 L2.571,3.722 L2.551,3.674 L2.531,3.626 L2.511,3.579 L2.491,3.532 L2.471,3.485 L2.451,3.438 L2.431,3.392 L2.411,3.346 L2.391,3.300 L2.371,3.254 L2.351,3.208 L2.331,3.163 L2.311,3.118 L2.291,3.073 L2.271,3.028 L2.251,2.984 L2.231,2.940 L2.211,2.896 L2.191,2.852 L2.171,2.809 L2.151,2.766 L2.131,2.723 L2.111,2.681 L2.091,2.638 L2.071,2.596 L2.051,2.555 L2.031,2.513 L2.011,2.472 L1.991,2.431 L1.971,2.391 L1.951,2.350 L1.931,2.310 L1.911,2.271 L1.891,2.232 L1.871,2.193 L1.851,2.154 L1.831,2.116 L1.811,2.078 L1.791,2.040 L1.771,2.003 L1.751,1.966 L1.731,1.930 L1.711,1.894 L1.691,1.858 L1.671,1.823 L1.651,1.788 L1.631,1.754 L1.611,1.720 L1.591,1.687 L1.571,1.654 L1.551,1.621 L1.531,1.590 L1.511,1.558 L1.491,1.527 L1.471,1.497 L1.451,1.467 L1.431,1.438 L1.411,1.410 L1.391,1.382 L1.371,1.355 L1.351,1.328 L1.331,1.302 L1.311,1.277 L1.291,1.253 L1.271,1.229 L1.251,1.207 L1.231,1.185 L1.211,1.164 L1.191,1.143 L1.171,1.124 L1.151,1.106 L1.131,1.088 L1.111,1.072 L1.091,1.057 L1.071,1.042 L1.051,1.029 L1.031,1.017 L1.011,1.006 L0.991,0.996 L0.971,0.987 L0.951,0.979 L0.931,0.972 L0.911,0.966 L0.891,0.962 L0.871,0.959 L0.851,0.956 L0.831,0.955 L0.811,0.955 L0.791,0.955 L0.771,0.957 L0.751,0.960 L0.731,0.964 L0.711,0.968 L0.691,0.974 L0.671,0.980 L0.651,0.987 L0.631,0.995 L0.611,1.003 L0.591,1.012 L0.571,1.022 L0.551,1.032 L0.531,1.043 L0.511,1.054 L0.491,1.066 L0.471,1.078 L0.451,1.091 L0.431,1.104 L0.411,1.117 L0.391,1.130 L0.371,1.144 L0.351,1.158 L0.331,1.172 L0.311,1.187 L0.291,1.201 L0.271,1.216 L0.251,1.230 L0.231,1.245 L0.211,1.260 L0.191,1.275 L0.171,1.290 L0.151,1.304 L0.131,1.319 L0.111,1.334 L0.091,1.349 L0.071,1.363 L0.051,1.378 L0.031,1.392 L0.011,1.406 L-0.009,1.421 L-0.029,1.435 L-0.049,1.448 L-0.069,1.462 L-0.089,1.476 L-0.109,1.489 L-0.129,1.502 L-0.149,1.515 L-0.169,1.527 L-0.189,1.540 L-0.209,1.552 L-0.229,1.564 L-0.249,1.576 L-0.269,1.587 L-0.289,1.598 L-0.309,1.609 L-0.329,1.619 L-0.349,1.630 L-0.369,1.639 L-0.389,1.649 L-0.409,1.658 L-0.429,1.667 L-0.449,1.676 L-0.469,1.684 L-0.489,1.691 L-0.509,1.699 L-0.529,1.706 L-0.549,1.712 L-0.569,1.719 L-0.589,1.724 L-0.609,1.730 L-0.629,1.735 L-0.649,1.739 L-0.669,1.743 L-0.689,1.747 L-0.709,1.750 L-0.729,1.752 L-0.749,1.754 L-0.769,1.756 L-0.789,1.757 L-0.809,1.757 L-0.829,1.757 L-0.849,1.757 L-0.869,1.755 L-0.889,1.754 L-0.909,1.751 L-0.929,1.748 L-0.949,1.745 L-0.969,1.740 L-0.989,1.735 L-1.009,1.729 L-1.029,1.723 L-1.049,1.716 L-1.069,1.708 L-1.089,1.699 L-1.109,1.689 L-1.129,1.679 L-1.149,1.668 L-1.169,1.655 L-1.189,1.642 L-1.209,1.628 L-1.229,1.613 L-1.249,1.597 L-1.269,1.579 L-1.289,1.561 L-1.309,1.541 L-1.329,1.520 L-1.349,1.498 L-1.369,1.474 L-1.389,1.449 L-1.409,1.422 L-1.429,1.393 L-1.449,1.362 L-1.469,1.330 L-1.489,1.295 L-1.509,1.258 L-1.529,1.218 L-1.549,1.175 L-1.569,1.129 L-1.589,1.080 L-1.609,1.026 L-1.629,0.967 L-1.649,0.902 L-1.669,0.830 L-1.689,0.748 L-1.709,0.653 L-1.729,0.538 L-1.749,0.384 L-1.769,0.046 L-1.769,-0.046 L-1.749,-0.384 L-1.729,-0.538 L-1.709,-0.653 L-1.689,-0.748 L-1.669,-0.830 L-1.649,-0.902 L-1.629,-0.967 L-1.609,-1.026 L-1.589,-1.080 L-1.569,-1.129 L-1.549,-1.175 L-1.529,-1.218 L-1.509,-1.258 L-1.489,-1.295 L-1.469,-1.330 L-1.449,-1.362 L-1.429,-1.393 L-1.409,-1.422 L-1.389,-1.449 L-1.369,-1.474 L-1.349,-1.498 L-1.329,-1.520 L-1.309,-1.541 L-1.289,-1.561 L-1.269,-1.579 L-1.249,-1.597 L-1.229,-1.613 L-1.209,-1.628 L-1.189,-1.642 L-1.169,-1.655 L-1.149,-1.668 L-1.129,-1.679 L-1.109,-1.689 L-1.089,-1.699 L-1.069,-1.708 L-1.049,-1.716 L-1.029,-1.723 L-1.009,-1.729 L-0.989,-1.735 L-0.969,-1.740 L-0.949,-1.745 L-0.929,-1.748 L-0.909,-1.751 L-0.889,-1.754 L-0.869,-1.755 L-0.849,-1.757 L-0.829,-1.757 L-0.809,-1.757 L-0.789,-1.757 L-0.769,-1.756 L-0.749,-1.754 L-0.729,-1.752 L-0.709,-1.750 L-0.689,-1.747 L-0.669,-1.743 L-0.649,-1.739 L-0.629,-1.735 L-0.609,-1.730 L-0.589,-1.724 L-0.569,-1.719 L-0.549,-1.712 L-0.529,-1.706 L-0.509,-1.699 L-0.489,-1.691 L-0.469,-1.684 L-0.449,-1.676 L-0.429,-1.667 L-0.409,-1.658 L-0.389,-1.649 L-0.369,-1.639 L-0.349,-1.630 L-0.329,-1.619 L-0.309,-1.609 L-0.289,-1.598 L-0.269,-1.587 L-0.249,-1.576 L-0.229,-1.564 L-0.209,-1.552 L-0.189,-1.540 L-0.169,-1.527 L-0.149,-1.515 L-0.129,-1.502 L-0.109,-1.489 L-0.089,-1.476 L-0.069,-1.462 L-0.049,-1.448 L-0.029,-1.435 L-0.009,-1.421 L0.011,-1.406 L0.031,-1.392 L0.051,-1.378 L0.071,-1.363 L0.091,-1.349 L0.111,-1.334 L0.131,-1.319 L0.151,-1.304 L0.171,-1.290 L0.191,-1.275 L0.211,-1.260 L0.231,-1.245 L0.251,-1.230 L0.271,-1.216 L0.291,-1.201 L0.311,-1.187 L0.331,-1.172 L0.351,-1.158 L0.371,-1.144 L0.391,-1.130 L0.411,-1.117 L0.431,-1.104 L0.451,-1.091 L0.471,-1.078 L0.491,-1.066 L0.511,-1.054 L0.531,-1.043 L0.551,-1.032 L0.571,-1.022 L0.591,-1.012 L0.611,-1.003 L0.631,-0.995 L0.651,-0.987 L0.671,-0.980 L0.691,-0.974 L0.711,-0.968 L0.731,-0.964 L0.751,-0.960 L0.771,-0.957 L0.791,-0.955 L0.811,-0.955 L0.831,-0.955 L0.851,-0.956 L0.871,-0.959 L0.891,-0.962 L0.911,-0.966 L0.931,-0.972 L0.951,-0.979 L0.971,-0.987 L0.991,-0.996 L1.011,-1.006 L1.031,-1.017 L1.051,-1.029 L1.071,-1.042 L1.091,-1.057 L1.111,-1.072 L1.131,-1.088 L1.151,-1.106 L1.171,-1.124 L1.191,-1.143 L1.211,-1.164 L1.231,-1.185 L1.251,-1.207 L1.271,-1.229 L1.291,-1.253 L1.311,-1.277 L1.331,-1.302 L1.351,-1.328 L1.371,-1.355 L1.391,-1.382 L1.411,-1.410 L1.431,-1.438 L1.451,-1.467 L1.471,-1.497 L1.491,-1.527 L1.511,-1.558 L1.531,-1.590 L1.551,-1.621 L1.571,-1.654 L1.591,-1.687 L1.611,-1.720 L1.631,-1.754 L1.651,-1.788 L1.671,-1.823 L1.691,-1.858 L1.711,-1.894 L1.731,-1.930 L1.751,-1.966 L1.771,-2.003 L1.791,-2.040 L1.811,-2.078 L1.831,-2.116 L1.851,-2.154 L1.871,-2.193 L1.891,-2.232 L1.911,-2.271 L1.931,-2.310 L1.951,-2.350 L1.971,-2.391 L1.991,-2.431 L2.011,-2.472 L2.031,-2.513 L2.051,-2.555 L2.071,-2.596 L2.091,-2.638 L2.111,-2.681 L2.131,-2.723 L2.151,-2.766 L2.171,-2.809 L2.191,-2.852 L2.211,-2.896 L2.231,-2.940 L2.251,-2.984 L2.271,-3.028 L2.291,-3.073 L2.311,-3.118 L2.331,-3.163 L2.351,-3.208 L2.371,-3.254 L2.391,-3.300 L2.411,-3.346 L2.431,-3.392 L2.451,-3.438 L2.471,-3.485 L2.491,-3.532 L2.511,-3.579 L2.531,-3.626 L2.551,-3.674 L2.571,-3.722 L2.591,-3.770" fill="none" stroke="#fff" stroke-width="0.05"/>
+</svg>
+  <a class="home-link" href="index.html">← 總覽</a>
+  <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
+  <div class="hero-content">
+    <div class="eyebrow">CHAPTER 03 · GROUP STRUCTURE AND THE ECDLP</div>
+    <h1>群結構與 ECDLP</h1>
+    <div class="subtitle">點的個數、子群，以及為什麼「從 kP 找回 k」很難</div>
+    <div class="big-formula">$|\#E(\mathbb F_p)-(p+1)|\le 2\sqrt p$</div>
+    <div class="chain" aria-label="成本鏈"><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer on" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">點加／倍點</a><span class="arr">→</span><a class="layer" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div><div class="chain-caption">成本鏈：每一層都由下一層的運算組成</div>
+  </div>
+</header>
+<main class="container">
+<div class="toc"><div class="toc-title">本章內容</div><div class="toc-grid"><a href="#why"><span class="toc-num">3.1</span>正著算容易，倒著算很難</a><a href="#hasse"><span class="toc-num">3.2</span>點有多少個：Hasse 定理</a><a href="#subgroup"><span class="toc-num">3.3</span>子群、階與餘因子</a><a href="#attacks"><span class="toc-num">3.4</span>ECDLP 與攻擊</a><a href="#trail"><span class="toc-num">3.5</span>互動：kP 的軌跡與點的階</a><a href="#hist"><span class="toc-num">3.6</span>互動：Hasse 區間裡的點數分布</a><a href="#refs"><span class="toc-num">REF</span>本章文獻</a></div></div>
+<section id="why" data-nav="動機">
+<div class="section-number">§3.1</div>
+<h2>正著算容易，倒著算很難</h2>
+<div class="info-box why"><span class="info-label">動機</span>
+<p>第 0 章的 ECDH 是這樣運作的：大家共用曲線上的一個基點 $G$；Alice 選秘密整數 $a$、公開 $aG$，Bob 選 $b$、公開 $bG$，雙方各自算出同一個點 $abG$。這個協定要安全，必須同時滿足兩件事：</p>
+<ul>
+<li><strong>正著算容易</strong>：給定 $k$ 與 $P$，算 $kP$ 只要幾百次倍點和加點（第 5 章）。</li>
+<li><strong>倒著算很難</strong>：給定 $P$ 與 $Q=kP$，找回 $k$ 在實際上做不到。這叫<strong>橢圓曲線離散對數問題</strong>（elliptic curve discrete logarithm problem，ECDLP）。</li>
+</ul>
+<p>第 2 章給了我們一個群。本章要回答：這個群有多大？它的子群長什麼樣子？在什麼條件下 ECDLP 才真的難？答案決定了實際的曲線怎麼挑，也決定了「256 位元的曲線提供 128 位元安全」這句話的來源。</p>
+</div>
+<p>整章的數值例子用兩條第 2 章的玩具曲線，都在 $\mathbb F_{97}$ 上：</p>
+$$E_A:\ y^2=x^3+2x+3,\qquad E_B:\ y^2=x^3-3x+6 .$$
+</section>
+
+<section id="hasse" data-nav="Hasse">
+<div class="section-number">§3.2</div>
+<h2>點有多少個：Hasse 定理</h2>
+<p>先數點。固定 $x\in\mathbb F_p$，令 $f(x)=x^3+ax+b$。方程式 $y^2=f(x)$ 的解數取決於 $f(x)$ 是不是平方：</p>
+<ul>
+<li>$f(x)$ 是非零的平方剩餘（quadratic residue）：兩個點 $(x,\pm y)$；</li>
+<li>$f(x)=0$：一個點 $(x,0)$；</li>
+<li>$f(x)$ 是非剩餘：沒有點。</li>
+</ul>
+<p>三種情形都可以寫成 $1+\left(\frac{f(x)}{p}\right)$（Legendre 符號）。加上無窮遠點 $\mathcal O$，</p>
+$$N=\#E(\mathbb F_p)=p+1+\sum_{x\in\mathbb F_p}\left(\frac{f(x)}{p}\right).$$
+<p>$\mathbb F_p^*$ 裡恰好一半的元素是平方，所以直覺上大約一半的 $x$ 貢獻兩個點、另一半貢獻零個，總數大約是 $p+1$。偏差來自 Legendre 符號的和；如果把它們當成隨機的 $\pm1$，和的大小應該是 $\sqrt p$ 的數量級。Hasse（1933）證明了這個直覺的精確版本：</p>
+$$\bigl|\,N-(p+1)\,\bigr|\le 2\sqrt p .$$
+<p>整數 $t=p+1-N$ 叫做 Frobenius 的跡（trace of Frobenius）。對數論背景的讀者：這正是曲線版本的 Riemann 假設，後來由 Weil 推廣到一般的代數曲線（Washington 第 4 章）。</p>
+<div class="example"><div class="ex-label">數一數：$\mathbb F_{97}$ 上的兩條玩具曲線</div>
+<p>在 $E_A$ 上，97 個 $x$ 之中有 48 個使 $f(x)$ 是非零平方、46 個是非剩餘、3 個使 $f(x)=0$，所以 $N=2\cdot48+3+1=100$。在 $E_B$ 上是 53、44、0 個，$N=2\cdot53+1=107$。</p>
+<p>$p=97$ 時 Hasse 區間是</p>$$[\,98-2\sqrt{97},\ 98+2\sqrt{97}\,]\approx[78.30,\ 117.70],$$<p>兩者都落在裡面。</p>
+</div>
+<div class="info-box"><span class="info-label">Hasse 界的是群的大小</span>
+<p>Hasse 定理說的是<strong>整個群的點數</strong> $N$，與個別點的階無關。點的階可以小到 2（下一節就有例子），只要它整除 $N$。</p>
+</div>
+<p>真實大小的曲線也一樣。P-256 的 $p$ 與群階 $n$ 都是 256 位元的數（它的餘因子是 1，所以 $N=n$），而 $t=p+1-n$ 只有 127 位元，比 $2\sqrt p$（129 位元）小：$N$ 與 $p$ 的前半段位元完全相同。實際的 $N$ 不是用上面的和去數（那要 $p$ 步），而是用 Schoof 演算法及其改良（SEA），它們的時間是 $\log p$ 的多項式（Washington 第 4 章）。</p>
+<div class="code-block"><div class="code-cap">數點、點的階，以及 baby-step giant-step</div><button class="copy" type="button">複製</button><pre class="hl"><code><span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">isqrt</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">count_points</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;#E(F_p) = p + 1 + sum_x (x^3+ax+b | p)：每個 x 貢獻 1 + Legendre 符號個點。&quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">1</span>                                          <span class="c1"># 無窮遠點 O</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">%</span> <span class="n">p</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">+=</span> <span class="mi">1</span>                                 <span class="c1"># y = 0，一個點</span>
+        <span class="k">elif</span> <span class="nb">pow</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">+=</span> <span class="mi">2</span>                                 <span class="c1"># 平方剩餘，兩個點 (x, ±y)</span>
+    <span class="k">return</span> <span class="n">N</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">point_order</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;最小的 k &gt;= 1 使 kP = O。依 Lagrange 定理，它整除 #E。&quot;&quot;&quot;</span>
+    <span class="n">k</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">P</span>
+    <span class="k">while</span> <span class="n">R</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">O</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">k</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">bsgs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Baby-step giant-step：找 k 使 kG = Q，G 的階為 n。約 2*sqrt(n) 次點加法。&quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">isqrt</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>                           <span class="c1"># m = ceil(sqrt(n))</span>
+    <span class="n">baby</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">O</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>                             <span class="c1"># baby steps：jG</span>
+        <span class="n">baby</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">ec_neg</span><span class="p">(</span><span class="n">scalar_mult</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">p</span><span class="p">)</span>      <span class="c1"># -mG</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">Q</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>                             <span class="c1"># giant steps：Q - i*mG</span>
+        <span class="k">if</span> <span class="n">R</span> <span class="ow">in</span> <span class="n">baby</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="n">baby</span><span class="p">[</span><span class="n">R</span><span class="p">])</span> <span class="o">%</span> <span class="n">n</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div>
+</section>
+
+<section id="subgroup" data-nav="子群">
+<div class="section-number">§3.3</div>
+<h2>子群、階與餘因子</h2>
+<p>對曲線上的點 $P$，最小的正整數 $m$ 使 $mP=\mathcal O$ 叫做 $P$ 的<strong>階</strong>（order）。$P,2P,\dots,mP=\mathcal O$ 構成一個循環子群 $\langle P\rangle$。由 Lagrange 定理，</p>
+$$\operatorname{ord}(P)\ \big|\ N .$$
+<p>反過來不成立：$N$ 的因數不一定都是某個點的階。$E_A$ 就是例子。它的 $N=100$，99 個非 $\mathcal O$ 的點的階分布如下（逐點計算）：</p>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>階</th><td class="num">2</td><td class="num">5</td><td class="num">10</td><td class="num">25</td><td class="num">50</td></tr>
+<tr><th>點數</th><td class="num">3</td><td class="num">4</td><td class="num">12</td><td class="num">20</td><td class="num">60</td></tr>
+</table></div>
+<p>沒有階為 4、20 或 100 的點。原因是 $x^3+2x+3$ 在 $\mathbb F_{97}$ 上有三個根（$x=30, 68, 96$），給出三個階為 2 的點 $(x,0)$；循環群只有一個階為 2 的元素，所以 $E_A(\mathbb F_{97})$ 不是循環群，而是 $\mathbb Z/2\times\mathbb Z/50$。一般而言 $E(\mathbb F_p)\cong\mathbb Z/n_1\times\mathbb Z/n_2$，其中 $n_1\mid n_2$ 且 $n_1\mid p-1$（Washington 定理 4.1）。$E_B$ 的情形最乾淨：$N=107$ 是質數，每個非 $\mathcal O$ 的點的階都是 107。</p>
+
+<h3>密碼學實際用的是一個質數階子群</h3>
+<p>實務上把群階寫成</p>
+$$N=h\cdot n,\qquad n\ \text{是大質數},\quad h\ \text{很小（餘因子，cofactor）}.$$
+<p>標準會給定一個階為 $n$ 的基點 $G$，ECDH 與 ECDSA 都只在 $\langle G\rangle$ 裡運算。$E_B$ 是 $h=1$、$n=107$；$E_A$ 的 $100=2^2\cdot5^2$，最大的質因數只有 5，也就是 $n=5$、$h=20$，這樣的曲線不會拿來用。真實曲線中，P-256 與 P-521 的 $h=1$（SP 800-186），Curve25519 的 $h=8$（RFC 7748）。</p>
+<div class="info-box green"><span class="info-label">兩個模數：$p$ 與 $n$</span>
+<p>座標是 $\mathbb F_p$ 的元素，所有點運算都在<strong>模 $p$</strong> 下做。純量 $k$ 只在模 $n$ 下有意義，因為 $nG=\mathcal O$ 讓 $(k+n)G=kG$；秘密金鑰取在 $[1,n-1]$，ECDSA 的簽章公式也在模 $n$ 下計算。P-256 的 $p$ 形狀特殊，可以用第 7 章的折疊；$n$ 沒有特殊形狀，所以 ECDSA 需要第 8、9 章的一般方法。</p>
+</div>
+<p>餘因子 $h&gt;1$ 時要小心：對方傳來的點可能落在階很小的子群裡（例如 $E_A$ 的三個 2 階點），使共用秘密只剩幾種可能。實作會檢查收到的點在曲線上、且位於 $\langle G\rangle$ 中，或把結果再乘上 $h$。</p>
+</section>
+
+<section id="attacks" data-nav="ECDLP">
+<div class="section-number">§3.4</div>
+<h2>ECDLP 與攻擊</h2>
+<p>問題：給定階為 $n$ 的 $G$ 與 $Q\in\langle G\rangle$，找 $k$ 使 $Q=kG$。</p>
+<h3>一般方法：$\sqrt n$ 的障礙</h3>
+<ul>
+<li><strong>暴力搜尋</strong>：依序算 $G,2G,3G,\dots$，最多 $n$ 次點加法。</li>
+<li><strong>Baby-step giant-step</strong>（BSGS）：取 $m=\lceil\sqrt n\,\rceil$，把 $k$ 寫成 $k=im+j$，$0\le i,j&lt;m$。先存下所有 $jG$（baby steps），再依序算 $Q-i\,(mG)$（giant steps），碰到表中的點就得到 $k$。時間與記憶體都約 $\sqrt n$。</li>
+<li><strong>Pollard rho</strong>：用一個看似隨機的走法在 $\langle G\rangle$ 中產生點列，等它出現碰撞。由生日悖論，期望約 $\sqrt{\pi n/2}$ 步，只需常數記憶體，而且可以多台機器平行。這是目前對一般曲線最好的攻擊（HMV §4.1）。</li>
+</ul>
+<div class="example"><div class="ex-label">BSGS 小例：$E_B$，$n=107$</div>
+<p>取 $G=(0,43)$、$Q=(25,91)$。$m=\lceil\sqrt{107}\,\rceil=11$。表中存 $0G,\dots,10G$；giant step 依序算 $Q, Q-11G, Q-22G,\dots$，在 $i=5$ 時碰到 $3G$，所以 $k=5\cdot11+3=58$。總共不到 $2m=22$ 次點加法，暴力搜尋則要 58 次。</p>
+</div>
+<p>對 P-256，$n$ 是 256 位元，Pollard rho 的期望步數 $\sqrt{\pi n/2}$ 約為 $2^{128.3}$。這就是「256 位元曲線約有 128 位元安全」的來源：安全強度是群階位元數的一半。</p>
+
+<h3>Pohlig–Hellman：為什麼要大質數因子</h3>
+<p>若 $n$ 不是質數，可以把問題分解到每個質數冪的子群上分別解，再用中國剩餘定理拼回 $k$。工作量由 $n$ 的<strong>最大質因數</strong> $q$ 決定，大約 $\sqrt q$。$E_A$ 的 $N=100=2^2\cdot5^2$，最大的質因數是 5，離散對數幾乎可以手算。所以實際的曲線一定讓 $n$ 是大質數，而且 $h$ 很小。</p>
+
+<h3>與 $\mathbb F_p^*$ 的差別：沒有指標演算法</h3>
+<p>在 $\mathbb F_p^*$ 上，離散對數有次指數時間的<strong>指標演算法</strong>（index calculus）：利用「很多整數可以拆成小質數的乘積」，先求出小質數的對數，再拼出目標。數域篩法把它推到 $L_p[1/3]$ 的複雜度，這也是有限體 Diffie–Hellman 與 RSA 需要 3072 位元，ECC 只要 256 位元的原因（第 0 章）。對質數體上一般選取的曲線，目前不知道有類似「小質數」的概念可用，最好的攻擊仍是 $\sqrt n$ 的一般方法（Washington 第 5 章）。</p>
+
+<h3>要避開的曲線</h3>
+<p>「一般選取」有例外。下面兩類曲線有特殊結構，ECDLP 會變簡單：</p>
+<ul>
+<li><strong>異常曲線</strong>（anomalous curve，$N=p$）：Smart、Satoh–Araki 與 Semaev 各自證明，這時可以把問題提升到 $p$ 進數上，在多項式時間內解出 $k$（Washington §5.4）。例如 $\mathbb F_{127}$ 上的 $y^2=x^3-3x+5$ 恰好有 127 個點（逐點計算確認），它的跡 $t=1$。</li>
+<li><strong>嵌入次數小的曲線</strong>：嵌入次數是使 $n\mid p^k-1$ 的最小 $k$。MOV 與 Frey–Rück 攻擊用配對（pairing）把 $\langle G\rangle$ 嵌入 $\mathbb F_{p^k}^*$，在那裡就能用指標演算法。$k$ 很小時這是致命的。例如 $\mathbb F_{103}$ 上的超奇異曲線 $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因子 $n=13$，而 $13\mid103+1$，所以 $k=2$（Washington §5.3）。</li>
+</ul>
+<p>相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^k\bmod107$）。標準曲線在發布前都排除了這些情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。</p>
+</section>
+
+<section id="trail" data-nav="kP 軌跡">
+<div class="section-number">§3.5</div>
+<h2>互動：$kP$ 的軌跡與點的階</h2>
+<p>點雲是曲線在 $\mathbb F_{97}$ 上的所有點。點一下任何一點當作起點 $P$（或用下拉選單挑一個指定階的點），再播放：每一步加上 $P$，紫色線依序連起 $P,2P,3P,\dots$，直到回到 $\mathcal O$。走過的步數就是 $P$ 的階，右側檢查它是否整除 $N$。</p>
+<p>在 $E_A$ 上試試不同的點：軌跡的長度只會是 2、5、10、25 或 50。在 $E_B$ 上，每一條軌跡都走遍全部 106 個仿射點。點的位置看起來毫無規律，這正是「從 $kP$ 看不出 $k$」的直觀寫照。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">kP TRAIL</div>
+    <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
+      <label>曲線 <select id="w03curve">
+        <option value="toyA">E_A：y² = x³ + 2x + 3（N = 100）</option>
+        <option value="toyB">E_B：y² = x³ − 3x + 6（N = 107）</option>
+      </select></label>
+      <label>起點 <select id="w03start"></select></label>
+      <button class="btn btn-ghost" id="w03rand" type="button">隨機起點</button>
+    </div>
+    <div class="stage"><svg id="w03cloud" role="img" aria-label="F_97 上的點雲與 kP 軌跡"></svg></div>
+    <div class="status-banner" id="w03status"></div>
+    <div class="controls-bar">
+      <button class="btn btn-play" id="w03play" type="button">▶ 播放</button>
+      <button class="btn btn-step" id="w03step" type="button">下一步</button>
+      <button class="btn btn-reset" id="w03reset" type="button">重來</button>
+    </div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">這條曲線</div><div id="w03info"></div></div>
+    <div class="info-card"><div class="ic-title">各階的點數</div><div id="w03orders"></div>
+      <div class="ic-note" style="margin-top:.4rem">每個階都整除 N（Lagrange）。目前起點的階以紅色標出。</div></div>
+  </div>
+</div>
+</section>
+
+<section id="hist" data-nav="Hasse 直方圖">
+<div class="section-number">§3.6</div>
+<h2>互動：Hasse 區間裡的點數分布</h2>
+<p>固定 $p$ 與 $a$，讓 $b$ 跑過所有使曲線非奇異（$4a^3+27b^2\not\equiv0$）的值，逐條數出 $N=\#E(\mathbb F_p)$，畫成直方圖。淺色帶是 Hasse 區間 $[\,p+1-2\sqrt p,\ p+1+2\sqrt p\,]$；所有長條都落在帶內。<span class="pill-hi">藍色</span>是一般的 $N$，<span class="pill-lo">綠色</span>長條的 $N$ 是質數（$h=1$ 的候選），<span class="pill-anom">紅色</span>長條是 $N=p$ 的異常曲線。點一下長條可以看到是哪些 $b$。</p>
+<div class="viz-layout">
+  <div class="viz-panel">
+    <div class="viz-title">HASSE HISTOGRAM</div>
+    <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
+      <label>p <select id="w03p">
+        <option value="97">97</option><option value="101">101</option>
+        <option value="127" selected>127</option><option value="251">251</option>
+      </select></label>
+      <label>a <select id="w03a">
+        <option value="-3">−3</option><option value="1">1</option><option value="2">2</option>
+      </select></label>
+    </div>
+    <div class="stage"><svg id="w03hist" role="img" aria-label="點數直方圖"></svg></div>
+    <div class="status-banner" id="w03hstatus"></div>
+  </div>
+  <div class="side-panel">
+    <div class="info-card"><div class="ic-title">統計</div><div id="w03hinfo"></div></div>
+  </div>
+</div>
+</section>
+
+<section id="refs" data-nav="本章文獻">
+<div class="section-number">REF</div>
+<h2>本章文獻</h2>
+<ul class="refs"><li>L. C. Washington, <cite>Elliptic Curves: Number Theory and Cryptography</cite>, 2nd ed., CRC Press, 2008. <span class="where">— Thm. 4.2, §5.1–5.2</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §3.1.3–3.1.4, §4.1（Alg. 4.3）</span></li><li>J. Hoffstein, J. Pipher, J. H. Silverman, <cite>An Introduction to Mathematical Cryptography</cite>, 2nd ed., Springer, 2014. <span class="where">— §6.3</span></li><li>NIST, <a href="https://doi.org/10.6028/NIST.SP.800-186" target="_blank" rel="noopener"><cite>SP 800-186: Recommendations for Discrete Logarithm-based Cryptography: Elliptic Curve Domain Parameters</cite></a>, 2023. <span class="where">— §3.1.1</span></li></ul>
+<p class="where">完整書目見 <a href="references.html">參考文獻</a>。</p>
+</section>
+<nav class="chapter-nav"><a class="prev" href="02_group_law.html"><div class="nav-dir">← 上一章</div><div class="nav-title">2. 曲線與群律</div></a><a class="home" href="index.html"><div class="nav-dir">總覽</div><div class="nav-title">全部章節</div></a><a class="next" href="04_coordinates.html"><div class="nav-dir">下一章 →</div><div class="nav-title">4. 座標與運算成本</div></a></nav>
+</main>
+<footer>橢圓曲線密碼：從曲線到模乘法・<a href="https://github.com/phonchi/ecc-selfstudy">原始碼</a>・所有互動元件在瀏覽器以 BigInt 計算，僅供教學，不是常數時間實作</footer>
+<script src="assets/ecc-core.js?v=20261004"></script>
+<script src="assets/ecc-ui.js?v=20261004"></script>
+<script src="assets/js/03_ecdlp.js?v=20261004"></script>
+</body>
+</html>
