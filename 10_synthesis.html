@@ -40,7 +40,7 @@
 <div class="section-number">§10.1</div>
 <h2>把整條成本鏈接起來</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>前面九章各自回答了一個「為什麼」：為什麼要有限體、為什麼要射影座標、為什麼要 NAF 或階梯、為什麼要挑模數的形狀。這一章把它們串成一筆總帳：<strong>一次純量乘法，最後到底是多少次 CPU 的字組乘法？</strong>每一層的選擇，又各自省下了多少？</p>
+<p>前面九章各自回答了一個「為什麼」：為什麼要有限體、為什麼要 Jacobian（加權射影）座標、為什麼要 NAF 或階梯、為什麼要挑模數的形狀。這一章把它們串成一筆總帳：<strong>一次純量乘法，最後到底是多少次 CPU 的字組乘法？</strong>每一層的選擇，又各自省下了多少？</p>
 </div>
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>層</th><th>問題</th><th>本站的答案</th><th>章</th></tr>
@@ -62,7 +62,7 @@
 <tr><td>每次化簡的字組乘法</td><td>幾乎沒有（只有加減與移位，或乘小常數）</td><td>約 $k^2+4k$（HAC Note 14.45）</td><td>$k(k+1)$（HAC Note 14.34）</td></tr>
 <tr><td>輸出</td><td>$x\bmod p$，加減幾次 $p$ 修正</td><td>$x\bmod m$，至多修正兩次</td><td>$xR^{-1}\bmod m$，至多修正一次</td></tr>
 <tr><td>表示法</td><td>普通</td><td>普通</td><td>要進出 Montgomery 表示</td></tr>
-<tr><td>適合</td><td>標準曲線的底體運算</td><td>模數常換、只算幾次</td><td>長串乘法（純量乘法、RSA 冪次）</td></tr>
+<tr><td>適合</td><td>標準曲線的底體運算</td><td>只做少數幾次乘法</td><td>長串乘法（純量乘法、RSA 冪次）</td></tr>
 </table></div>
 <p>實際的函式庫常常混用：底體 $\mathbb F_p$ 用折疊或 Montgomery，基點的階 $n$ 上的運算（例如 ECDSA）用 Montgomery 或 Barrett。沒有單一的最佳解，要看模數、平台與是否需要常數時間。</p>
 </section>
@@ -70,16 +70,16 @@
 <section id="ledger" data-nav="總帳">
 <div class="section-number">§10.3</div>
 <h2>互動：一次 $kP$ 的總帳</h2>
-<p>選一個模數、化簡方法與純量乘法方法，下面從上到下列出每一層的次數。字組大小固定為 64 位元，反元素以 $100\,\mathbf M$ 計，加減法與移位不計。這是<strong>粗估</strong>，用來看量級與比例，不是任何實作的實測值。</p>
+<p>選一個模數、化簡方法與純量乘法方法，下面從上到下列出每一層的次數。字組大小固定為 64 位元，反元素以 $100\,\mathbf M$ 計，加減法與移位不計。這是<strong>粗估</strong>，用來看量級與比例，不是任何實作的實測值。所有選項都假設同一種模型：$a=-3$ 的短 Weierstrass 曲線，純量的位元數等於模數的位元數；只換底體模數。所以 $2^{255}-19$ 與 Goldilocks 的數字不是 X25519／X448 的實際成本（它們用 Montgomery 曲線與只用 $x$ 座標的階梯，見 RFC 7748）。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">FROM kP DOWN TO WORDS</div>
     <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
       <label>模數 <select id="w10mod">
-        <option value="4|256">P-256（k = 4 字組）</option>
-        <option value="4|255">2^255 − 19（k = 4）</option>
-        <option value="7|448">Goldilocks（k = 7）</option>
-        <option value="9|521">P-521（k = 9）</option>
+        <option value="4|256">P-256（4 個 64 位元字組）</option>
+        <option value="4|255">2^255 − 19（4 個字組）</option>
+        <option value="7|448">Goldilocks（7 個字組）</option>
+        <option value="9|521">P-521（9 個字組）</option>
       </select></label>
       <label>化簡 <select id="w10red">
         <option value="fold">特殊模數折疊</option>

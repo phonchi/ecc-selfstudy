@@ -16,7 +16,7 @@ HC.ready(() => {
     const words = wM + wS;
     const tier = (label, val, note, w) => `<div class="frow"><div class="fl">${label}</div><div class="fv"><div class="ledger-bar" style="--w:${w}%"></div><b class="mono">${val}</b> <span class="where">${note}</span></div></div>`;
     $('w10chain').innerHTML =
-      tier('純量乘法', '1 次 kP', `k 有 ${l} 位元`, 4)
+      tier('純量乘法', '1 次 kP', `純量 k 有 ℓ = ${l} 位元`, 4)
       + tier('點運算', `${fmt(nD)} 倍點 + ${fmt(nA)} 加點`, sm.value === 'ladder' ? '每一位一次倍點、一次一般加點' : '加點用混合座標', 12)
       + tier('體運算', `${fmt(M)} M + ${fmt(S)} S`, `含最後一次反元素（以 100M 計）`, 40)
       + tier('字組乘法', fmt(words), `乘積與平方 ${fmt(M * k * k + S * (k * k + k) / 2)}，化簡 ${fmt((M + S) * redCost)}`, 100);

@@ -41,6 +41,7 @@ def test_toy_group(name, size):
             ref = E.scalar_mult(k, P, a, p)
             assert E.scalar_mult_naf(k, P, a, p) == ref
             assert E.ladder(k, P, a, p) == ref
+            assert E.ladder(k, P, a, p, bits=12) == ref
             assert E.scalar_mult_jacobian(k, P, a, p) == ref
 
 

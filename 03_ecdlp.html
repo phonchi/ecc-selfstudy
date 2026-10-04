@@ -47,7 +47,7 @@
 </ul>
 <p>第 2 章給了我們一個群。本章要回答：這個群有多大？它的子群長什麼樣子？在什麼條件下 ECDLP 才真的難？答案決定了實際的曲線怎麼挑，也決定了「256 位元的曲線提供 128 位元安全」這句話的來源。</p>
 </div>
-<p>整章的數值例子用兩條第 2 章的玩具曲線，都在 $\mathbb F_{97}$ 上：</p>
+<p>整章的數值例子用兩條玩具曲線，都在 $\mathbb F_{97}$ 上（$E_A$ 出現在第 2 章，$E_B$ 出現在第 0 章）：</p>
 $$E_A:\ y^2=x^3+2x+3,\qquad E_B:\ y^2=x^3-3x+6 .$$
 </section>
 
@@ -64,7 +64,7 @@ $$E_A:\ y^2=x^3+2x+3,\qquad E_B:\ y^2=x^3-3x+6 .$$
 $$N=\#E(\mathbb F_p)=p+1+\sum_{x\in\mathbb F_p}\left(\frac{f(x)}{p}\right).$$
 <p>$\mathbb F_p^*$ 裡恰好一半的元素是平方，所以直覺上大約一半的 $x$ 貢獻兩個點、另一半貢獻零個，總數大約是 $p+1$。偏差來自 Legendre 符號的和；如果把它們當成隨機的 $\pm1$，和的大小應該是 $\sqrt p$ 的數量級。Hasse（1933）證明了這個直覺的精確版本：</p>
 $$\bigl|\,N-(p+1)\,\bigr|\le 2\sqrt p .$$
-<p>整數 $t=p+1-N$ 叫做 Frobenius 的跡（trace of Frobenius）。對數論背景的讀者：這正是曲線版本的 Riemann 假設，後來由 Weil 推廣到一般的代數曲線（Washington 第 4 章）。</p>
+<p>整數 $t=p+1-N$ 叫做 Frobenius 的跡（trace of Frobenius）。對數論背景的讀者：這正是曲線版本的 Riemann 假設，後來由 Weil 推廣到一般的代數曲線（Washington 第 14 章）。</p>
 <div class="example"><div class="ex-label">數一數：$\mathbb F_{97}$ 上的兩條玩具曲線</div>
 <p>在 $E_A$ 上，97 個 $x$ 之中有 48 個使 $f(x)$ 是非零平方、46 個是非剩餘、3 個使 $f(x)=0$，所以 $N=2\cdot48+3+1=100$。在 $E_B$ 上是 53、44、0 個，$N=2\cdot53+1=107$。</p>
 <p>$p=97$ 時 Hasse 區間是</p>$$[\,98-2\sqrt{97},\ 98+2\sqrt{97}\,]\approx[78.30,\ 117.70],$$<p>兩者都落在裡面。</p>
@@ -72,7 +72,7 @@ $$\bigl|\,N-(p+1)\,\bigr|\le 2\sqrt p .$$
 <div class="info-box"><span class="info-label">Hasse 界的是群的大小</span>
 <p>Hasse 定理說的是<strong>整個群的點數</strong> $N$，與個別點的階無關。點的階可以小到 2（下一節就有例子），只要它整除 $N$。</p>
 </div>
-<p>真實大小的曲線也一樣。P-256 的 $p$ 與群階 $n$ 都是 256 位元的數（它的餘因子是 1，所以 $N=n$），而 $t=p+1-n$ 只有 127 位元，比 $2\sqrt p$（129 位元）小：相對於 $p$ 本身，$N$ 與 $p+1$ 的差只是約 $2^{-129}$ 的比例。實際的 $N$ 不是用上面的和去數（那要 $p$ 步），而是用 Schoof 演算法及其改良（SEA），它們的時間是 $\log p$ 的多項式（Washington 第 4 章）。</p>
+<p>真實大小的曲線也一樣。P-256 的 $p$ 與群階 $n$ 都是 256 位元的數（它的餘因子是 1，所以 $N=n$），而 $t=p+1-n$ 只有 127 位元，比 $2\sqrt p$（129 位元）小：相對於 $p$ 本身，$N$ 與 $p+1$ 的差只是約 $2^{-129}$ 的比例。實際的 $N$ 不是用上面的和去數（那要 $p$ 步），而是用 Schoof 演算法及其改良（SEA），它們的時間是 $\log p$ 的多項式（Washington §4.5 的 Schoof、§12.4 的 SEA）。</p>
 <div class="code-block"><div class="code-cap">數點、點的階，以及 baby-step giant-step</div><button class="copy" type="button">複製</button><pre class="hl"><code><span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">isqrt</span>
 
 
@@ -160,10 +160,10 @@ $$N=h\cdot n,\qquad n\ \text{是大質數},\quad h\ \text{很小（餘因子，c
 <h3>要避開的曲線</h3>
 <p>「一般選取」有例外。下面兩類曲線有特殊結構，ECDLP 會變簡單：</p>
 <ul>
-<li><strong>異常曲線</strong>（anomalous curve，$N=p$）：Smart、Satoh–Araki 與 Semaev 各自證明，這時可以把問題提升到 $p$ 進數上，在多項式時間內解出 $k$（Washington §5.4）。例如 $\mathbb F_{127}$ 上的 $y^2=x^3-3x+5$ 恰好有 127 個點（逐點計算確認），它的跡 $t=1$。</li>
-<li><strong>嵌入次數小的曲線</strong>：嵌入次數是使 $n\mid p^k-1$ 的最小 $k$。MOV 與 Frey–Rück 攻擊用配對（pairing）把 $\langle G\rangle$ 嵌入 $\mathbb F_{p^k}^*$，在那裡就能用指標演算法。$k$ 很小時這是致命的。例如 $\mathbb F_{103}$ 上的超奇異曲線 $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因數 $n=13$，而 $13\mid103+1$，所以 $k=2$（Washington §5.3）。</li>
+<li><strong>異常曲線</strong>（anomalous curve，$N=p$）：Semaev、Satoh–Araki、Smart 各自證明，這時可以在多項式時間內解出 $k$；後兩者的方法是把問題提升到 $p$ 進數上（Washington §5.4）。例如 $\mathbb F_{127}$ 上的 $y^2=x^3-3x+5$ 恰好有 127 個點（逐點計算確認），它的跡 $t=1$。</li>
+<li><strong>嵌入次數小的曲線</strong>：嵌入次數是使 $n\mid p^e-1$ 的最小正整數 $e$。MOV 與 Frey–Rück 攻擊用配對（pairing）把 $\langle G\rangle$ 嵌入 $\mathbb F_{p^e}^*$，在那裡就能用指標演算法。$e$ 很小時這是致命的。例如 $\mathbb F_{103}$ 上的超奇異曲線 $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因數 $n=13$，而 $13\mid103^2-1$（因為 $13\mid103+1$），所以 $e=2$（Washington §5.3）。</li>
 </ul>
-<p>相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^k\bmod107$）。標準曲線在發布前都排除了這些情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。</p>
+<p>相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^e\bmod107$）。標準曲線在發布前都排除了這些情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。</p>
 </section>
 
 <section id="trail" data-nav="kP 軌跡">

@@ -72,7 +72,7 @@ $$R_1-R_0=P .$$
   <div class="side-panel">
     <div class="info-card"><div class="ic-title">計數</div><div id="w05count"></div></div>
     <div class="info-card"><div class="ic-title">看節奏</div><div class="ic-note">
-      double-and-add 與 NAF 的條帶裡，「D 後面有沒有 A」直接洩漏了數字。換成 ladder，每一格都是一次 A 加一次 D。這裡的 ladder 固定跑 7 位（$n=107$ 的位元數），不足的前面補 0，所以條帶連 $k$ 的位元長度也不洩漏。
+      double-and-add 的條帶裡，「D 後面有沒有 A」直接洩漏了每一個位元。NAF 的條帶洩漏非零數字的位置，雖然看不出是 $+1$ 還是 $-1$，也已經大幅縮小 $k$ 的範圍。換成 ladder，每一格都是一次 A 加一次 D。這裡的 ladder 固定跑 7 位（$n=107$ 的位元數），不足的前面補 0，所以條帶連 $k$ 的位元長度也不洩漏。
     </div></div>
   </div>
 </div>

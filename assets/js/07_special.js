@@ -34,7 +34,8 @@ HC.ready(() => {
     fr.push({ rows: [row('A = x·y', show(A, M))], msg: `A = x·y 有 ${A.toString(2).length} 位元，比 p 長一倍。` });
     if (key === 'p448' || key === 'p256') return fr.concat(key === 'p448' ? fr448(A, M) : fr256(A, M));
     let cur = A, round = 0;
-    while (cur >> BigInt(M.n)) {
+    // Mersenne（c = 1）折一次就小於 2p，剩下的只是減一次 p；偽 Mersenne 可能要再折一次
+    while ((cur >> BigInt(M.n)) && !(M.c === 1n && round >= 1)) {
       round++;
       const hi = cur >> BigInt(M.n), lo = cur & ((1n << BigInt(M.n)) - 1n);
       fr.push({ rows: [row(`第 ${round} 次切開`, split(cur, M))],

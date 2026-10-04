@@ -86,10 +86,12 @@ $$k=(\cdots((k_{\ell-1})\,2+k_{\ell-2})\,2+\cdots)\,2+k_0 .$$
     <span class="k">return</span> <span class="n">R</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">ladder</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Montgomery ladder：每一位都做一次加點與一次倍點，並保持 R1 - R0 = P。&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ladder</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">bits</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Montgomery ladder：每一位都做一次加點與一次倍點，並保持 R1 - R0 = P。</span>
+<span class="sd">    bits 是公開的固定長度（例如 n 的位元數），k 前面補 0，迴圈次數就不洩漏 k 的長度。</span>
+<span class="sd">    這裡的 if 與 Python 整數運算都不是常數時間，只用來說明演算法。&quot;&quot;&quot;</span>
     <span class="n">R0</span><span class="p">,</span> <span class="n">R1</span> <span class="o">=</span> <span class="n">O</span><span class="p">,</span> <span class="n">P</span>
-    <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">bin</span><span class="p">(</span><span class="n">k</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]:</span>
+    <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">bin</span><span class="p">(</span><span class="n">k</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="n">bits</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">bit</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
             <span class="n">R0</span><span class="p">,</span> <span class="n">R1</span> <span class="o">=</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R0</span><span class="p">,</span> <span class="n">R0</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">ec_add</span><span class="p">(</span><span class="n">R0</span><span class="p">,</span> <span class="n">R1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -161,7 +163,7 @@ $$R_1-R_0=P .$$
   <div class="side-panel">
     <div class="info-card"><div class="ic-title">計數</div><div id="w05count"></div></div>
     <div class="info-card"><div class="ic-title">看節奏</div><div class="ic-note">
-      double-and-add 與 NAF 的條帶裡，「D 後面有沒有 A」直接洩漏了數字。換成 ladder，每一格都是一次 A 加一次 D。這裡的 ladder 固定跑 7 位（$n=107$ 的位元數），不足的前面補 0，所以條帶連 $k$ 的位元長度也不洩漏。
+      double-and-add 的條帶裡，「D 後面有沒有 A」直接洩漏了每一個位元。NAF 的條帶洩漏非零數字的位置，雖然看不出是 $+1$ 還是 $-1$，也已經大幅縮小 $k$ 的範圍。換成 ladder，每一格都是一次 A 加一次 D。這裡的 ladder 固定跑 7 位（$n=107$ 的位元數），不足的前面補 0，所以條帶連 $k$ 的位元長度也不洩漏。
     </div></div>
   </div>
 </div>

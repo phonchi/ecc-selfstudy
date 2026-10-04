@@ -114,10 +114,12 @@ def scalar_mult_naf(k, P, a, p):
     return R
 
 
-def ladder(k, P, a, p):
-    """Montgomery ladder：每一位都做一次加點與一次倍點，並保持 R1 - R0 = P。"""
+def ladder(k, P, a, p, bits=0):
+    """Montgomery ladder：每一位都做一次加點與一次倍點，並保持 R1 - R0 = P。
+    bits 是公開的固定長度（例如 n 的位元數），k 前面補 0，迴圈次數就不洩漏 k 的長度。
+    這裡的 if 與 Python 整數運算都不是常數時間，只用來說明演算法。"""
     R0, R1 = O, P
-    for bit in bin(k)[2:]:
+    for bit in bin(k)[2:].zfill(bits):
         if bit == "0":
             R0, R1 = ec_add(R0, R0, a, p), ec_add(R0, R1, a, p)
         else:
@@ -272,7 +274,7 @@ def fold_p256(A):
     D3 = cat(a[12], 0, a[10], a[9], a[8], a[15], a[14], a[13])
     D4 = cat(a[13], 0, a[11], a[10], a[9], 0, a[15], a[14])
     B = T + 2 * S1 + 2 * S2 + S3 + S4 - D1 - D2 - D3 - D4
-    while B < 0:                        # 結果落在 (-4p, 5p)，加減幾次 p 即可
+    while B < 0:                        # 結果落在 (-4·2^256, 7·2^256)，加減幾次 p 即可
         B += p
     while B >= p:
         B -= p

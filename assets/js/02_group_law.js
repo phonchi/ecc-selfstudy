@@ -68,6 +68,14 @@ HC.ready(() => {
   function drawPts() {
     const g = sv.clearLayer('pts'), c = compute();
     const vals = $('w02vals');
+    if (Math.abs(4 * a ** 3 + 27 * b ** 2) < 1e-9) {     // 奇異曲線：群律沒有定義，只畫曲線形狀
+      $('w02status').innerHTML = '4a³ + 27b² = 0：這條曲線有尖點或自交點，不是橢圓曲線，割線法則在奇異點上沒有定義。請調整 a 或 b。';
+      vals.innerHTML = '<div class="ic-note">奇異曲線，不計算加法。</div>';
+      hP.setAttribute('cx', sv.X(P.x)); hP.setAttribute('cy', sv.Y(yOf(P)));
+      hQ.style.display = 'none';
+      sv.el.appendChild(sv.layer('handles'));
+      return;
+    }
     if (c.O) {
       sv.seg(c.x1, -6, c.x1, 6, { cls: 'chord' }, g);
       $('w02status').innerHTML = mode === 'dbl' ? 'P 在 x 軸上（y = 0），切線是鉛直線：第三個交點是無窮遠點，所以 <b>2P = O</b>，P 是 2 階點。' : 'P 與 −P 在同一條鉛直線上：第三個交點是無窮遠點，所以 <b>P + (−P) = O</b>。';
