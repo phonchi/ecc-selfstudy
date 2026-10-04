@@ -25,7 +25,7 @@
   <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
 </header>
 <div class="book">
-<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch on" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a><ul class="sb-secs"><li><a href="#why" data-target="why">7.1 動機</a></li><li><a href="#mersenne" data-target="mersenne">7.2 Mersenne</a></li><li><a href="#pseudo" data-target="pseudo">7.3 偽 Mersenne</a></li><li><a href="#solinas" data-target="solinas">7.4 Solinas</a></li><li><a href="#lab" data-target="lab">7.5 折疊實驗</a></li><li><a href="#p256" data-target="p256">7.6 P-256</a></li><li><a href="#limits" data-target="limits">7.7 限制</a></li></ul></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
+<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch on" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a><ul class="sb-secs"><li><a href="#why" data-target="why">7.1 動機</a></li><li><a href="#fold" data-target="fold">7.2 折疊</a></li><li><a href="#mersenne" data-target="mersenne">7.3 P-521</a></li><li><a href="#pseudo" data-target="pseudo">7.4 2^255−19</a></li><li><a href="#solinas" data-target="solinas">7.5 Goldilocks</a></li><li><a href="#p256" data-target="p256">7.6 P-256</a></li><li><a href="#lab" data-target="lab">7.7 折疊實驗</a></li><li><a href="#limits" data-target="limits">7.8 限制</a></li></ul></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
 <main class="content" id="top">
 <div class="ch-head">
   <div class="eyebrow">第 7 章 · Special Moduli</div>
@@ -34,30 +34,122 @@
   <div class="chain" aria-label="成本鏈"><span class="chain-cap">成本鏈</span><a class="layer" href="00_why_ecc.html">協定 ECDH</a><span class="arr">→</span><a class="layer" href="05_scalar.html">純量乘法 kP</a><span class="arr">→</span><a class="layer" href="04_coordinates.html">加點／倍點</a><span class="arr">→</span><a class="layer on" href="07_special.html">模乘 mod p</a><span class="arr">→</span><a class="layer" href="06_multiprecision.html">字組乘法</a></div>
 </div>
 <section id="why" data-nav="動機">
-<h2><span class="secno">7.1</span>為什麼要挑模數的形狀</h2>
+<h2><span class="secno">7.1</span>不做除法，能不能化簡？</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 5 章算過：一次純量乘法 $kP$ 大約要做幾千次 $\mathbb F_p$ 的乘法。每一次乘法都分成兩步：先算出整數乘積 $A=x\cdot y$（$0\le A&lt;p^2$，位數是 $p$ 的兩倍），再把 $A$ 化簡成 $A \bmod p$。第一步是第 6 章的字組乘法；第二步若照字面做「除以 $p$ 取餘數」，就是一次多字組的長除法，比乘法本身還慢。</p>
-<p>所以真正的問題是：<strong>能不能不做除法就得到 $A\bmod p$？</strong>本章的答案是「挑一個長得好看的 $p$」；第 8、9 章處理一般的 $p$。</p>
+<p>第 6 章結束時，兩個 $\mathbb F_p$ 元素 $x,y\in[0,p)$ 的整數乘積 $A=x\cdot y$ 已經算好：$0\le A&lt;p^2$，有 $2s$ 個字組。剩下的工作是求 $A\bmod p$（<a class="xref" href="01_finite_field.html#def-mod">定義 1.1</a>）。照字面做是一次多字組的長除法，比乘法本身還慢；而一次純量乘法要做幾千次這樣的化簡。</p>
+<p>本章的想法是：<strong>模數 $p$ 是設計曲線的人挑的，那就挑一個讓化簡變容易的 $p$。</strong>若 $p$ 很接近 2 的冪，「除以 $p$」可以換成移位、加法和小常數乘法。NIST 的 P-256、P-521，以及 Curve25519、Curve448 的模數都是這樣挑出來的。第 8、9 章再處理沒辦法挑的模數。</p>
 </div>
-<p>關鍵觀察只有一行。若 $p = 2^n - c$，其中 $c$ 很小，那麼</p>
-$$2^n \equiv c \pmod p .$$
-<p>把 $A$ 在第 $n$ 位切成高低兩半，$A = A_1\cdot 2^n + A_0$（$0\le A_0&lt;2^n$），就得到</p>
-$$A \equiv A_1\cdot c + A_0 \pmod p .$$
-<p>右邊比 $A$ 短了大約 $n$ 位，而算它只需要<strong>移位、一次小常數乘法和一次加法</strong>。重複一兩次，再減幾次 $p$，就落在 $[0,p)$。這個動作叫<strong>折疊</strong>（folding）：把高半部「折」回低半部。</p>
-<p>電腦裡的整數本來就是二進位，所以若 $n$ 落在字組邊界上，「在第 $n$ 位切開」只是取出某些字組；不在邊界上時（例如下面的 P-521），也只要遮罩與移位，完全不需要除法。</p>
 </section>
 
-<section id="mersenne" data-nav="Mersenne">
-<h2><span class="secno">7.2</span>Mersenne 質數：$c=1$，P-521</h2>
-<p>最乾淨的情形是 $c=1$，也就是 Mersenne 質數 $p=2^n-1$。這時 $2^n\equiv1$，折疊公式變成</p>
-$$A = A_1\cdot 2^n + A_0 \equiv A_0 + A_1 \pmod p,$$
-<p>只要一次加法。因為 $A&lt;p^2&lt;2^{2n}$，所以 $A_0, A_1 &lt; 2^n$，相加後小於 $2^{n+1}$，最多再減一次 $p$。</p>
-<div class="example"><div class="ex-label">手算小例：$p = 2^7-1 = 127$</div>
-<p>取 $x=100$、$y=113$，$A=11300$。二進位下 $A = \underbrace{1011000}_{A_1=88}\,\underbrace{0100100}_{A_0=36}$。所以</p>
-$$A \equiv 88 + 36 = 124 \pmod{127},$$
-<p>而 $124&lt;127$，不必再減。驗算：$11300 = 88\cdot127 + 124$。</p>
+<section id="fold" data-nav="折疊">
+<h2><span class="secno">7.2</span>折疊恆等式與三類特殊模數</h2>
+<p>整個章節只用到一個觀察。若 $p=2^L-c$（$L$ 是正整數，通常就是 $p$ 的位元數），則 $2^L=p+c$，所以 $2^L\equiv c\pmod p$（<a class="xref" href="01_finite_field.html#def-cong">定義 1.2</a>）：$2^L$ 這個「大」的量，模 $p$ 等於 $c$。</p>
+<div class="box thm" id="c7-thm-fold"><div class="box-head"><span class="box-label">定理 7.1</span><span class="box-title">折疊恆等式</span><span class="box-ref">HAC §14.3.4</span></div>
+<p>設 $p=2^L-c$，其中 $c$ 是整數。對整數 $A\ge0$，令 $A_1=\lfloor A/2^L\rfloor$、$A_0=A\bmod 2^L$，即 $A=A_1\cdot2^L+A_0$，$0\le A_0&lt;2^L$。則</p>
+$$A\equiv A_0+c\,A_1\pmod p .$$
+<p>若 $0&lt;c&lt;2^L$ 且 $A_1&gt;0$，右邊嚴格小於 $A$。</p>
 </div>
-<p>NIST 的曲線 <strong>P-521</strong> 用的就是 Mersenne 質數 $p=2^{521}-1$（SP 800-186 §3.2.1.5），化簡規則就是上面這一行（SP 800-186 附錄 G.1.4）。521 不是 64 的倍數（$521 = 8\cdot64+9$），所以實作時 $A_1$ 要從第 9 個字組的中間開始取，需要一次跨字組的移位；這是唯一的麻煩。</p>
+<p>把 $A$ 的高位部分 $A_1$「折」回低位、乘上 $c$ 再加起來，這個動作稱為<strong>折疊</strong>（folding）。同餘類不變，數值變小。因為電腦裡的整數本來就是二進位，求 $A_1,A_0$ 只是取出位元；若 $L$ 是字組大小 $w$ 的倍數（<a class="xref" href="06_multiprecision.html#c6-def-radix">定義 6.1</a>），甚至只是取出某些字組。所以折疊的成本取決於 $c$ 有多「簡單」。依 $c$ 的形狀，常見的特殊模數分成三類。</p>
+<div class="box defn" id="c7-def-mersenne"><div class="box-head"><span class="box-label">定義 7.2</span><span class="box-title">Mersenne 質數、偽 Mersenne 質數、Crandall 質數</span><span class="box-ref">HAC §14.3.4；SP 800-186 App. G.1</span></div>
+<p>形如 $2^L-1$ 的質數稱為 <strong>Mersenne 質數</strong>。形如 $p=2^L-c$、其中 $c$ 是小的正整數（例如 $c$ 只佔一個字組）的質數，稱為<strong>偽 Mersenne 質數</strong>（pseudo-Mersenne prime），也叫 <strong>Crandall 質數</strong>。</p>
+</div>
+<div class="box defn" id="c7-def-solinas"><div class="box-head"><span class="box-label">定義 7.3</span><span class="box-title">廣義 Mersenne 數、Solinas 質數</span><span class="box-ref">Solinas 1999；SP 800-186 App. G.1；HMV §2.2.6</span></div>
+<p>設 $f(X)=X^d+f_{d-1}X^{d-1}+\cdots+f_0$ 是次數 $d$ 很小、係數 $f_i$ 都是很小的整數（典型是 $0,\pm1$）的多項式，$v$ 是正整數。形如 $p=f(2^v)$ 的質數稱為<strong>廣義 Mersenne 數</strong>（generalized Mersenne number），或 <strong>Solinas 質數</strong>。當 $v$ 是字組大小的倍數時，每一項 $2^{vi}$ 都落在字組邊界上。</p>
+</div>
+<p>本章的四個例子：</p>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>模數</th><th>類別</th><th>$2^L\equiv c$ 中的 $c$</th><th>用在</th></tr>
+<tr><td>$2^{521}-1$</td><td>Mersenne</td><td class="num">$1$</td><td>P-521</td></tr>
+<tr><td>$2^{255}-19$</td><td>偽 Mersenne</td><td class="num">$19$</td><td>Curve25519</td></tr>
+<tr><td>$2^{448}-2^{224}-1$</td><td>Solinas</td><td class="num">$2^{224}+1$</td><td>Curve448</td></tr>
+<tr><td>$2^{256}-2^{224}+2^{192}+2^{96}-1$</td><td>Solinas</td><td class="num">$2^{224}-2^{192}-2^{96}+1$</td><td>P-256</td></tr>
+</table></div>
+<p>後兩個是 Solinas 質數：Goldilocks 是 $f(X)=X^2-X-1$、$v=224$；P-256 是 $f(X)=X^8-X^7+X^6+X^3-1$、$v=32$。它們的 $c$ 不小，但它是少數幾個 2 的冪的和或差，而且次方都落在字組邊界上，所以「乘 $c$」仍然只是移位與加減。SP 800-186 附錄 G.1 把 P-224 到 P-521 的模數稱為 generalized Mersenne numbers，把 Curve25519、Curve448 的模數稱為 Crandall primes；Curve448 的模數同時也符合上面 Solinas 的形式。</p>
+<div class="box defn" id="c7-def-concat"><div class="box-head"><span class="box-label">定義 7.4</span><span class="box-title">塊的並排</span><span class="box-ref">SP 800-186 App. G.1</span></div>
+<p>給定塊寬 $t$，若 $0\le X_i&lt;2^t$，記</p>
+$$(X_{q-1}\Vert\cdots\Vert X_1\Vert X_0)=\sum_{i=0}^{q-1}X_i\,2^{ti},$$
+<p>也就是把 $q$ 個 $t$ 位元的塊由高到低並排成一個 $qt$ 位元的數。本章每次使用時都會寫明 $t$。</p>
+</div>
+</section>
+
+<section id="mersenne" data-nav="P-521">
+<h2><span class="secno">7.3</span>Mersenne：P-521 的 $2^{521}-1$</h2>
+<p>最乾淨的情形是 $c=1$。這時 <a class="xref" href="07_special.html#c7-thm-fold">定理 7.1</a> 變成 $A\equiv A_0+A_1$：化簡只要一次加法。NIST 的 <strong>P-521</strong> 就用 Mersenne 質數 $p=2^{521}-1$。</p>
+<div class="box algo" id="c7-alg-p521"><div class="box-head"><span class="box-label">演算法 7.5</span><span class="box-title">化簡模 2^521 − 1</span><span class="box-ref">HMV Alg. 2.31；SP 800-186 App. G.1.4</span></div>
+<div class="io"><b>輸入</b>$p=2^{521}-1$，整數 $0\le A&lt;p^2$，寫成 $A=(A_1\Vert A_0)$（每塊 521 位元）。</div>
+<div class="io"><b>輸出</b>$A\bmod p$。</div>
+<ol class="steps">
+<li>$r\leftarrow A_0+A_1$。</li>
+<li>若 $r\ge p$，則 $r\leftarrow r-p$。</li>
+<li>回傳 $r$。</li>
+</ol>
+<p>$r\equiv A$ 來自 $2^{521}\equiv1$。因為 $A_0\le p$、$A_1&lt;p$（由 $A&lt;p^2$），所以 $r&lt;2p$，最多減一次。成本是一次 521 位元的加法。</p>
+</div>
+<p>521 不是 64 的倍數（$521=8\cdot64+9$），所以在 64 位元機器上，$A_1$ 要從第 9 個字組的中間開始取，需要一次跨字組的移位，這是唯一的麻煩。</p>
+<div class="example"><div class="ex-label">手算小例：$p=2^7-1=127$</div>
+<p>取 $x=100$、$y=113$，$A=11300$。以 7 位元為塊寬，$A=(\underbrace{1011000}_{A_1=88}\Vert\underbrace{0100100}_{A_0=36})$。所以</p>
+$$A\equiv 88+36=124\pmod{127},$$
+<p>而 $124&lt;127$，不必再減。驗算：$11300=88\cdot127+124$。</p>
+</div>
+</section>
+
+<section id="pseudo" data-nav="2^255−19">
+<h2><span class="secno">7.4</span>偽 Mersenne：$2^{255}-19$</h2>
+<p>Mersenne 質數很少（$L$ 本身必須是質數，而且大多數這樣的 $2^L-1$ 仍是合數），密碼學需要的大小不一定剛好有。放寬成 $c$ 小的偽 Mersenne 質數，選擇就多了。最著名的例子是 $p=2^{255}-19$，Curve25519 的底體（RFC 7748）。這時 $2^{255}\equiv19$，每次折疊多一次「乘 19」。</p>
+<div class="box algo" id="c7-alg-25519"><div class="box-head"><span class="box-label">演算法 7.6</span><span class="box-title">化簡模 2^255 − 19（兩次折疊）</span><span class="box-ref">HAC Alg. 14.47（$b=2,\ t=255,\ c=19$）</span></div>
+<div class="io"><b>輸入</b>$p=2^{255}-19$，整數 $0\le A&lt;p^2$。</div>
+<div class="io"><b>輸出</b>$A\bmod p$。</div>
+<ol class="steps">
+<li>寫 $A=(A_1\Vert A_0)$（每塊 255 位元）；$r\leftarrow A_0+19A_1$。</li>
+<li>再寫 $r=(r_1\Vert r_0)$（每塊 255 位元）；$r\leftarrow r_0+19r_1$。</li>
+<li>若 $r\ge p$，則 $r\leftarrow r-p$。</li>
+<li>回傳 $r$。</li>
+</ol>
+<p>兩步都是 <a class="xref" href="07_special.html#c7-thm-fold">定理 7.1</a>，所以 $r\equiv A$。第 1 步後 $r&lt;2^{255}+19\cdot2^{255}=20\cdot2^{255}&lt;2^{260}$，比 $p$ 大，所以要再折一次；這時 $r_1&lt;20$，第 2 步後 $r&lt;2^{255}+19\cdot19&lt;2p$，最多再減一次。</p>
+</div>
+<div class="box rem" id="c7-rem-curve25519"><div class="box-head"><span class="box-label">注意 7.7</span><span class="box-title">只借用模數</span></div>
+<p>Curve25519 這條曲線是 Montgomery 形式 $v^2=u^3+486662u^2+u$（RFC 7748），不是本站其他章用的短 Weierstrass 形式。這裡只借用它的<em>模數</em>來說明折疊，與曲線的形式無關。</p>
+</div>
+</section>
+
+<section id="solinas" data-nav="Goldilocks">
+<h2><span class="secno">7.5</span>Solinas：Goldilocks $2^{448}-2^{224}-1$</h2>
+<p>再放寬一步：$c$ 不必小，只要它是少數幾個落在塊邊界上的 2 的冪。Curve448 用的 $p=2^{448}-2^{224}-1$ 就是一例（因為形狀漂亮，常被叫做 Goldilocks）。以 224 位元為塊寬，$2^{448}\equiv2^{224}+1$，而且</p>
+$$2^{672}=2^{224}\cdot2^{448}\equiv2^{448}+2^{224}\equiv2^{225}+1\pmod p .$$
+<p>把 $A=(A_3\Vert A_2\Vert A_1\Vert A_0)$（每塊 224 位元）的高次方逐一換掉：$A_2\cdot2^{448}\equiv(A_2\Vert A_2)$，$A_3\cdot2^{672}\equiv A_3\cdot2^{225}+A_3$，也就是 $(A_3\Vert A_3)+(A_3\Vert0)$。</p>
+<div class="box algo" id="c7-alg-448"><div class="box-head"><span class="box-label">演算法 7.8</span><span class="box-title">化簡模 2^448 − 2^224 − 1</span><span class="box-ref">SP 800-186 App. G.1.6</span></div>
+<div class="io"><b>輸入</b>$p=2^{448}-2^{224}-1$，整數 $0\le A&lt;p^2$，寫成 $A=(A_3\Vert A_2\Vert A_1\Vert A_0)$（每塊 224 位元）。</div>
+<div class="io"><b>輸出</b>$A\bmod p$。</div>
+<ol class="steps">
+<li>定義四個 448 位元的數（每塊 224 位元）：$S_1=(A_1\Vert A_0)$，$S_2=(A_2\Vert A_2)$，$S_3=(A_3\Vert A_3)$，$S_4=(A_3\Vert 0)$。</li>
+<li>$r\leftarrow S_1+S_2+S_3+S_4$。</li>
+<li>當 $r\ge p$：$r\leftarrow r-p$。</li>
+<li>回傳 $r$。</li>
+</ol>
+<p>上面的兩個同餘式給出 $S_1+S_2+S_3+S_4\equiv A$。四項各小於 $2^{448}$，所以 $r&lt;4\cdot2^{448}$，而 $4\cdot2^{448}-4p=4(2^{224}+1)&lt;p$，第 3 步至多減四次。</p>
+</div>
+<p>注意：單獨一項 $S_i$ 與 $A$ 沒有同餘關係；只有<strong>四項全部加完</strong>，總和才與 $A$ 同餘。</p>
+</section>
+
+<section id="p256" data-nav="P-256">
+<h2><span class="secno">7.6</span>P-256：九項的加減</h2>
+<p>P-256 的模數 $p=2^{256}-2^{224}+2^{192}+2^{96}-1$ 看起來比上面幾個複雜，為什麼要選這個形狀？關鍵是<strong>每個次方 $256,224,192,96,0$ 都是 32 的倍數</strong>。由 <a class="xref" href="07_special.html#c7-thm-fold">定理 7.1</a>，</p>
+$$2^{256}\equiv2^{224}-2^{192}-2^{96}+1\pmod p ,$$
+<p>右邊每一項都是 $2^{32i}$ 的形式。所以若以 32 位元字組寫 $A=(A_{15}\Vert\cdots\Vert A_1\Vert A_0)$（每塊 32 位元），把 $2^{256},2^{288},\dots,2^{480}$ 一個個換成 $2^0,2^{32},\dots,2^{224}$ 的組合，每個 $A_j$ 都整塊落到某些字組位置上，不必在字組內部移位，而且係數只有 $0,\pm1,\pm2$。這正是設計者要的：在 32 位元機器上，化簡只剩字組的重排與加減。</p>
+<div class="box algo" id="c7-alg-p256"><div class="box-head"><span class="box-label">演算法 7.9</span><span class="box-title">化簡模 P-256 的 p</span><span class="box-ref">HMV Alg. 2.29；SP 800-186 App. G.1.2</span></div>
+<div class="io"><b>輸入</b>$p=2^{256}-2^{224}+2^{192}+2^{96}-1$，整數 $0\le A&lt;p^2$，寫成 $A=(A_{15}\Vert A_{14}\Vert\cdots\Vert A_0)$（每塊 32 位元）。</div>
+<div class="io"><b>輸出</b>$A\bmod p$。</div>
+<ol class="steps">
+<li>定義九個 256 位元的數 $T,S_1,\dots,S_4,D_1,\dots,D_4$，每個由 8 塊 32 位元字組並排而成，例如 $T=(A_7\Vert A_6\Vert\cdots\Vert A_0)$、$S_1=(A_{15}\Vert A_{14}\Vert A_{13}\Vert A_{12}\Vert A_{11}\Vert0\Vert0\Vert0)$；全部九項見下表（由左到右是字組 7 到字組 0）。<div class="tbl-wrap"><table class="cmp-table" id="w07p256table"></table></div></li>
+<li>$U\leftarrow T+2S_1+2S_2+S_3+S_4$；再令 $U\leftarrow U-D_1-D_2-D_3-D_4$。</li>
+<li>當 $U&lt;0$：$U\leftarrow U+p$。當 $U\ge p$：$U\leftarrow U-p$。</li>
+<li>回傳 $U$。</li>
+</ol>
+<p>$U\equiv A\pmod p$ 是把每個 $2^{32j}$（$8\le j\le15$）用 $2^{256}$ 的同餘式反覆換掉後整理的結果。每一項都在 $[0,2^{256})$，所以 $-4\cdot2^{256}&lt;U&lt;7\cdot2^{256}$，第 3 步至多加 5 次或減 7 次 $p$。HMV 把同樣九項記作 $s_1,\dots,s_9$。</p>
+</div>
+<p>和 Goldilocks 一樣，<strong>九項必須全部加減完</strong>，總和 $U$ 才與 $A$ 同餘；中間的部分和沒有這個性質。而且 $U$ 可能是負數，也可能比 $p$ 大好幾倍，所以第 3 步的<strong>正規化</strong>（加或減若干次 $p$，把結果拉回 $[0,p)$）不可省略。這一步的次數隨資料而變；常數時間的實作會改成固定次數的條件加減，用遮罩選結果。</p>
+
+<p>下面的程式中，四個函式依序對應 <a class="xref" href="07_special.html#c7-alg-p521">演算法 7.5</a>、<a class="xref" href="07_special.html#c7-alg-25519">演算法 7.6</a>、<a class="xref" href="07_special.html#c7-alg-448">演算法 7.8</a>、<a class="xref" href="07_special.html#c7-alg-p256">演算法 7.9</a>（$2^{255}-19$ 的版本以迴圈折到不能再折為止，效果與兩次折疊相同）。</p>
 <details class="code-fold"><summary>Python 參考實作（選讀）：四種折疊（SP 800-186 附錄 G.1）</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">fold_p521</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;p = 2^521 - 1，A &lt; p^2。2^521 = 1 (mod p)，所以高半部直接加回低半部。&quot;&quot;&quot;</span>
     <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">521</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -108,34 +200,9 @@ $$A \equiv 88 + 36 = 124 \pmod{127},$$
 </code></pre></div></details>
 </section>
 
-<section id="pseudo" data-nav="偽 Mersenne">
-<h2><span class="secno">7.3</span>偽 Mersenne：$c$ 很小，$2^{255}-19$</h2>
-<p>Mersenne 質數很少（$n$ 本身必須是質數，而且大多數這樣的 $2^n-1$ 仍是合數），密碼學需要的大小不一定剛好有。放寬成 $p=2^n-c$、$c$ 小，選擇就多了，這叫<strong>偽 Mersenne 質數</strong>（pseudo-Mersenne）。</p>
-<p>最著名的例子是 $p=2^{255}-19$（Curve25519 與 Ed25519 的底體，RFC 7748）。折疊規則是</p>
-$$A = A_1\cdot2^{255}+A_0 \equiv A_0 + 19\,A_1 \pmod p .$$
-<p>和 Mersenne 相比只多了「乘 19」。第一次折疊後的結果大約 $2^{260}$，比 $p$ 稍大，所以要再折一次（這次的 $A_1$ 只有幾個位元），最後最多減一次 $p$。</p>
-<div class="info-box"><span class="info-label">注意</span>
-<p>Curve25519 這條曲線是 Montgomery 形式 $By^2=x^3+Ax^2+x$，不是本站其他章用的 $y^2=x^3+ax+b$。這裡只借用它的<em>模數</em>來說明折疊，與曲線的形式無關。</p>
-</div>
-</section>
-
-<section id="solinas" data-nav="Solinas">
-<h2><span class="secno">7.4</span>Solinas 質數：Goldilocks $2^{448}-2^{224}-1$</h2>
-<p>再放寬一步：讓 $p$ 是 2 的幾個次方的和或差，而且次方都落在字組邊界上。這類模數叫<strong>廣義 Mersenne 數</strong>或 <strong>Solinas 質數</strong>。Curve448 用的 $p=2^{448}-2^{224}-1$ 是一例（因為形狀漂亮，常被叫做 Goldilocks）。這時</p>
-$$2^{448}\equiv 2^{224}+1 \pmod p .$$
-<p>把 $A$ 切成四個 224 位元的塊，$A = A_3 2^{672}+A_2 2^{448}+A_1 2^{224}+A_0$，再把每個高次方換掉：</p>
-$$\begin{aligned}
-A_2\cdot2^{448} &amp;\equiv A_2\cdot2^{224}+A_2,\\
-A_3\cdot2^{672} &amp;= A_3\cdot2^{224}\cdot2^{448} \equiv A_3\cdot2^{448}+A_3\cdot2^{224} \equiv A_3\cdot 2^{225} + A_3 .
-\end{aligned}$$
-<p>整理成「兩個 224 位元塊並排」的寫法（$X\Vert Y$ 表示 $X\cdot2^{224}+Y$），就是 SP 800-186 附錄 G.1.6 的公式</p>
-$$A \equiv (A_1\Vert A_0) + (A_2\Vert A_2) + (A_3\Vert A_3) + (A_3\Vert 0) \pmod p .$$
-<p>四個 448 位元的數相加，結果小於 $4\cdot2^{448}$，再減幾次 $p$ 就完成。</p>
-</section>
-
 <section id="lab" data-nav="折疊實驗">
-<h2><span class="secno">7.5</span>互動：折疊實驗室</h2>
-<p>選一個模數，按「隨機乘積」產生 $A=x\cdot y$（$x,y$ 是隨機的體元素），再逐步播放。<span class="pill-hi">藍色</span>是要折回去的高位部分，<span class="pill-lo">綠色</span>是低位部分。Mersenne 與偽 Mersenne 的每一次折疊都讓<strong>值</strong>變小，而<strong>模 $p$ 的同餘類</strong>不變。Goldilocks 與 P-256 要把所有項加完，總和才與 $A$ 同餘；中間的部分和不一定同餘，P-256 的總和甚至可能是負數，最後再加減 $p$ 正規化。最後一行與直接算 <code>A % p</code> 比對。</p>
+<h2><span class="secno">7.7</span>互動：折疊實驗室</h2>
+<p>選一個模數，按「隨機乘積」產生 $A=x\cdot y$（$x,y$ 是隨機的體元素），再逐步播放。<span class="pill-hi">藍色</span>是要折回去的高位部分，<span class="pill-lo">綠色</span>是低位部分。Mersenne 與偽 Mersenne 的每一次折疊都讓<strong>值</strong>變小，而<strong>模 $p$ 的同餘類</strong>不變。Goldilocks 與 P-256 則要把所有項加完，總和才與 $A$ 同餘；中間的部分和不一定同餘，P-256 的總和甚至可能是負數，最後再加減 $p$ 正規化。最後一行與直接算 <code>A % p</code> 比對。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">FOLD LAB</div>
@@ -168,40 +235,26 @@ $$A \equiv (A_1\Vert A_0) + (A_2\Vert A_2) + (A_3\Vert A_3) + (A_3\Vert 0) \pmod
 </div>
 </section>
 
-<section id="p256" data-nav="P-256">
-<h2><span class="secno">7.6</span>P-256：九項的加減</h2>
-<p>P-256 的模數是 $p=2^{256}-2^{224}+2^{192}+2^{96}-1$。它看起來比上面幾個複雜，但每個次方都是 32 的倍數，所以若用 <strong>32 位元字組</strong>來寫 $A$，</p>
-$$A = (A_{15}\Vert A_{14}\Vert\cdots\Vert A_0),\qquad A_i&lt;2^{32},$$
-<p>就能把 $2^{256},2^{288},\dots,2^{480}$ 逐一換成低次方的組合，而且每個係數都是 $0,\pm1,\pm2$。整理後得到 SP 800-186 附錄 G.1.2 的公式</p>
-$$A \equiv T + 2S_1 + 2S_2 + S_3 + S_4 - D_1 - D_2 - D_3 - D_4 \pmod p ,$$
-<p>其中每一項都是由 $A_i$ 重新排列成的 256 位元數，例如 $T=(A_7\Vert\cdots\Vert A_0)$ 就是低半部，$S_1=(A_{15}\Vert A_{14}\Vert A_{13}\Vert A_{12}\Vert A_{11}\Vert 0\Vert0\Vert0)$。</p>
-<details class="more"><summary>九項的完整表，以及為什麼最後還要修正幾次</summary><div class="more-body">
-<div class="tbl-wrap"><table class="cmp-table" id="w07p256table"></table></div>
-<p>每一項都在 $[0,2^{256})$，所以這個組合 $U$ 落在 $-4\cdot2^{256}&lt;U&lt;7\cdot2^{256}$（再利用 $A&lt;p^2$ 可以收緊到大約 $(-4p,5p)$）。$U$ 和 $A$ 同餘，但可能是負數，也可能比 $p$ 大好幾倍，所以最後要加或減若干次 $p$。這一步的次數隨資料而變；常數時間的實作會改成固定次數的條件選擇。</p>
-<p>上面的折疊實驗室選「P-256」時，會逐項顯示 $T, S_1,\dots,D_4$ 的值與修正次數。</p>
-</div></details>
-</section>
-
 <section id="limits" data-nav="限制">
-<h2><span class="secno">7.7</span>特殊模數的代價</h2>
+<h2><span class="secno">7.8</span>特殊模數的代價</h2>
 <p>折疊這麼快，為什麼還需要第 8、9 章的一般方法？</p>
 <ul>
-<li><strong>模數是給定的，不一定能挑。</strong>基點的階 $n$（ECDSA 簽章要在模 $n$ 下計算）由曲線決定，通常沒有特殊形狀；RSA 的模數更是兩個隨機質數的乘積。</li>
-<li><strong>每個模數要一套專用程式。</strong>折疊規則是為某一個 $p$ 量身打造的；一般方法只要換掉預先算好的常數就能用在任何模數上。</li>
-<li><strong>平台不同，最佳選擇不同。</strong>P-521 的 521 位元不在字組邊界上；在某些硬體上，Montgomery 乘法即使用在特殊模數上也不輸給折疊。</li>
+<li><strong>模數不一定能挑。</strong>曲線的底體 $p$ 可以挑，但 ECDSA 簽章還要在模<strong>基點的階 $n$</strong>下計算（第 8 章開頭說明），而 $n$ 由曲線決定，通常沒有特殊形狀；RSA 的模數更是兩個隨機質數的乘積。</li>
+<li><strong>每個模數要一套專用程式。</strong>折疊規則是為某一個 $p$ 量身打造的；一般方法只要換掉預先算好的常數，就能用在任何模數上。</li>
+<li><strong>平台不同，最佳選擇不同。</strong>P-256 的規則是為 32 位元字組設計的；P-521 的 521 位元不在 64 位元字組邊界上。在某些硬體上，第 9 章的 Montgomery 乘法即使用在特殊模數上也不輸給折疊。</li>
 </ul>
 <p>所以本章與後兩章不是互相取代，而是各有用處。第 10 章有一張總比較表。</p>
 </section>
 
 <section id="refs" data-nav="本章文獻">
 <h2>本章文獻</h2>
-<ul class="refs"><li>NIST, <a href="https://doi.org/10.6028/NIST.SP.800-186" target="_blank" rel="noopener"><cite>SP 800-186: Recommendations for Discrete Logarithm-based Cryptography: Elliptic Curve Domain Parameters</cite></a>, 2023. <span class="where">— App. G.1</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §2.2.6：Alg. 2.29, 2.31</span></li><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.3.4：Alg. 14.47</span></li><li>J. A. Solinas, <cite>Generalized Mersenne numbers</cite>, Technical Report CORR 99-39, University of Waterloo, 1999.</li></ul>
+<ul class="refs"><li>NIST, <a href="https://doi.org/10.6028/NIST.SP.800-186" target="_blank" rel="noopener"><cite>SP 800-186: Recommendations for Discrete Logarithm-based Cryptography: Elliptic Curve Domain Parameters</cite></a>, 2023. <span class="where">— App. G.1.2, G.1.4, G.1.6</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §2.2.6：Alg. 2.29, 2.31</span></li><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.3.4：Alg. 14.47</span></li><li>A. Langley, M. Hamburg, S. Turner, <a href="https://www.rfc-editor.org/rfc/rfc7748" target="_blank" rel="noopener"><cite>RFC 7748: Elliptic Curves for Security</cite></a>, IETF, 2016. <span class="where">— §4.1, §4.2</span></li><li>J. A. Solinas, <cite>Generalized Mersenne numbers</cite>, Technical Report CORR 99-39, University of Waterloo, 1999.</li></ul>
 <p class="where">完整書目見 <a href="references.html">參考文獻</a>；全部記號見 <a href="notation.html">記號與術語</a>。</p>
 </section>
 <nav class="chapter-nav"><a class="prev" href="06_multiprecision.html"><div class="nav-dir">← 上一章</div><div class="nav-title">6. 大整數乘法</div></a><a class="home" href="index.html"><div class="nav-dir">導讀</div><div class="nav-title">全部章節</div></a><a class="next" href="08_barrett.html"><div class="nav-dir">下一章 →</div><div class="nav-title">8. Barrett 化簡</div></a></nav>
 <footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">7.1 為什麼要挑模數的形狀</a></li><li><a href="#mersenne" data-target="mersenne">7.2 Mersenne 質數：c=1，P-521</a></li><li><a href="#pseudo" data-target="pseudo">7.3 偽 Mersenne：c 很小，2^255−19</a></li><li><a href="#solinas" data-target="solinas">7.4 Solinas 質數：Goldilocks 2^448−2^224−1</a></li><li><a href="#lab" data-target="lab">7.5 互動：折疊實驗室</a></li><li><a href="#p256" data-target="p256">7.6 P-256：九項的加減</a></li><li><a href="#limits" data-target="limits">7.7 特殊模數的代價</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">7.1 不做除法，能不能化簡？</a></li><li><a href="#fold" data-target="fold">7.2 折疊恆等式與三類特殊模數</a></li><li><a href="#mersenne" data-target="mersenne">7.3 Mersenne：P-521 的 2^521−1</a></li><li><a href="#pseudo" data-target="pseudo">7.4 偽 Mersenne：2^255−19</a></li><li><a href="#solinas" data-target="solinas">7.5 Solinas：Goldilocks 2^448−2^224−1</a></li><li><a href="#p256" data-target="p256">7.6 P-256：九項的加減</a></li><li><a href="#lab" data-target="lab">7.7 互動：折疊實驗室</a></li><li><a href="#limits" data-target="limits">7.8 特殊模數的代價</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
 </div>
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <script src="assets/ecc-core.js?v=20261005"></script>

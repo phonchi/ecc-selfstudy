@@ -26,7 +26,7 @@
   <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
 </header>
 <div class="book">
-<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch on" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a><ul class="sb-secs"><li><a href="#why" data-target="why">5.1 動機</a></li><li><a href="#dbladd" data-target="dbladd">5.2 double-and-add</a></li><li><a href="#naf" data-target="naf">5.3 NAF</a></li><li><a href="#cost" data-target="cost">5.4 成本帳</a></li><li><a href="#ladder" data-target="ladder">5.5 旁通道與階梯</a></li><li><a href="#lab" data-target="lab">5.6 逐位演示</a></li></ul></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
+<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch on" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a><ul class="sb-secs"><li><a href="#why" data-target="why">5.1 動機</a></li><li><a href="#def" data-target="def">5.2 純量乘法</a></li><li><a href="#dbladd" data-target="dbladd">5.3 double-and-add</a></li><li><a href="#naf" data-target="naf">5.4 NAF</a></li><li><a href="#cost" data-target="cost">5.5 成本帳</a></li><li><a href="#ladder" data-target="ladder">5.6 旁通道與階梯</a></li><li><a href="#lab" data-target="lab">5.7 逐位演示</a></li><li><a href="#next" data-target="next">5.8 小結</a></li></ul></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
 <main class="content" id="top">
 <div class="ch-head">
   <div class="eyebrow">第 5 章 · Scalar Multiplication</div>
@@ -37,15 +37,37 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">5.1</span>把 $k$ 個 $P$ 加起來，但不能真的加 $k$ 次</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>ECC 的公開金鑰是 $Q=kG$，ECDH 的共同祕密是 $a(bG)$：所有協定的核心都是<strong>純量乘法</strong> $kP$。$k$ 是 256 位元左右的整數，大約 $2^{256}$，一個一個加顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法，而且要算清楚：一次 $kP$ 到底要多少次 $\mathbb F_p$ 乘法？這個數字決定了後面四章為什麼值得花力氣。</p>
+<p>第 4 章算出了單次倍點與加點的成本（Jacobian 座標下約 $7\mathbf M$ 與 $10\mathbf M$），但留下一個問題：一次 $kP$ 要做<strong>幾次</strong>倍點與加點，又要按什麼順序做？ECC 的公開金鑰是 $Q_A=d_AG$，ECDH 的共同祕密是 $d_A(d_BG)$：所有協定的核心都是這個運算。$k$ 是 256 位元左右的整數，一個一個加要 $2^{256}$ 步，顯然不可能。我們需要只用 $O(\log k)$ 次點運算的方法。</p>
+<p>本章有兩條主線。第一條是<strong>速度</strong>：double-and-add 與 NAF（一種帶負號數字的二進位表示，§5.3 定義），最後把一次 $kP$ 的成本換算成 $\mathbb F_p$ 乘法的次數。第二條是<strong>安全</strong>：運算的順序本身可能洩漏 $k$，Montgomery 階梯把每一位的動作做成一樣。</p>
 </div>
 </section>
 
+<section id="def" data-nav="純量乘法">
+<h2><span class="secno">5.2</span>純量乘法的定義</h2>
+<p>「$kP$」在第 1 章只是「$P$ 自己加 $k$ 次」的記號（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）。演算法要處理負數與 0，所以先把定義補完整。</p>
+<div class="box defn" id="c5-def-kp"><div class="box-head"><span class="box-label">定義 5.1</span><span class="box-title">純量乘法</span><span class="box-ref">HMV §3.3</span></div>
+<p>設 $P\in E(\mathbb F_p)$，$k\in\mathbb Z$。定義</p>
+$$kP=\begin{cases}\underbrace{P+P+\cdots+P}_{k\ \text{個}}, &amp; k&gt;0,\\ \mathcal O, &amp; k=0,\\ -\bigl((-k)P\bigr), &amp; k&lt;0 .\end{cases}$$
+<p>稱為<strong>純量乘法</strong>（scalar multiplication），$k$ 稱為純量。它滿足 $(j+k)P=jP+kP$ 與 $j(kP)=(jk)P$。若 $\operatorname{ord}(P)=n$，則 $kP$ 只與 $k\bmod n$ 有關。</p>
+</div>
+<p>以下設 $k&gt;0$，其二進位表示為 $k=(k_{\ell-1}\cdots k_1k_0)_2$，$k_{\ell-1}=1$，所以 $k$ 有 $\ell$ 位元。</p>
+</section>
+
 <section id="dbladd" data-nav="double-and-add">
-<h2><span class="secno">5.2</span>double-and-add</h2>
-<p>這和第 1 章計算 $a^{p-2}$ 的平方-乘是同一個演算法，只是群運算寫成加法：把 $k$ 寫成二進位，由最高位往下讀，每讀一位先把目前的點<strong>倍點</strong>，讀到 1 再<strong>加上 $P$</strong>。正確性來自 Horner 形式：</p>
+<h2><span class="secno">5.3</span>double-and-add</h2>
+<p>這和第 1 章計算冪次的平方-乘（<a class="xref" href="01_finite_field.html#alg-sqmul">演算法 1.16</a>）是同一個演算法，只是群運算寫成加法：平方換成倍點，乘上底數換成加 $P$。正確性來自 Horner 形式</p>
 $$k=(\cdots((k_{\ell-1})\,2+k_{\ell-2})\,2+\cdots)\,2+k_0 .$$
-<p>讀完前 $j$ 位時，手上的點恰好是「這 $j$ 位所代表的整數」乘上 $P$。$\ell$ 位元的 $k$ 需要 $\ell-1$ 次倍點，以及（$k$ 中 1 的個數減 1）次加點。隨機的 $k$ 平均約一半位元是 1，所以大約 $\ell/2$ 次加點。</p>
+<div class="box algo" id="c5-alg-dbladd"><div class="box-head"><span class="box-label">演算法 5.2</span><span class="box-title">由左而右的 double-and-add</span><span class="box-ref">HMV Alg. 3.27</span></div>
+<div class="io"><b>輸入</b>$k=(k_{\ell-1}\cdots k_1k_0)_2$，$P\in E(\mathbb F_p)$。</div>
+<div class="io"><b>輸出</b>$kP$。</div>
+<ol class="steps">
+<li>$R\leftarrow\mathcal O$。</li>
+<li>對 $i=\ell-1,\ell-2,\dots,0$：$R\leftarrow2R$；若 $k_i=1$，$R\leftarrow R+P$。</li>
+<li>回傳 $R$。</li>
+</ol>
+<p>處理完 $k_{\ell-1},\dots,k_i$ 之後，$R=jP$，其中 $j=(k_{\ell-1}\cdots k_i)_2$ 是已讀的位元所代表的整數。第一輪的 $2\mathcal O$ 與 $\mathcal O+P$ 不必真的算，所以實際成本是 $\ell-1$ 次倍點，以及（$k$ 中 1 的個數減 1）次加點。隨機的 $k$ 約一半位元是 1，平均約 $\ell/2$ 次加點。</p>
+</div>
+<p>加上的點永遠是同一個 $P$，所以 $P$ 可以保持仿射形式，用第 4 章的混合加點（<a class="xref" href="04_coordinates.html#c4-alg-madd">演算法 4.4</a>）；$R$ 用 Jacobian 座標，倍點用 <a class="xref" href="04_coordinates.html#c4-alg-dbl">演算法 4.3</a>。</p>
 <details class="code-fold"><summary>Python 參考實作（選讀）：三種純量乘法</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">scalar_mult</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;由左而右的 double-and-add：每讀一位先倍點，位元為 1 再加 P。&quot;&quot;&quot;</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">O</span>
@@ -97,41 +119,98 @@ $$k=(\cdots((k_{\ell-1})\,2+k_{\ell-2})\,2+\cdots)\,2+k_0 .$$
 </section>
 
 <section id="naf" data-nav="NAF">
-<h2><span class="secno">5.3</span>NAF：減法是免費的</h2>
-<p>橢圓曲線上取負號幾乎不花成本：$-(x,y)=(x,-y)$。所以「減 $P$」和「加 $P$」一樣便宜，可以允許 $k$ 的數字是 $-1,0,1$。這樣的表示法很多，其中<strong>非相鄰形式</strong>（non-adjacent form，NAF）要求任兩個相鄰的數字不同時為非零。每個正整數恰有一個 NAF，而且它的非零數字最少。</p>
-<div class="example"><div class="ex-label">小例</div>
-<p>$7=(111)_2$ 要加兩次；它的 NAF 是 $(1\,0\,0\,\bar1)=8-1$，只要減一次。$45=(101101)_2$ 有 4 個 1，NAF 是 $(1\,0\,\bar1\,0\,\bar1\,0\,1)=64-16-4+1$，非零數字也是 4 個，但長度多一位。</p>
+<h2><span class="secno">5.4</span>NAF：減法是免費的</h2>
+<p>為什麼要換表示法？因為在曲線上取負號幾乎不花成本：$-(x,y)=(x,-y)$，Jacobian 座標下是 $-(X:Y:Z)=(X:-Y:Z)$。所以「減 $P$」和「加 $P$」一樣便宜，可以允許 $k$ 的數字取 $-1$。數字越多種，就有越多寫法可以挑，目標是挑非零數字最少的那一種，因為每個非零數字就是一次加點。</p>
+<div class="box defn" id="c5-def-naf"><div class="box-head"><span class="box-label">定義 5.3</span><span class="box-title">帶號二進位表示、非相鄰形式、NAF、Hamming 權重</span><span class="box-ref">HMV Def. 3.28</span></div>
+<p>把正整數寫成 $k=\sum_{i=0}^{L-1}k_i2^i$，$k_i\in\{-1,0,1\}$，$k_{L-1}\ne0$，稱為 $k$ 的一個長度 $L$ 的<strong>帶號二進位表示</strong>（signed binary representation）；非零數字的個數稱為它的<strong>權重</strong>（weight）。若還滿足</p>
+$$k_ik_{i+1}=0\qquad(0\le i&lt;L-1),$$
+<p>也就是任兩個相鄰的數字不同時非零，就稱為 $k$ 的<strong>非相鄰形式</strong>（non-adjacent form，NAF）。數字 $-1$ 常寫成 $\bar1$。</p>
 </div>
-<p>平均而言，NAF 的非零數字約佔 $1/3$（隨機 256 位元的 $k$ 平均約 86 個，二進位則約 128 個），所以加點次數從約 $\ell/2$ 降到約 $\ell/3$。更進一步的 wNAF 預先算好 $3P,5P,\dots$，非零數字更稀疏（HMV 演算法 3.36）。</p>
+<div class="box thm" id="c5-thm-naf"><div class="box-head"><span class="box-label">定理 5.4</span><span class="box-title">NAF 的性質</span><span class="box-ref">HMV Thm. 3.29</span></div>
+<p>設 $k$ 是正整數，其二進位表示有 $\ell$ 位元。</p>
+<ol class="steps">
+<li>$k$ 恰有一個 NAF，記作 $\operatorname{NAF}(k)$。</li>
+<li>在 $k$ 的所有帶號二進位表示中，$\operatorname{NAF}(k)$ 的權重最小。</li>
+<li>$\operatorname{NAF}(k)$ 的長度至多是 $\ell+1$。</li>
+<li>若 $\operatorname{NAF}(k)$ 的長度是 $L$，則 $2^L/3&lt;k&lt;2^{L+1}/3$。</li>
+<li>長度為 $L$ 的所有 NAF 中，非零數字的平均密度約為 $1/3$（$L\to\infty$ 時趨近 $1/3$）。</li>
+</ol>
+<p>直覺：相鄰兩位不能同時非零，所以每個非零數字後面至少跟著一個 0，密度不可能超過 $1/2$；平均起來，大約每三位才有一個非零數字。</p>
+</div>
+<p>NAF 可以從低位往高位逐位產生：反覆除以 2，但允許餘數取 $\pm1$。$k$ 是奇數時，選 $k_i\in\{1,-1\}$ 使 $(k-k_i)/2$ 是偶數，下一位就保證是 0。</p>
+<div class="box algo" id="c5-alg-naf"><div class="box-head"><span class="box-label">演算法 5.5</span><span class="box-title">計算 NAF</span><span class="box-ref">HMV Alg. 3.30</span></div>
+<div class="io"><b>輸入</b>正整數 $k$。</div>
+<div class="io"><b>輸出</b>$\operatorname{NAF}(k)=(k_{L-1}\cdots k_1k_0)$。</div>
+<ol class="steps">
+<li>$i\leftarrow0$。</li>
+<li>當 $k\ge1$：
+  <br>若 $k$ 是奇數：$k_i\leftarrow2-(k\bmod4)$，$k\leftarrow k-k_i$；否則 $k_i\leftarrow0$。
+  <br>$k\leftarrow k/2$，$i\leftarrow i+1$。</li>
+<li>回傳 $(k_{i-1},k_{i-2},\dots,k_0)$。</li>
+</ol>
+<p>$k\equiv1\pmod4$ 時取 $k_i=1$，$k\equiv3\pmod4$ 時取 $k_i=-1$；兩種情形 $k-k_i$ 都是 4 的倍數，所以除以 2 後仍是偶數。</p>
+</div>
+<div class="box algo" id="c5-alg-nafmul"><div class="box-head"><span class="box-label">演算法 5.6</span><span class="box-title">以 NAF 做純量乘法</span><span class="box-ref">HMV Alg. 3.31</span></div>
+<div class="io"><b>輸入</b>正整數 $k$，$P\in E(\mathbb F_p)$。</div>
+<div class="io"><b>輸出</b>$kP$。</div>
+<ol class="steps">
+<li>用 <a class="xref" href="05_scalar.html#c5-alg-naf">演算法 5.5</a> 算出 $\operatorname{NAF}(k)=\sum_{i=0}^{L-1}k_i2^i$。</li>
+<li>$R\leftarrow\mathcal O$。</li>
+<li>對 $i=L-1,\dots,0$：$R\leftarrow2R$；若 $k_i=1$，$R\leftarrow R+P$；若 $k_i=-1$，$R\leftarrow R-P$。</li>
+<li>回傳 $R$。</li>
+</ol>
+<p>與 <a class="xref" href="05_scalar.html#c5-alg-dbladd">演算法 5.2</a> 只差在多了「減 $P$」的分支。由 <a class="xref" href="05_scalar.html#c5-thm-naf">定理 5.4</a> 的 (iii) 與 (v)，平均約 $\ell$ 次倍點與 $\ell/3$ 次加點。</p>
+</div>
+<div class="example"><div class="ex-label">小例</div>
+<p>$7=(111)_2$ 要加兩次；它的 NAF 是 $(1\,0\,0\,\bar1)=8-1$，只要減一次。$45=(101101)_2$ 有 4 個 1，NAF 是 $(1\,0\,\bar1\,0\,\bar1\,0\,1)=64-16-4+1$，非零數字也是 4 個，但長度多一位：NAF 保證權重不比二進位多，不保證每個 $k$ 都更少。</p>
+</div>
+<p>隨機 256 位元的 $k$，NAF 平均約 86 個非零數字（模擬 2 萬個隨機 $k$ 的平均是 86.2），二進位則約 128 個，所以加點次數從約 $\ell/2$ 降到約 $\ell/3$。更進一步的寬度 $\omega$ NAF（width-$\omega$ NAF，文獻常記作 wNAF；這裡用 $\omega$ 以免與字組位元數 $w$ 混淆）預先算好 $3P,5P,\dots$，非零數字的密度降到約 $1/(\omega+1)$（HMV Thm. 3.33、Alg. 3.36）。</p>
 </section>
 
 <section id="cost" data-nav="成本帳">
-<h2><span class="secno">5.4</span>一次 $kP$ 的成本帳</h2>
-<p>用第 4 章的 Jacobian 公式（$a=-3$ 倍點 3M + 5S，混合加點 7M + 4S，最後一次反元素約 100M），假設 $\mathbf S=0.8\,\mathbf M$，256 位元的 $k$：</p>
+<h2><span class="secno">5.5</span>一次 $kP$ 的成本帳</h2>
+<p>用第 4 章的 EFD 數字（$a=-3$ 倍點 $3\mathbf M+5\mathbf S$，混合加點 $7\mathbf M+4\mathbf S$，一般加點 $11\mathbf M+5\mathbf S$，最後轉回仿射 $1\mathbf I+3\mathbf M+1\mathbf S$），假設 $\mathbf S=0.8\,\mathbf M$、$\mathbf I=100\,\mathbf M$，256 位元的 $k$：</p>
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>方法</th><th>倍點</th><th>加點</th><th>約略總成本</th></tr>
-<tr><td>double-and-add</td><td class="num">255</td><td class="num">約 128</td><td class="num">約 3 200 M</td></tr>
-<tr><td>NAF</td><td class="num">255</td><td class="num">約 86</td><td class="num">約 2 800 M</td></tr>
-<tr><td>Montgomery ladder</td><td class="num">256</td><td class="num">256（一般加點）</td><td class="num">約 5 700 M</td></tr>
+<tr><td>double-and-add</td><td class="num">255</td><td class="num">約 128（混合）</td><td class="num">約 3 200 M</td></tr>
+<tr><td>NAF</td><td class="num">255</td><td class="num">約 86（混合）</td><td class="num">約 2 800 M</td></tr>
+<tr><td>Montgomery 階梯（下一節）</td><td class="num">256</td><td class="num">256（一般加點）</td><td class="num">約 5 700 M</td></tr>
 </table></div>
-<p>結論是：<strong>一次純量乘法 ≈ 三千到六千次 $\mathbb F_p$ 乘法</strong>。一次 ECDH 每一方要做一兩次純量乘法。把一次 $\mathbb F_p$ 乘法加快 20%，整個協定大約就快 20%。這就是成本鏈的下一層：第 6 章算整數乘積，第 7 到 9 章做化簡。</p>
+<p>（逐項：$255\times7+128\times10.2+103.8\approx3\,194$；$255\times7+86\times10.2+103.8\approx2\,766$；$256\times7+256\times15+103.8\approx5\,736$。）結論是：<strong>一次純量乘法 ≈ 三千到六千次 $\mathbb F_p$ 乘法</strong>。一次 ECDH 每一方要做一兩次純量乘法。把一次 $\mathbb F_p$ 乘法加快 20%，整個協定大約就快 20%。</p>
 </section>
 
 <section id="ladder" data-nav="旁通道與階梯">
-<h2><span class="secno">5.5</span>旁通道與 Montgomery 階梯</h2>
-<p>double-and-add 有一個實際的弱點：讀到 0 只做倍點，讀到 1 多做一次加點。攻擊者若能量測晶片的耗電或時間（<strong>旁通道</strong>，side channel），就能從「倍點、倍點加點、倍點……」的節奏直接讀出 $k$ 的位元。這叫簡單功率分析（simple power analysis，SPA）。下面的互動元件會畫出這條「節奏」。</p>
-<p><strong>Montgomery 階梯</strong>（Montgomery ladder）讓每一位做的事都一樣：同時維護兩個點 $R_0,R_1$，並保持</p>
-$$R_1-R_0=P .$$
-<p>讀到 0 時令 $(R_0,R_1)\leftarrow(2R_0,\ R_0+R_1)$，讀到 1 時令 $(R_0,R_1)\leftarrow(R_0+R_1,\ 2R_1)$。兩種情形都是一次加點加一次倍點，而且不變量保持成立；最後 $R_0=kP$。實作上要把 $k$ 補 0 到固定的公開長度（通常是基點階 $n$ 的位元數），否則迴圈次數本身就洩漏了 $k$ 的長度。差別只在「哪一個被倍點」，實作上用一個與資料無關的條件交換（cswap）處理。</p>
-<div class="info-box red"><span class="info-label">規則的排程還不夠</span>
-<p>操作順序固定只是第一步。常數時間的實作還要求：不能有依賴祕密的分支或記憶體位址（cswap 要用遮罩做），底層的 $\mathbb F_p$ 運算本身也必須是常數時間（第 8、9 章最後的條件減法就是一個例子）。本站的 JavaScript BigInt 示範<strong>不是</strong>常數時間，只用來說明演算法。</p>
+<h2><span class="secno">5.6</span>旁通道與 Montgomery 階梯</h2>
+<p>上表最快的是 NAF，但實作上常用最慢的階梯。原因是 double-and-add 與 NAF 有一個不在數學裡、而在實體裡的弱點。</p>
+<div class="box defn" id="c5-def-sca"><div class="box-head"><span class="box-label">定義 5.7</span><span class="box-title">旁通道、簡單功率分析、SPA、常數時間</span><span class="box-ref">HMV §5.3, §5.3.1, §5.3.5</span></div>
+<p><strong>旁通道</strong>（side channel）：演算法的輸入輸出以外，實作在執行時洩漏的實體資訊，例如執行時間、耗電、電磁輻射。<strong>簡單功率分析</strong>（simple power analysis，SPA）：量測一次（或少數幾次）運算的耗電曲線，從曲線的形狀直接辨認出執行了哪些運算、順序為何，進而推出祕密。一個實作是<strong>常數時間</strong>（constant time）的，是指它的執行時間、執行的運算序列、以及存取的記憶體位址都與祕密資料無關。</p>
 </div>
-<p>階梯和第 9 章的 Montgomery 乘法、以及 Montgomery 形式的曲線是三件不同的事；它在 $y^2=x^3+ax+b$ 上同樣可以用（HECC §13.2.3），在 Montgomery 曲線上則可以只用 $x$ 座標，特別省（RFC 7748 §5）。</p>
+<p>double-and-add 讀到 0 只做倍點，讀到 1 多做一次加點。倍點與加點的耗電形狀不同，所以從「倍點、倍點加點、倍點……」的節奏就能直接讀出 $k$ 的每一位。NAF 的節奏洩漏非零數字的位置，雖然看不出是 $+1$ 還是 $-1$，也已經大幅縮小 $k$ 的範圍。下面的 <strong>Montgomery 階梯</strong>（Montgomery ladder）讓每一位做的事都一樣：同時維護兩個點，每一位都做一次加點與一次倍點。</p>
+<div class="box algo" id="c5-alg-ladder"><div class="box-head"><span class="box-label">演算法 5.8</span><span class="box-title">Montgomery 階梯</span><span class="box-ref">HECC Alg. 9.5, 29.4；§13.2.3</span></div>
+<div class="io"><b>輸入</b>公開的固定長度 $\ell$（例如基點階 $n$ 的位元數），純量 $k=(k_{\ell-1}\cdots k_1k_0)_2$（前面可以有 0），$P\in E(\mathbb F_p)$。</div>
+<div class="io"><b>輸出</b>$kP$。</div>
+<ol class="steps">
+<li>$R_0\leftarrow\mathcal O$，$R_1\leftarrow P$。</li>
+<li>對 $i=\ell-1,\ell-2,\dots,0$：
+  <br>若 $k_i=0$：$(R_0,R_1)\leftarrow(2R_0,\ R_0+R_1)$；
+  <br>若 $k_i=1$：$(R_0,R_1)\leftarrow(R_0+R_1,\ 2R_1)$。</li>
+<li>回傳 $R_0$。</li>
+</ol>
+<p><strong>不變量</strong>：處理完 $k_{\ell-1},\dots,k_i$ 之後，$R_0=jP$、$R_1=(j+1)P$，其中 $j$ 是已讀位元代表的整數；特別地，$R_1-R_0=P$ 始終成立。讀到 0 時 $j\mapsto2j$，$2R_0=2jP$、$R_0+R_1=(2j+1)P$；讀到 1 時 $j\mapsto2j+1$，$R_0+R_1=(2j+1)P$、$2R_1=(2j+2)P$。兩種情形都是一次加點加一次倍點，差別只在「哪一個被倍點」。成本是 $\ell$ 次倍點與 $\ell$ 次一般加點（兩個點都在變，不能用混合加點）。</p>
+<p>HECC 的版本從 $(R_0,R_1)=(P,2P)$ 開始，並假設最高位是 1；這裡從 $(\mathcal O,P)$ 開始、跑滿公開的 $\ell$ 位，讀到最高位的 1 時恰好得到 $(P,2P)$，兩者等價。跑滿固定長度很重要：否則迴圈次數本身就洩漏了 $k$ 的位元長度。</p>
+</div>
+<div class="info-box red"><span class="info-label">規則的排程還不夠</span>
+<p>操作順序固定只是第一步。常數時間的實作還要求：「依 $k_i$ 選擇哪一個被倍點」不能用依賴祕密的分支或記憶體位址，而是用遮罩做的條件交換（conditional swap，cswap）；底層的 $\mathbb F_p$ 運算本身也必須是常數時間（第 8、9 章最後的條件減法就是一個例子）。本站的 JavaScript BigInt 示範<strong>不是</strong>常數時間，只用來說明演算法。</p>
+</div>
+<div class="box rem" id="c5-rem-montgomery"><div class="box-head"><span class="box-label">注意 5.9</span><span class="box-title">三個不同的「Montgomery」</span></div>
+<p>本章的 Montgomery 階梯、第 9 章的 Montgomery 乘法（一種模乘法的化簡方法）、以及 Montgomery 形式的曲線 $By^2=x^3+Ax^2+x$，是三件不同的事，只是都出自 P. Montgomery。階梯在 $y^2=x^3+ax+b$ 上同樣可以用（HECC §13.2.3.b）；在 Montgomery 曲線上則可以只用 $x$ 座標，特別省（HECC §13.2.3.a；RFC 7748 §5 的 X25519）。</p>
+</div>
 </section>
 
 <section id="lab" data-nav="逐位演示">
-<h2><span class="secno">5.6</span>互動：逐位執行三種方法</h2>
-<p>曲線是 $E: y^2=x^3-3x+6$ over $\mathbb F_{97}$（107 個點，質數階），$P=(0,43)$。每一步顯示讀到的數字、做了哪些運算、目前的點，以及「已讀的數字代表的整數」：目前的點永遠等於這個整數乘上 $P$。下方的條帶是運算節奏：<span class="pill-dbl">D</span> 倍點、<span class="pill-add">A</span> 加點。</p>
+<h2><span class="secno">5.7</span>互動：逐位執行三種方法</h2>
+<p><strong>要觀察什麼：</strong>（一）每一步「目前的點」都等於「已讀數字代表的整數 $j$」乘上 $P$，這就是三個演算法共同的不變量；（二）下方條帶的節奏：double-and-add 的條帶裡，「D 後面有沒有 A」直接洩漏每一個位元；NAF 洩漏非零數字的位置；階梯每一格都是一次 A 加一次 D，看不出任何位元；（三）選階梯時，右側還會檢查 $R_1-R_0=P$。</p>
+<p>曲線是 $E_B: y^2=x^3-3x+6$ over $\mathbb F_{97}$（107 個點，質數階），$P=(0,43)$。每一步顯示讀到的數字、做了哪些運算、目前的點。條帶中 <span class="pill-dbl">D</span> 是倍點、<span class="pill-add">A</span> 是加點。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">SCALAR MULTIPLICATION</div>
@@ -155,21 +234,26 @@ $$R_1-R_0=P .$$
   <div class="side-panel">
     <div class="info-card"><div class="ic-title">計數</div><div id="w05count"></div></div>
     <div class="info-card"><div class="ic-title">看節奏</div><div class="ic-note">
-      double-and-add 的條帶裡，「D 後面有沒有 A」直接洩漏了每一個位元。NAF 的條帶洩漏非零數字的位置，雖然看不出是 $+1$ 還是 $-1$，也已經大幅縮小 $k$ 的範圍。換成 ladder，每一格都是一次 A 加一次 D。這裡的 ladder 固定跑 7 位（$n=107$ 的位元數），不足的前面補 0，所以條帶連 $k$ 的位元長度也不洩漏。
+      double-and-add 的條帶裡，「D 後面有沒有 A」直接洩漏了每一個位元。NAF 的條帶洩漏非零數字的位置，雖然看不出是 $+1$ 還是 $-1$，也已經大幅縮小 $k$ 的範圍。換成階梯，每一格都是一次 A 加一次 D。這裡的階梯固定跑 $\ell=7$ 位（$n=107$ 的位元數），不足的前面補 0，所以條帶連 $k$ 的位元長度也不洩漏。
     </div></div>
   </div>
 </div>
 </section>
 
+<section id="next" data-nav="小結">
+<h2><span class="secno">5.8</span>小結：成本鏈的下一層</h2>
+<p>到這裡，一次 $kP$ 已經拆成幾百次倍點與加點，每一次又拆成十次左右的 $\mathbb F_p$ 乘法與平方，總計三千到六千次。剩下的問題是：一次 $\mathbb F_p$ 乘法本身怎麼做？$p$ 有 256 位元，放不進一個暫存器。第 6 章先算出兩個大整數的乘積，第 7 到 9 章再把乘積化簡回模 $p$。</p>
+</section>
+
 <section id="refs" data-nav="本章文獻">
 <h2>本章文獻</h2>
-<ul class="refs"><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §3.3（Alg. 3.26–3.31, 3.35–3.36）, §5.3</span></li><li>H. Cohen, G. Frey (eds.), <cite>Handbook of Elliptic and Hyperelliptic Curve Cryptography</cite>, CRC Press, 2006. <span class="where">— §13.2.3</span></li><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.6, §14.7.1</span></li><li>A. Langley, M. Hamburg, S. Turner, <a href="https://www.rfc-editor.org/rfc/rfc7748" target="_blank" rel="noopener"><cite>RFC 7748: Elliptic Curves for Security</cite></a>, IETF, 2016. <span class="where">— §5</span></li></ul>
+<ul class="refs"><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §3.3（Alg. 3.27, 3.30, 3.31；Thm. 3.29）, §5.3</span></li><li>H. Cohen, G. Frey (eds.), <cite>Handbook of Elliptic and Hyperelliptic Curve Cryptography</cite>, CRC Press, 2006. <span class="where">— Alg. 9.5, 29.4；§13.2.3</span></li><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.6, §14.7.1</span></li><li>A. Langley, M. Hamburg, S. Turner, <a href="https://www.rfc-editor.org/rfc/rfc7748" target="_blank" rel="noopener"><cite>RFC 7748: Elliptic Curves for Security</cite></a>, IETF, 2016. <span class="where">— §5</span></li></ul>
 <p class="where">完整書目見 <a href="references.html">參考文獻</a>；全部記號見 <a href="notation.html">記號與術語</a>。</p>
 </section>
 <nav class="chapter-nav"><a class="prev" href="04_coordinates.html"><div class="nav-dir">← 上一章</div><div class="nav-title">4. 座標與運算成本</div></a><a class="home" href="index.html"><div class="nav-dir">導讀</div><div class="nav-title">全部章節</div></a><a class="next" href="06_multiprecision.html"><div class="nav-dir">下一章 →</div><div class="nav-title">6. 大整數乘法</div></a></nav>
 <footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">5.1 把 k 個 P 加起來，但不能真的加 k 次</a></li><li><a href="#dbladd" data-target="dbladd">5.2 double-and-add</a></li><li><a href="#naf" data-target="naf">5.3 NAF：減法是免費的</a></li><li><a href="#cost" data-target="cost">5.4 一次 kP 的成本帳</a></li><li><a href="#ladder" data-target="ladder">5.5 旁通道與 Montgomery 階梯</a></li><li><a href="#lab" data-target="lab">5.6 互動：逐位執行三種方法</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">5.1 把 k 個 P 加起來，但不能真的加 k 次</a></li><li><a href="#def" data-target="def">5.2 純量乘法的定義</a></li><li><a href="#dbladd" data-target="dbladd">5.3 double-and-add</a></li><li><a href="#naf" data-target="naf">5.4 NAF：減法是免費的</a></li><li><a href="#cost" data-target="cost">5.5 一次 kP 的成本帳</a></li><li><a href="#ladder" data-target="ladder">5.6 旁通道與 Montgomery 階梯</a></li><li><a href="#lab" data-target="lab">5.7 互動：逐位執行三種方法</a></li><li><a href="#next" data-target="next">5.8 小結：成本鏈的下一層</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
 </div>
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <script src="assets/ecc-core.js?v=20261005"></script>

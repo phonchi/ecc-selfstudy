@@ -190,10 +190,10 @@ def scalar_mult_jacobian(k, P, a, p):
 
 
 # >>> words
-def to_words(x, w, k):
-    """把 x 拆成 k 個 w 位元字組，由低到高：x = sum(words[i] * 2^(w*i))。"""
+def to_words(x, w, s):
+    """把 x 拆成 s 個 w 位元字組，由低到高：x = sum(words[i] * 2^(w*i))。"""
     mask = (1 << w) - 1
-    return [(x >> (w * i)) & mask for i in range(k)]
+    return [(x >> (w * i)) & mask for i in range(s)]
 
 
 def from_words(words, w):
@@ -284,18 +284,18 @@ def fold_p256(A):
 
 # >>> barrett
 def barrett_setup(m, w):
-    """b = 2^w，k = m 的字組數，預先算 mu = floor(b^(2k) / m)。"""
-    k = (m.bit_length() + w - 1) // w
-    mu = (1 << (2 * k * w)) // m
-    return k, mu
+    """beta = 2^w，s = m 的字組數，預先算 mu = floor(beta^(2s) / m)。"""
+    s = (m.bit_length() + w - 1) // w
+    mu = (1 << (2 * s * w)) // m
+    return s, mu
 
 
-def barrett(x, m, w, k, mu):
-    """HAC Alg. 14.42：0 <= x < b^(2k)。回傳 (x mod m, 修正次數)。"""
-    q1 = x >> (w * (k - 1))
+def barrett(x, m, w, s, mu):
+    """HAC Alg. 14.42：0 <= x < beta^(2s)。回傳 (x mod m, 修正次數)。"""
+    q1 = x >> (w * (s - 1))
     q2 = q1 * mu
-    q3 = q2 >> (w * (k + 1))            # 商的估計值，比真正的商最多少 2
-    mod = 1 << (w * (k + 1))
+    q3 = q2 >> (w * (s + 1))            # 商的估計值，比真正的商最多少 2
+    mod = 1 << (w * (s + 1))
     r = (x % mod) - (q3 * m % mod)
     if r < 0:
         r += mod
@@ -309,35 +309,35 @@ def barrett(x, m, w, k, mu):
 
 # >>> montgomery
 def mont_setup(m, w):
-    """m 必須是奇數；R = b^k > m，m' = -m^(-1) mod b。"""
-    k = (m.bit_length() + w - 1) // w
-    b = 1 << w
-    m_prime = (-inv_euclid(m % b, b)) % b
-    return k, m_prime
+    """m 必須是奇數；R = beta^s > m，m' = -m^(-1) mod betaeta。"""
+    s = (m.bit_length() + w - 1) // w
+    beta = 1 << w
+    m_prime = (-inv_euclid(m % beta, beta)) % beta
+    return s, m_prime
 
 
-def redc(T, m, w, k, m_prime):
+def redc(T, m, w, s, m_prime):
     """HAC Alg. 14.32：輸入 0 <= T < mR，輸出 T * R^(-1) mod m。
-    每一輪把目前最低的字組變成 0，k 輪後整個數右移 k 個字組。"""
-    b = 1 << w
+    每一輪把目前最低的字組變成 0，s 輪後整個數右移 s 個字組。"""
+    beta = 1 << w
     A = T
-    for i in range(k):
-        a_i = (A >> (w * i)) & (b - 1)
-        u_i = a_i * m_prime % b          # 只需要模 b 的乘法
+    for i in range(s):
+        a_i = (A >> (w * i)) & (beta - 1)
+        u_i = a_i * m_prime % beta          # 只需要模 beta 的乘法
         A += u_i * m << (w * i)          # 這一步讓第 i 個字組歸零
-    A >>= w * k                          # 除以 R：只是丟掉低位字組
+    A >>= w * s                          # 除以 R：只是丟掉低位字組
     return A - m if A >= m else A
 
 
-def mont_mul(x, y, m, w, k, m_prime):
+def mont_mul(x, y, m, w, s, m_prime):
     """HAC Alg. 14.36：乘法與化簡交錯，x, y < m，回傳 x * y * R^(-1) mod m。"""
-    b = 1 << w
+    beta = 1 << w
     A = 0
-    y0 = y & (b - 1)
-    for i in range(k):
-        x_i = (x >> (w * i)) & (b - 1)
-        a0 = A & (b - 1)
-        u_i = (a0 + x_i * y0) * m_prime % b
+    y0 = y & (beta - 1)
+    for i in range(s):
+        x_i = (x >> (w * i)) & (beta - 1)
+        a0 = A & (beta - 1)
+        u_i = (a0 + x_i * y0) * m_prime % beta
         A = (A + x_i * y + u_i * m) >> w
     return A - m if A >= m else A
 # <<<

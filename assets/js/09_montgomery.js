@@ -31,7 +31,7 @@ HC.ready(() => {
     f.push({ html: [['T', base(T, 0, 0)]], msg: `T = ${show(T, c)} 小於 mR。藍色是高 ${S.k + 1} 個字組，最低 ${S.k} 個字組要逐一消成 0。` });
     t.rounds.forEach((r, i) => {
       f.push({ html: [[`第 ${i} 輪`, base(r.A, i + 1, i + 1 < S.k ? i + 1 : -1)]],
-        msg: `a${i} = ${show(r.ai, c)}，u${i} = a${i}·m' mod b = ${show(r.ui, c)}；加上 u${i}·m·b^${i} 後，第 ${i} 個字組變成 0。` });
+        msg: `a${i} = ${show(r.ai, c)}，u${i} = a${i}·m' mod β = ${show(r.ui, c)}；加上 u${i}·m·β^${i} 後，第 ${i} 個字組變成 0。` });
     });
     f.push({ html: [['÷ R', rowHTML(t.shifted, c.b, S.k + 1, () => '')]], msg: `低 ${S.k} 個字組全是 0，右移 ${S.k} 個字組（除以 R）。結果 ${show(t.shifted, c)} 小於 2m。` });
     const ok = t.r === (T * S.Rinv) % c.m;
@@ -49,8 +49,8 @@ HC.ready(() => {
     const c = C[sel.value], S = ECC.montSetupB(c.m, c.b);
     const T = !random && c.T ? c.T : rnd(c.m) * rnd(c.m);
     $('w09pre').innerHTML = `<div class="ic-row"><span class="ic-label">m</span><span class="ic-value">${show(c.m, c)}</span></div>`
-      + `<div class="ic-row"><span class="ic-label">b</span><span class="ic-value">${bname(c.b)}</span></div>`
-      + `<div class="ic-row"><span class="ic-label">k</span><span class="ic-value">${S.k}</span></div>`
+      + `<div class="ic-row"><span class="ic-label">β</span><span class="ic-value">${bname(c.b)}</span></div>`
+      + `<div class="ic-row"><span class="ic-label">s</span><span class="ic-value">${S.k}</span></div>`
       + `<div class="ic-row"><span class="ic-label">m'</span><span class="ic-value">${show(S.mPrime, c)}</span></div>`
       + `<div class="ic-row"><span class="ic-label">R² mod m</span><span class="ic-value">${show(S.R2, c)}</span></div>`;
     const frames = framesFor(c, T);

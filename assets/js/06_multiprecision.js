@@ -46,7 +46,7 @@ HC.ready(() => {
       for (let c = 0; c < k; c++) {
         const j = k - 1 - c, key = `${i},${j}`, v = done.get(key);
         const cls = key === cur ? 'cur' : v !== undefined ? 'done' : '';
-        h += `<td class="${cls}"><span class="ij">→ w${sub(i + j)}</span>${v !== undefined ? cellHex(v, w) : '·'}</td>`;
+        h += `<td class="${cls}"><span class="ij">→ z${sub(i + j)}</span>${v !== undefined ? cellHex(v, w) : '·'}</td>`;
       }
       h += '</tr>';
     }
@@ -55,7 +55,7 @@ HC.ready(() => {
   const subs = '₀₁₂₃₄₅₆₇₈₉';
   const sub = n => String(n).split('').map(d => subs[d]).join('');
   function drawOut(out, hi) {
-    outEl.innerHTML = `<div class="io-row"><span class="row-label">輸出 w</span>${words(out, S.w, i => (i === hi ? 'cur' : ''))}</div>`;
+    outEl.innerHTML = `<div class="io-row"><span class="row-label">輸出 z</span>${words(out, S.w, i => (i === hi ? 'cur' : ''))}</div>`;
   }
   function apply(f, n) {
     const { w, xw, yw, k, b, t } = S;
@@ -66,20 +66,20 @@ HC.ready(() => {
       const before = (prev ? prev.out : Array(2 * k).fill(0n))[f.i + f.j];
       const cin = f.j === 0 ? 0n : prev.carry;
       drawOut(f.out, f.i + f.j);
-      status.innerHTML = `(i, j) = (${f.i}, ${f.j})：uv = w${sub(f.i + f.j)} + x${sub(f.j)}·y${sub(f.i)} + c = ${hexw(before, w)} + ${hexw(xw[f.j], w)}·${hexw(yw[f.i], w)} + ${hexw(cin, w)} = <b>${hexw(f.uv, 2 * w)}</b>`
-        + `<br>→ w${sub(f.i + f.j)} = ${hexw(f.uv & (b - 1n), w)}，新進位 c = ${hexw(f.carry, w)}${f.uv === b * b - 1n ? '（恰好等於 b² − 1）' : ''}`;
+      status.innerHTML = `(i, j) = (${f.i}, ${f.j})：uv = z${sub(f.i + f.j)} + x${sub(f.j)}·y${sub(f.i)} + c = ${hexw(before, w)} + ${hexw(xw[f.j], w)}·${hexw(yw[f.i], w)} + ${hexw(cin, w)} = <b>${hexw(f.uv, 2 * w)}</b>`
+        + `<br>→ z${sub(f.i + f.j)} = ${hexw(f.uv & (b - 1n), w)}，新進位 c = ${hexw(f.carry, w)}${f.uv === b * b - 1n ? '（恰好等於 β² − 1）' : ''}`;
     } else {
       drawOut(f.out, f.i + k);
       const last = n === t.frames.length - 1;
-      status.innerHTML = `第 ${f.i} 列結束：進位 c = ${hexw(f.carry, w)} 寫入 w${sub(f.i + k)}。`
-        + (last ? `<br>全部完成：共 ${mults} 次字組乘法 = k² = ${k * k}。` : '');
+      status.innerHTML = `第 ${f.i} 列結束：進位 c = ${hexw(f.carry, w)} 寫入 z${sub(f.i + k)}。`
+        + (last ? `<br>全部完成：共 ${mults} 次字組乘法 = s² = ${k * k}。` : '');
     }
     count(mults, n);
   }
   function count(mults, n) {
     const { k, t, x, y, w } = S;
     $('w06count').innerHTML = [
-      ['字組乘法', `${mults} / ${k * k}`], ['k²', String(k * k)], ['平方時不同的乘積', String(k * (k + 1) / 2)],
+      ['字組乘法', `${mults} / ${k * k}`], ['s²', String(k * k)], ['平方時不同的乘積', String(k * (k + 1) / 2)],
       ['步驟', `${n + 1} / ${t.frames.length}`],
     ].map(([l, v]) => `<div class="ic-row"><span class="ic-label">${l}</span><span class="ic-value">${v}</span></div>`).join('');
     const done = n === t.frames.length - 1, got = ECC.fromWords(t.out, w), ok = got === x * y;

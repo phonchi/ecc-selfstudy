@@ -1,95 +1,189 @@
 <section id="why" data-nav="動機">
-<h2>正著算容易，倒著算很難</h2>
+<h2>安全性取決於一個大質數 $n$</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 0 章的 ECDH 是這樣運作的：大家共用曲線上的一個基點 $G$；Alice 選祕密整數 $a$、公開 $aG$，Bob 選 $b$、公開 $bG$，雙方各自算出同一個點 $abG$。這個協定要安全，必須同時滿足兩件事：</p>
-<ul>
-<li><strong>正著算容易</strong>：給定 $k$ 與 $P$，算 $kP$ 只要幾百次倍點和加點（第 5 章）。</li>
-<li><strong>倒著算很難</strong>：給定 $P$ 與 $Q=kP$，找回 $k$ 在實際上做不到。這叫<strong>橢圓曲線離散對數問題</strong>（elliptic curve discrete logarithm problem，ECDLP）。</li>
-</ul>
-<p>第 2 章給了我們一個群。本章要回答：這個群有多大？它的子群長什麼樣子？在什麼條件下 ECDLP 才真的難？答案決定了實際的曲線怎麼挑，也決定了「256 位元的曲線提供 128 位元安全」這句話的來源。</p>
+<p>第 2 章的群律（[[ref:c2-thm-grouplaw]]）告訴我們，$\mathbb F_p$ 上的曲線點構成一個有限交換群。第 0 章的 ECDH（[[ref:c0-def-ecdh]]）就在這個群裡運作：大家共用一個點 $G$，Alice 公開 $Q_A=d_AG$，Bob 公開 $Q_B=d_BG$。協定要安全，必須做到「已知 $G$ 與 $Q_A$，求不出 $d_A$」。</p>
+<p>本章會看到，對任何有限群都適用的攻擊，所需時間大約是 $\sqrt q$，其中 $q$ 是 $G$ 的階的<strong>最大質因數</strong>。所以 $G$ 的階 $n$ 本身就必須是一個大質數；要 128 位元的安全，$n$ 大約要 256 位元。這引出三個問題，也是本章的骨架：</p>
+<ol>
+<li>曲線上一共有幾個點？（3.2 節：Hasse 定理）</li>
+<li>這個群長什麼樣子，能不能找到階為大質數的點？（3.3 節：群結構、基點與餘因子）</li>
+<li>在階為大質數的子群裡，最好的攻擊要多久？又有哪些曲線雖然 $n$ 很大，卻仍然不安全？（3.4–3.7 節）</li>
+</ol>
 </div>
-<p>整章的數值例子用兩條玩具曲線，都在 $\mathbb F_{97}$ 上（$E_A$ 出現在第 2 章，$E_B$ 出現在第 0 章）：</p>
-$$E_A:\ y^2=x^3+2x+3,\qquad E_B:\ y^2=x^3-3x+6 .$$
+<p>整章的數值例子用 $\mathbb F_{97}$ 上的兩條玩具曲線（[[ref:c2-def-curve]] 的短 Weierstrass 形式），第 2 章與第 0 章都出現過：</p>
+$$\begin{aligned}E_A&amp;:\ y^2=x^3+2x+3,\\ E_B&amp;:\ y^2=x^3-3x+6 .\end{aligned}$$
+<!-- notation: $E_A,\ E_B$ || 本站的兩條玩具曲線：$\mathbb F_{97}$ 上的 $y^2=x^3+2x+3$（100 點）與 $y^2=x^3-3x+6$（107 點） -->
 </section>
 
-<section id="hasse" data-nav="Hasse">
+<section id="hasse" data-nav="點數">
 <h2>點有多少個：Hasse 定理</h2>
-<p>先數點。固定 $x\in\mathbb F_p$，令 $f(x)=x^3+ax+b$。方程式 $y^2=f(x)$ 的解數取決於 $f(x)$ 是不是平方：</p>
-<ul>
-<li>$f(x)$ 是非零的平方剩餘（quadratic residue）：兩個點 $(x,\pm y)$；</li>
-<li>$f(x)=0$：一個點 $(x,0)$；</li>
-<li>$f(x)$ 是非剩餘：沒有點。</li>
-</ul>
-<p>三種情形都可以寫成 $1+\left(\frac{f(x)}{p}\right)$（Legendre 符號）。加上無窮遠點 $\mathcal O$，</p>
-$$N=\#E(\mathbb F_p)=p+1+\sum_{x\in\mathbb F_p}\left(\frac{f(x)}{p}\right).$$
-<p>$\mathbb F_p^*$ 裡恰好一半的元素是平方，所以直覺上大約一半的 $x$ 貢獻兩個點、另一半貢獻零個，總數大約是 $p+1$。偏差來自 Legendre 符號的和；如果把它們當成隨機的 $\pm1$，和的大小應該是 $\sqrt p$ 的數量級。Hasse（1933）證明了這個直覺的精確版本：</p>
-$$\bigl|\,N-(p+1)\,\bigr|\le 2\sqrt p .$$
-<p>整數 $t=p+1-N$ 叫做 Frobenius 的跡（trace of Frobenius）。對數論背景的讀者：這正是曲線版本的 Riemann 假設，後來由 Weil 推廣到一般的代數曲線（Washington 第 14 章）。</p>
+<p>為什麼要先數點？因為下一節的群結構、基點的階 $n$、餘因子 $h$，全都從點的總數出發。</p>
+<div class="box defn" id="c3-def-order" data-terms="曲線的點數" data-sym="$\#E(\mathbb F_p)$、$N$" data-gloss="$E(\mathbb F_p)$ 的元素個數（含 $\mathcal O$）；第 3 章簡記為 $N$" data-ref="HMV §3.1.3">
+<p>設 $E$ 是 $\mathbb F_p$ 上的橢圓曲線（[[ref:c2-def-curve]]）。$E(\mathbb F_p)$ 是座標都在 $\mathbb F_p$ 中的仿射點，再加上無窮遠點 $\mathcal O$（[[ref:c2-def-proj]]）所成的群。它的元素個數 $\#E(\mathbb F_p)$ 稱為 $E$ 在 $\mathbb F_p$ 上的<strong>點數</strong>，也就是這個群的階（[[ref:def-group]]）。本章簡記 $N:=\#E(\mathbb F_p)$。</p>
+</div>
+<p>先直接數。固定 $x\in\mathbb F_p$，令 $f(x)=x^3+ax+b$。方程式 $y^2=f(x)$ 的解數取決於 $f(x)$ 是不是平方（[[ref:def-qr]]）：$f(x)$ 是平方剩餘時有兩個點 $(x,\pm y)$；$f(x)=0$ 時一個點 $(x,0)$；非剩餘時沒有點。三種情形都等於 $1+\left(\frac{f(x)}{p}\right)$，加上 $\mathcal O$ 得到</p>
+$$\begin{aligned}N&amp;=1+\sum_{x\in\mathbb F_p}\left(1+\left(\frac{f(x)}{p}\right)\right)\\ &amp;=p+1+\sum_{x\in\mathbb F_p}\left(\frac{f(x)}{p}\right).\end{aligned}$$
+<p>所以 $N$ 與 $p+1$ 的差，就是 Legendre 符號的和。這個差有自己的名字：</p>
+<div class="box defn" id="c3-def-trace" data-terms="Frobenius 的跡" data-sym="$t$" data-gloss="$t=p+1-\#E(\mathbb F_p)$" data-ref="HMV §3.1.3；Washington §4.2">
+<p>整數 $t:=p+1-\#E(\mathbb F_p)=-\sum_{x\in\mathbb F_p}\left(\frac{f(x)}{p}\right)$ 稱為 $E$ 在 $\mathbb F_p$ 上的 <strong>Frobenius 的跡</strong>（trace of Frobenius）。</p>
+</div>
+<div class="box rem" id="c3-rem-heuristic" data-title="啟發式的估計，不是證明">
+<p>$\mathbb F_p^*$ 中恰好一半是平方剩餘（[[ref:thm-euler]]）。如果把 $p$ 個值 $\left(\frac{f(x)}{p}\right)$ 想成彼此獨立、隨機的 $\pm1$，它們的和應該是 $\sqrt p$ 的數量級。這只是<strong>啟發式</strong>（heuristic）的論證：這些符號並不獨立，也不隨機。下面的 Hasse 定理才是嚴格的結果，而且常數是 2。</p>
+</div>
+<div class="box thm" id="c3-thm-hasse" data-title="Hasse 定理" data-ref="Washington Thm. 4.2；HMV Thm. 3.7">
+<p>設 $E$ 是 $\mathbb F_p$ 上的橢圓曲線，則</p>
+$$\bigl|\,p+1-\#E(\mathbb F_p)\,\bigr|\le 2\sqrt p ,$$
+<p>也就是 $|t|\le2\sqrt p$。區間 $[\,p+1-2\sqrt p,\ p+1+2\sqrt p\,]$ 稱為 <strong>Hasse 區間</strong>。因為 $2\sqrt p$ 相對於 $p$ 很小，$\#E(\mathbb F_p)\approx p$。</p>
+</div>
+<p>對數論背景的讀者：這是曲線版本的 Riemann 假設，後來由 Weil 推廣到一般的代數曲線。反過來，對每個滿足 $|t|\le2\sqrt p$ 的整數 $t$，都存在 $\mathbb F_p$ 上以 $t$ 為跡的曲線（HMV Thm. 3.8 的推論）。</p>
 <div class="example"><div class="ex-label">數一數：$\mathbb F_{97}$ 上的兩條玩具曲線</div>
-<p>在 $E_A$ 上，97 個 $x$ 之中有 48 個使 $f(x)$ 是非零平方、46 個是非剩餘、3 個使 $f(x)=0$，所以 $N=2\cdot48+3+1=100$。在 $E_B$ 上是 53、44、0 個，$N=2\cdot53+1=107$。</p>
-<p>$p=97$ 時 Hasse 區間是</p>$$[\,98-2\sqrt{97},\ 98+2\sqrt{97}\,]\approx[78.30,\ 117.70],$$<p>兩者都落在裡面。</p>
+<p>在 $E_A$ 上，97 個 $x$ 之中有 48 個使 $f(x)$ 是非零平方、46 個是非剩餘、3 個使 $f(x)=0$，所以 $N=2\cdot48+3+1=100$，$t=-2$。在 $E_B$ 上是 53、44、0 個，$N=2\cdot53+1=107$，$t=-9$。</p>
+<p>$p=97$ 時 Hasse 區間是 $[\,98-2\sqrt{97},\ 98+2\sqrt{97}\,]$，約為 $[78.30,\ 117.70]$，兩者都落在裡面。</p>
 </div>
-<div class="info-box"><span class="info-label">Hasse 界的是群的大小</span>
-<p>Hasse 定理說的是<strong>整個群的點數</strong> $N$，與個別點的階無關。點的階可以小到 2（下一節就有例子），只要它整除 $N$。</p>
-</div>
-<p>真實大小的曲線也一樣。P-256 的 $p$ 與群階 $n$ 都是 256 位元的數（它的餘因子是 1，所以 $N=n$），而 $t=p+1-n$ 只有 127 位元，比 $2\sqrt p$（129 位元）小：相對於 $p$ 本身，$N$ 與 $p+1$ 的差只是約 $2^{-129}$ 的比例。實際的 $N$ 不是用上面的和去數（那要 $p$ 步），而是用 Schoof 演算法及其改良（SEA），它們的時間是 $\log p$ 的多項式（Washington §4.5 的 Schoof、§12.4 的 SEA）。</p>
-<!-- code: ecdlp 數點、點的階，以及 baby-step giant-step -->
+<p>真實大小的曲線也一樣。P-256 的 $p$ 與點數都是 256 位元的數，而 $t$ 只有 127 位元，比 $2\sqrt p$（129 位元）小。實際的 $N$ 不是用上面的和去數（那要 $p$ 步），而是用 Schoof 演算法及其改良 SEA，時間是 $\log p$ 的多項式（Washington §4.5、§12.4）。</p>
 </section>
 
-<section id="subgroup" data-nav="子群">
-<h2>子群、階與餘因子</h2>
-<p>對曲線上的點 $P$，最小的正整數 $m$ 使 $mP=\mathcal O$ 叫做 $P$ 的<strong>階</strong>（order）。$P,2P,\dots,mP=\mathcal O$ 構成一個循環子群 $\langle P\rangle$。由 Lagrange 定理，</p>
-$$\operatorname{ord}(P)\ \big|\ N .$$
-<p>反過來不成立：$N$ 的因數不一定都是某個點的階。$E_A$ 就是例子。它的 $N=100$，99 個非 $\mathcal O$ 的點的階分布如下（逐點計算）：</p>
+<section id="subgroup" data-nav="群結構">
+<h2>群結構、基點與餘因子</h2>
+<p>知道 $N$ 還不夠。ECDH 需要一個階為大質數的點；這種點存不存在，要看群的結構。先回顧：對點 $P$，使 $jP=\mathcal O$ 的最小正整數 $j$ 是它的階 $\operatorname{ord}(P)$，$P$ 生成的循環子群記作 $\langle P\rangle$（[[ref:def-subgroup]]，這裡用加法寫法，見 [[ref:rem-notation]]）。由 Lagrange 定理（[[ref:thm-lagrange]]），$\operatorname{ord}(P)\mid N$。</p>
+<div class="box thm" id="c3-thm-structure" data-title="E(𝔽ₚ) 的群結構" data-ref="Washington Thm. 4.1, Cor. 3.11">
+<p>存在唯一的正整數 $n_1,n_2$，$n_1\mid n_2$，使</p>
+$$E(\mathbb F_p)\cong\mathbb Z/n_1\mathbb Z\times\mathbb Z/n_2\mathbb Z ,$$
+<p>而且 $n_1\mid p-1$。$n_1=1$ 時 $E(\mathbb F_p)$ 是循環群。</p>
+<p>直覺：有限交換群是循環群的直積；而曲線上「階整除 $n_1$ 的點」至多 $n_1^2$ 個，所以最多兩個因子。$n_1\mid p-1$ 來自 Weil 配對（Washington Cor. 3.11）。HMV Thm. 3.12 是同一個結果，但 $n_1,n_2$ 的標法相反。</p>
+</div>
+<p>$N$ 的因數不一定都是某個點的階。$E_A$ 就是例子：它的 $N=100$，99 個非 $\mathcal O$ 的點的階分布如下（逐點計算）：</p>
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>階</th><td class="num">2</td><td class="num">5</td><td class="num">10</td><td class="num">25</td><td class="num">50</td></tr>
 <tr><th>點數</th><td class="num">3</td><td class="num">4</td><td class="num">12</td><td class="num">20</td><td class="num">60</td></tr>
 </table></div>
-<p>沒有階為 4、20 或 100 的點。原因是 $x^3+2x+3$ 在 $\mathbb F_{97}$ 上有三個根（$x=30, 68, 96$），給出三個階為 2 的點 $(x,0)$；循環群只有一個階為 2 的元素，所以 $E_A(\mathbb F_{97})$ 不是循環群，而是 $\mathbb Z/2\times\mathbb Z/50$。一般而言 $E(\mathbb F_p)\cong\mathbb Z/n_1\times\mathbb Z/n_2$，其中 $n_1\mid n_2$（Washington 定理 4.1），而且 $n_1\mid p-1$（Washington 推論 3.11，由 Weil 配對得到）。$E_B$ 的情形最乾淨：$N=107$ 是質數，每個非 $\mathcal O$ 的點的階都是 107。</p>
+<p>沒有階為 4、20 或 100 的點。原因是 $x^3+2x+3$ 在 $\mathbb F_{97}$ 上有三個根（$x=30, 68, 96$），給出三個階為 2 的點 $(x,0)$；循環群只有一個階為 2 的元素，所以 $E_A(\mathbb F_{97})$ 不是循環群，而是 $\mathbb Z/2\mathbb Z\times\mathbb Z/50\mathbb Z$（$n_1=2$ 確實整除 $p-1=96$）。$E_B$ 的情形最乾淨：$N=107$ 是質數，群是循環群，每個非 $\mathcal O$ 的點的階都是 107。</p>
 
 <h3>密碼學實際用的是一個質數階子群</h3>
-<p>實務上把群階寫成</p>
-$$N=h\cdot n,\qquad n\ \text{是大質數},\quad h\ \text{很小（餘因子，cofactor）}.$$
-<p>標準會給定一個階為 $n$ 的基點 $G$，ECDH 與 ECDSA 都只在 $\langle G\rangle$ 裡運算。$E_B$ 是 $h=1$、$n=107$；$E_A$ 的 $100=2^2\cdot5^2$，最大的質因數只有 5，也就是 $n=5$、$h=20$，這樣的曲線不會拿來用。真實曲線中，P-256 與 P-521 的 $h=1$（SP 800-186），Curve25519 的 $h=8$（RFC 7748）。</p>
-<div class="info-box green"><span class="info-label">兩個模數：$p$ 與 $n$</span>
-<p>座標是 $\mathbb F_p$ 的元素，所有點運算都在<strong>模 $p$</strong> 下做。純量 $k$ 只在模 $n$ 下有意義，因為 $nG=\mathcal O$ 讓 $(k+n)G=kG$；祕密金鑰取在 $[1,n-1]$，ECDSA 的簽章公式也在模 $n$ 下計算。P-256 的 $p$ 形狀特殊，可以用第 7 章的折疊；$n$ 沒有特殊形狀，所以 ECDSA 需要第 8、9 章的一般方法。</p>
+<p>依照本章開頭的動機，我們要一個階為大質數的點。標準把它固定下來，連同曲線一起公布：</p>
+<div class="box defn" id="c3-def-base" data-terms="餘因子" data-sym="$G$、$n=\operatorname{ord}(G)$、$h$" data-gloss="公開的基點 $G$，其階 $n$ 為大質數；餘因子 $h=\#E(\mathbb F_p)/n$" data-ref="SP 800-186 §3.1.1；HMV §4.2">
+<p>曲線參數中指定一個點 $G\in E(\mathbb F_p)$，稱為<strong>基點</strong>（base point；第 0 章 [[ref:c0-def-ecdlp]] 已用過這個詞），要求它的階 $n=\operatorname{ord}(G)$ 是大質數。整數</p>
+$$h:=\#E(\mathbb F_p)/n$$
+<p>稱為<strong>餘因子</strong>（cofactor），實務上很小。ECDH 與 ECDSA 都只在 $\langle G\rangle$ 中運算。</p>
 </div>
-<p>餘因子 $h&gt;1$ 時要小心：對方傳來的點可能落在階很小的子群裡（例如 $E_A$ 的三個 2 階點），使共用祕密只剩幾種可能。實作會先檢查收到的點確實在曲線上，再確認它位於 $\langle G\rangle$ 中（例如檢查 $nQ=\mathcal O$）；另一種做法是把共用的點乘上 $h$（cofactor multiplication），若結果是 $\mathcal O$ 就拒絕。只乘 $h$ 而不做這個拒絕，小階的輸入仍會得到可預測的 $\mathcal O$。</p>
+<div class="example"><div class="ex-label">真實的例子：P-256 的網域參數（SP 800-186 §3.2.1.3）</div>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>參數</th><th>值（數字為十六進位）</th></tr>
+<tr><td>$p$</td><td class="num">$2^{256}-2^{224}+2^{192}+2^{96}-1$</td></tr>
+<tr><td>$a$</td><td class="num">$-3$</td></tr>
+<tr><td>$b$</td><td class="num">5ac635d8 aa3a93e7 b3ebbd55 769886bc 651d06b0 cc53b0f6 3bce3c3e 27d2604b</td></tr>
+<tr><td>$G$ 的 $x$</td><td class="num">6b17d1f2 e12c4247 f8bce6e5 63a440f2 77037d81 2deb33a0 f4a13945 d898c296</td></tr>
+<tr><td>$G$ 的 $y$</td><td class="num">4fe342e2 fe1a7f9b 8ee7eb4a 7c0f9e16 2bce3357 6b315ece cbb64068 37bf51f5</td></tr>
+<tr><td>$n$</td><td class="num">ffffffff 00000000 ffffffff ffffffff bce6faad a7179e84 f3b9cac2 fc632551</td></tr>
+<tr><td>$h$</td><td class="num">1</td></tr>
+<tr><td>$t=p+1-n$</td><td class="num">43190553 58e8617b 0c46353d 039cdaaf</td></tr>
+</table></div>
+<p>本站用 Python 確認過：$G$ 在曲線上、$n$ 是質數、$nG=\mathcal O$。$p$ 的特殊形狀是第 7 章的主題；$a=-3$ 的好處在第 4 章。</p>
+</div>
+<p>$E_B$ 是 $h=1$、$n=107$。$E_A$ 的 $100=2^2\cdot5^2$，最大的質因數只有 5，所以最好也只能取 $n=5$、$h=20$；3.5 節會看到這樣的曲線毫無安全性。真實曲線中，P-256 與 P-521 的 $h=1$（SP 800-186），Curve25519 的 $h=8$（RFC 7748）。</p>
+<div class="info-box green"><span class="info-label">兩個模數：$p$ 與 $n$</span>
+<p>座標是 $\mathbb F_p$ 的元素，所有點運算都在<strong>模 $p$</strong> 下做。純量只在模 $n$ 下有意義，因為 $nG=\mathcal O$ 讓 $(k+n)G=kG$；私鑰取在 $[1,n-1]$，ECDSA 的簽章公式也在模 $n$ 下計算（[[ref:c0-rem-ecdsa]]）。P-256 的 $p$ 形狀特殊，可以用第 7 章的折疊；$n$ 沒有特殊形狀，所以 ECDSA 需要第 8、9 章的一般方法。</p>
+</div>
+<div class="box rem" id="c3-rem-cofactor" data-title="餘因子大於 1 時要檢查收到的點">
+<p>餘因子 $h&gt;1$ 時，對方傳來的點可能落在階很小的子群裡（例如 $E_A$ 的三個 2 階點），使共用祕密只剩幾種可能。實作會先檢查收到的點確實在曲線上，再確認它位於 $\langle G\rangle$ 中（例如檢查 $nQ=\mathcal O$）；另一種做法是把共用的點乘上 $h$（cofactor multiplication），若結果是 $\mathcal O$ 就拒絕。只乘 $h$ 而不做這個拒絕，小階的輸入仍會得到可預測的 $\mathcal O$。</p>
+</div>
 </section>
 
-<section id="attacks" data-nav="ECDLP">
-<h2>ECDLP 與攻擊</h2>
-<p>問題：給定階為 $n$ 的 $G$ 與 $Q\in\langle G\rangle$，找 $k$ 使 $Q=kG$。</p>
-<h3>一般方法：$\sqrt n$ 的障礙</h3>
-<ul>
-<li><strong>暴力搜尋</strong>：依序算 $G,2G,3G,\dots$，最多 $n$ 次加點。</li>
-<li><strong>Baby-step giant-step</strong>（BSGS）：取 $m=\lceil\sqrt n\,\rceil$，把 $k$ 寫成 $k=im+j$，$0\le i,j&lt;m$。先存下所有 $jG$（baby steps），再依序算 $Q-i\,(mG)$（giant steps），碰到表中的點就得到 $k$。時間與記憶體都約 $\sqrt n$。</li>
-<li><strong>Pollard rho</strong>：用一個看似隨機的走法在 $\langle G\rangle$ 中產生點列，等它出現碰撞。由生日悖論，期望約 $\sqrt{\pi n/2}$ 步，只需常數記憶體，而且可以多台機器平行。這是目前對一般曲線最好的攻擊（HMV §4.1）。</li>
-</ul>
-<div class="example"><div class="ex-label">BSGS 小例：$E_B$，$n=107$</div>
-<p>取 $G=(0,43)$、$Q=(25,91)$。$m=\lceil\sqrt{107}\,\rceil=11$。表中存 $0G,\dots,10G$；giant step 依序算 $Q, Q-11G, Q-22G,\dots$，在 $i=5$ 時碰到 $3G$，所以 $k=5\cdot11+3=58$。總共不到 $2m=22$ 次加點，暴力搜尋則要 58 次。</p>
+<section id="ecdlp" data-nav="DLP 與 ECDLP">
+<h2>離散對數問題</h2>
+<p>第 0 章已經用白話介紹過這兩個問題（[[ref:c0-def-dlp]]、[[ref:c0-def-ecdlp]]）。有了群結構與基點，現在可以把它們說精確。先在一般的循環群中定義，因為有限體 Diffie–Hellman 用的是 $\mathbb F_p^*$（[[ref:thm-fpstar-cyclic]]），而 ECC 用的是 $\langle G\rangle$；兩者是同一個問題的兩個例子。</p>
+<div class="box rem" id="c3-def-dlp" data-title="回顧：離散對數問題（[[ref:c0-def-dlp]]）" data-ref="HAC Def. 3.51, 3.52">
+<p>設 $C=\langle g\rangle$ 是階為 $r$ 的有限循環群（乘法寫法）。<strong>離散對數問題</strong>（discrete logarithm problem，DLP）是：給定 $g$ 與 $y\in C$，求整數 $k\in[0,r-1]$ 使 $g^k=y$。這個 $k$ 記作 $\log_g y$。$C=\mathbb F_p^*$ 時就是經典的 DLP。</p>
 </div>
-<p>對 P-256，$n$ 是 256 位元，Pollard rho 的期望步數 $\sqrt{\pi n/2}$ 約為 $2^{128.3}$。這就是「256 位元曲線約有 128 位元安全」的來源：安全強度是群階位元數的一半。</p>
+<div class="box rem" id="c3-def-ecdlp" data-title="回顧：ECDLP（[[ref:c0-def-ecdlp]]）" data-ref="HMV Def. 4.1">
+<p>設 $G\in E(\mathbb F_p)$ 的階為 $n$，$Q\in\langle G\rangle$。<strong>橢圓曲線離散對數問題</strong>（elliptic curve discrete logarithm problem，ECDLP）是：求整數 $k\in[0,n-1]$ 使 $Q=kG$，記作 $k=\log_G Q$。它就是加法寫法的 DLP。</p>
+</div>
+<p>最直接的方法是依序算 $G,2G,3G,\dots$ 直到碰到 $Q$，最多 $n$ 次加點。當 $n\approx2^{256}$ 時這毫無希望。問題是：有沒有明顯更快的方法？下一節的答案是「有，但只快到 $\sqrt n$」。</p>
+</section>
 
-<h3>Pohlig–Hellman：為什麼要大質數因子</h3>
-<p>若 $G$ 的階不是質數，可以把問題分解到每個質數冪的子群上分別解，再用中國剩餘定理拼回 $k$。工作量由這個階的<strong>最大質因數</strong> $q$ 決定，大約 $\sqrt q$。$E_A$ 的 $N=100=2^2\cdot5^2$，最大的質因數是 5，離散對數幾乎可以手算。所以實際的曲線一定讓 $n$ 是大質數，而且 $h$ 很小。</p>
+<section id="attacks" data-nav="通用攻擊">
+<h2>通用攻擊：$\sqrt n$ 的障礙</h2>
+<p>這一節的方法只用到群運算與「判斷兩個元素是否相等」，對任何群都適用，所以叫<strong>通用</strong>（generic）攻擊。它們給出 ECDLP 難度的上限，也決定了 $n$ 要多大。</p>
 
-<h3>與 $\mathbb F_p^*$ 的差別：沒有指標演算法</h3>
-<p>在 $\mathbb F_p^*$ 上，離散對數有次指數時間的<strong>指標演算法</strong>（index calculus）：利用「很多整數可以拆成小質數的乘積」，先求出小質數的對數，再拼出目標。數域篩法把它推到 $L_p[1/3]$ 的複雜度，這也是有限體 Diffie–Hellman 與 RSA 需要 3072 位元，ECC 只要 256 位元的原因（第 0 章）。對質數體上一般選取的曲線，目前不知道有類似「小質數」的概念可用，最好的攻擊仍是 $\sqrt n$ 的一般方法（Washington 第 5 章）。</p>
+<h3>Baby-step giant-step</h3>
+<p>想法是用記憶體換時間：把 $k$ 拆成「大步」與「小步」兩部分，先把所有小步存起來，再一大步一大步地查表。</p>
+<div class="box algo" id="c3-alg-bsgs" data-title="Baby-step giant-step（BSGS）" data-ref="HAC Alg. 3.56；Washington §5.2.1">
+<div class="io"><b>輸入</b>階為 $n$ 的點 $G$，以及 $Q\in\langle G\rangle$。</div>
+<div class="io"><b>輸出</b>$k\in[0,n-1]$，使 $Q=kG$。</div>
+<ol class="steps">
+<li>$M\leftarrow\lceil\sqrt n\,\rceil$。</li>
+<li>（baby steps）對 $j=0,1,\dots,M-1$，把 $(j,\ jG)$ 存進以點為鍵的雜湊表。</li>
+<li>先算好 $MG$，令 $R\leftarrow Q$。</li>
+<li>（giant steps）對 $i=0,1,\dots,M-1$：若 $R$ 等於表中的某個 $jG$，回傳 $k=iM+j$；否則 $R\leftarrow R-MG$。</li>
+</ol>
+<p>正確性：因為 $M^2\ge n$，$k$ 可以寫成 $k=iM+j$，$0\le i,j&lt;M$；第 $i$ 個大步時 $R=Q-iMG=jG$，一定在表中。成本約 $2\sqrt n$ 次加點，加上存 $\sqrt n$ 個點的記憶體（HAC Fact 3.57）。</p>
+</div>
+<div class="example"><div class="ex-label">BSGS 小例：$E_B$，$n=107$</div>
+<p>取 $G=(0,43)$、$Q=(25,91)$。$M=\lceil\sqrt{107}\,\rceil=11$。表中存 $0G,\dots,10G$；大步依序算 $Q,\ Q-11G,\ Q-22G,\dots$，在 $i=5$ 時碰到 $3G$，所以 $k=5\cdot11+3=58$。總共不到 $2M=22$ 次加點，暴力搜尋則要 58 次。</p>
+</div>
+<!-- code: ecdlp 數點、點的階，以及 baby-step giant-step（程式中的 m 即正文的 M） -->
 
-<h3>要避開的曲線</h3>
-<p>「一般選取」有例外。下面兩類曲線有特殊結構，ECDLP 會變簡單：</p>
-<ul>
-<li><strong>異常曲線</strong>（anomalous curve，$N=p$）：Semaev、Satoh–Araki、Smart 各自證明，這時可以在多項式時間內解出 $k$；後兩者的方法是把問題提升到 $p$ 進數上（Washington §5.4）。例如 $\mathbb F_{127}$ 上的 $y^2=x^3-3x+5$ 恰好有 127 個點（逐點計算確認），它的跡 $t=1$。</li>
-<li><strong>嵌入次數小的曲線</strong>：嵌入次數是使 $n\mid p^e-1$ 的最小正整數 $e$。MOV 與 Frey–Rück 攻擊用配對（pairing）把 $\langle G\rangle$ 嵌入 $\mathbb F_{p^e}^*$，在那裡就能用指標演算法。$e$ 很小時這是致命的。例如 $\mathbb F_{103}$ 上的超奇異曲線 $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因數 $n=13$，而 $13\mid103^2-1$（因為 $13\mid103+1$），所以 $e=2$（Washington §5.3）。</li>
-</ul>
-<p>相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^e\bmod107$）。標準曲線在發布前都排除了這些情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。</p>
+<h3>Pollard rho</h3>
+<p>BSGS 的瓶頸是記憶體：$n\approx2^{256}$ 時要存 $2^{128}$ 個點，不可能。Pollard rho 的時間差不多，記憶體卻只要常數。想法是找到兩組不同的係數，使</p>
+$$c'G+d'Q=c''G+d''Q .$$
+<p>代入 $Q=kG$ 得 $c'-c''\equiv(d''-d')k\pmod n$；$n$ 是質數，只要 $d'\ne d''$ 就能解出 $k$。為了找到這樣的碰撞，用一個「看起來隨機」的函數在 $\langle G\rangle$ 裡走，走到重複為止；點列的形狀像希臘字母 $\rho$，因此得名。</p>
+<div class="box algo" id="c3-alg-rho" data-title="Pollard rho（單機版）" data-ref="HMV Alg. 4.3">
+<div class="io"><b>輸入</b>質數階 $n$ 的點 $G$，以及 $Q\in\langle G\rangle$。</div>
+<div class="io"><b>輸出</b>$k$，使 $Q=kG$（或以極小的機率回報失敗）。</div>
+<ol class="steps">
+<li>選分支數 $L$（例如 16 或 32），以及分割函數 $\chi:\langle G\rangle\to\{1,\dots,L\}$（例如取 $x$ 座標的低位元）。</li>
+<li>對 $j=1,\dots,L$：隨機取 $u_j,v_j\in[0,n-1]$，令 $R_j\leftarrow u_jG+v_jQ$。</li>
+<li>隨機取 $c',d'\in[0,n-1]$，令 $X'\leftarrow c'G+d'Q$；再令 $(X'',c'',d'')\leftarrow(X',c',d')$。</li>
+<li>重複下列兩件事，直到 $X'=X''$：
+  <br>走一步 $X'$：$j\leftarrow\chi(X')$，$X'\leftarrow X'+R_j$，$c'\leftarrow c'+u_j\bmod n$，$d'\leftarrow d'+v_j\bmod n$；
+  <br>用同樣的規則走兩步 $X''$（同時更新 $c'',d''$）。</li>
+<li>若 $d'=d''$，回報失敗；否則回傳 $k=(c'-c'')(d''-d')^{-1}\bmod n$。</li>
+</ol>
+<p>整個過程始終維持 $X'=c'G+d'Q$、$X''=c''G+d''Q$。$X''$ 走得比 $X'$ 快一倍，進入迴圈後一定會追上（Floyd 找迴圈法），所以只需記住兩個點。</p>
+</div>
+<p><strong>成本。</strong>若把迭代函數當成隨機函數（這是啟發式的假設，實驗上很準），由生日悖論，點列約在 $\sqrt{\pi n/2}\approx1.25\sqrt n$ 步後第一次重複；Floyd 法找到它約需 $3\sqrt n$ 次加點（HMV §4.1.2）。平行版本（HMV Alg. 4.5）用 $T$ 台機器可以快約 $T$ 倍。這是目前對一般曲線最好的攻擊。</p>
+<p>對 P-256，$n$ 是 256 位元，$\sqrt{\pi n/2}\approx2^{128.3}$。這就是「256 位元曲線約有 128 位元安全」的來源：安全強度大約是 $n$ 的位元數的一半。</p>
+
+<h3>Pohlig–Hellman：為什麼 $n$ 必須是質數</h3>
+<p>上面都假設 $G$ 的階是質數。若點的階 $\nu$ 是合數，問題可以拆小。關鍵工具是<strong>中國剩餘定理</strong>（Chinese remainder theorem，CRT；HAC Fact 2.120）：若 $\nu=\prod_i q_i^{e_i}$（$q_i$ 為相異質數），則知道每個 $k\bmod q_i^{e_i}$，就唯一決定 $k\bmod\nu$。所以只要在每個質數冪上分別求出 $k$ 的餘數，再拼回去即可。</p>
+<div class="box algo" id="c3-alg-ph" data-title="Pohlig–Hellman" data-ref="HMV §4.1.1；HAC Alg. 3.63, Fact 3.65">
+<div class="io"><b>輸入</b>點 $P$，其階 $\nu=\operatorname{ord}(P)=\prod_{i=1}^{r}q_i^{e_i}$（$q_i$ 為相異質數，分解已知），以及 $Q\in\langle P\rangle$。</div>
+<div class="io"><b>輸出</b>$k\in[0,\nu-1]$，使 $Q=kP$。</div>
+<ol class="steps">
+<li>對每個 $i=1,\dots,r$（以下記 $q=q_i$）：
+  <br>令 $P_0\leftarrow(\nu/q)P$，它的階是 $q$。
+  <br>對 $t=0,1,\dots,e_i-1$：令 $\kappa_t\leftarrow z_0+z_1q+\cdots+z_{t-1}q^{t-1}$（$\kappa_0=0$），$Q_t\leftarrow(\nu/q^{t+1})\,(Q-\kappa_tP)$，在階為 $q$ 的群 $\langle P_0\rangle$ 中解 $Q_t=z_tP_0$（用 BSGS 或 Pollard rho），得 $z_t\in[0,q-1]$。
+  <br>令 $k_i\leftarrow z_0+z_1q+\cdots+z_{e_i-1}q^{e_i-1}$；它等於 $k\bmod q_i^{e_i}$。</li>
+<li>用 CRT 求出唯一的 $k\in[0,\nu-1]$，使 $k\equiv k_i\pmod{q_i^{e_i}}$ 對所有 $i$ 成立；回傳 $k$。</li>
+</ol>
+<p>乘上 $\nu/q^{t+1}$ 會把 $k$ 中已經求出的低位數字消掉，只留下 $k\bmod q_i^{e_i}$ 以 $q$ 為底的第 $t$ 位數字 $z_t$。總成本是 $O\bigl(\sum_i e_i(\log\nu+\sqrt{q_i})\bigr)$ 次群運算（HAC Fact 3.65），由<strong>最大的質因數</strong> $q_i$ 主導。</p>
+</div>
+<p>結論：ECDLP 在 $\langle P\rangle$ 中的難度，不超過它在最大質數階子群中的難度。$E_A$ 的 $N=100=2^2\cdot5^2$，每個子問題都只在階 2 或 5 的群裡，試幾次就解完。所以實際的曲線要讓基點的階 $n$ 是大質數、$h$ 很小，這正是 [[ref:c3-def-base]] 的要求。</p>
+</section>
+
+<section id="index" data-nav="指標演算法">
+<h2>為什麼橢圓曲線沒有指標演算法</h2>
+<p>同樣有 $\sqrt n$ 的通用攻擊，為什麼有限體 Diffie–Hellman 要 3072 位元，ECC 只要 256 位元？因為 $\mathbb F_p^*$ 上有比通用攻擊快得多的方法，而橢圓曲線上沒有。</p>
+<p>在 $\mathbb F_p^*$ 上，<strong>指標演算法</strong>（index calculus）利用「整數可以分解成質數的乘積」：先選一組小質數當作「因子基」（factor base），找出許多指數 $j$ 使 $g^j\bmod p$ 只含這些小質數，每找到一個就得到這些小質數的離散對數之間的一條線性關係；關係夠多時解線性方程組，再把目標 $y$ 也拆成小質數。這是<strong>次指數時間</strong>（subexponential）的演算法：最基本的版本約 $\exp\bigl(\sqrt{2\ln p\ln\ln p}\bigr)$（Washington §5.1），數域篩法再降到 $\exp\bigl(O((\ln p)^{1/3}(\ln\ln p)^{2/3})\bigr)$；相比之下，通用攻擊是 $\sqrt p=\exp(\tfrac12\ln p)$。對質數體上一般選取的曲線，點沒有「分解成小點」的自然概念，把指標演算法搬過去的各種嘗試都不成功；目前最好的攻擊仍是 $\sqrt n$ 的 Pollard rho（Washington §5.1；HMV §4.1.3）。這就是 ECC 金鑰短的原因（第 0 章）。</p>
+</section>
+
+<section id="weak" data-nav="弱曲線">
+<h2>要避開的曲線</h2>
+<p>前面的結論是：$n$ 大、而且是質數，ECDLP 就難。但有兩類曲線即使滿足這個條件仍然不安全，因為它們的特殊結構讓 ECDLP 能搬到一個比較容易的群裡去解。</p>
+<div class="box defn" id="c3-def-anomalous" data-terms="異常曲線" data-sym="$\#E(\mathbb F_p)=p$" data-gloss="點數等於 $p$，即跡 $t=1$" data-ref="HMV §4.1.4；Washington §5.4">
+<p>若 $\#E(\mathbb F_p)=p$（等價地 $t=1$），稱 $E$ 為（質數體上的）<strong>異常曲線</strong>（anomalous curve）。</p>
+</div>
+<p>Semaev、Satoh–Araki、Smart 各自證明，異常曲線上可以有效率地算出一個群同構 $E(\mathbb F_p)\to(\mathbb F_p,+)$，於是 ECDLP 變成「已知 $x$ 與 $kx\bmod p$ 求 $k$」，一次反元素就解完（Washington §5.4 用 $p$ 進數的提升說明）。例如 $\mathbb F_{127}$ 上的 $y^2=x^3-3x+5$ 恰好有 127 個點（逐點計算確認）。檢查方式很簡單：算出 $N$，看是否等於 $p$。</p>
+<div class="box defn" id="c3-def-embed" data-terms="嵌入次數" data-sym="$e$" data-gloss="使 $n\mid p^e-1$ 的最小正整數" data-ref="HMV §4.1.4；Washington §5.3">
+<p>設基點的階 $n$ 是質數且 $n\ne p$。使 $p^e\equiv1\pmod n$（即 $n\mid p^e-1$）的最小正整數 $e$，稱為<strong>嵌入次數</strong>（embedding degree）。它就是 $p\bmod n$ 在 $\mathbb F_n^*$（[[ref:def-fp]]）中的階，所以 $e\mid n-1$。（HMV 把它記作 $k$，本站的 $k$ 留給純量；它也與 3.5 節 Pohlig–Hellman 的指數 $e_i$ 無關。）</p>
+</div>
+<p>MOV 攻擊（Menezes–Okamoto–Vanstone）與 Frey–Rück 攻擊用<strong>配對</strong>（pairing，一種與群運算相容的雙線性映射，本站不展開），把 $\langle G\rangle$ 同構地嵌入有 $p^e$ 個元素的有限體的乘法群；在那裡可以用指標演算法。對大多數曲線，$e$ 和 $n$ 差不多大，這個有限體大到無法處理；但 $e$ 很小時這是致命的。例如 $\mathbb F_{103}$ 上的超奇異曲線 $y^2=x^3+x$ 有 $104=p+1$ 個點，最大質因數 $n=13$，而 $103\equiv-1\pmod{13}$，所以 $13\mid103^2-1$，$e=2$（Washington §5.3）。相對地，$E_B$ 的 $n=107$ 對 $p=97$ 的嵌入次數是 106（逐一計算 $97^e\bmod107$），也就是可能的最大值 $n-1$。</p>
+<p>標準曲線在發布前都排除了這兩類情形，並且選擇 $h$ 小、$n$ 為大質數的曲線（SP 800-186；HMV §4.1）。到這裡，「怎樣的曲線才安全」已經回答完。下一章轉向成本：第 2 章的加點公式（[[ref:c2-alg-add]]）每一步都要除一次，在安全的曲線上做幾百次加點，要怎麼避開這些除法？</p>
 </section>
 
 <section id="trail" data-nav="kP 軌跡">
 <h2>互動：$kP$ 的軌跡與點的階</h2>
-<p>點雲是曲線在 $\mathbb F_{97}$ 上的所有點。點一下任何一點當作起點 $P$（或用下拉選單挑一個指定階的點），再播放：每一步加上 $P$，紫色線依序連起 $P,2P,3P,\dots$，直到回到 $\mathcal O$。走過的步數就是 $P$ 的階，右側檢查它是否整除 $N$。</p>
-<p>在 $E_A$ 上試試不同的點：軌跡的長度只會是 2、5、10、25 或 50。在 $E_B$ 上，每一條軌跡都走遍全部 106 個仿射點。點的位置看起來毫無規律，這正是「從 $kP$ 看不出 $k$」的直觀寫照。</p>
+<p><strong>要觀察什麼：</strong>（一）軌跡回到 $\mathcal O$ 時走過的步數就是起點的階，而它一定整除 $N$（Lagrange 定理）；（二）在 $E_A$ 上，軌跡長度只會是 2、5、10、25 或 50，看不到 4、20、100，這就是 $\mathbb Z/2\mathbb Z\times\mathbb Z/50\mathbb Z$ 的結構；（三）在 $E_B$ 上，每一條軌跡都走遍全部 106 個仿射點，而且點的位置毫無規律，這正是「從 $kP$ 看不出 $k$」的直觀寫照。</p>
+<p>點雲是曲線在 $\mathbb F_{97}$ 上的所有點。點一下任何一點當作起點 $P$（或用下拉選單挑一個指定階的點），再播放：每一步加上 $P$，紫色線依序連起 $P,2P,3P,\dots$，直到回到 $\mathcal O$。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">kP TRAIL</div>
@@ -119,7 +213,8 @@ $$N=h\cdot n,\qquad n\ \text{是大質數},\quad h\ \text{很小（餘因子，c
 
 <section id="hist" data-nav="Hasse 直方圖">
 <h2>互動：Hasse 區間裡的點數分布</h2>
-<p>固定 $p$ 與 $a$，讓 $b$ 跑過所有使曲線非奇異（$4a^3+27b^2\not\equiv0$）的值，逐條數出 $N=\#E(\mathbb F_p)$，畫成直方圖。淺色帶是 Hasse 區間 $[\,p+1-2\sqrt p,\ p+1+2\sqrt p\,]$；所有長條都落在帶內。<span class="pill-hi">藍色</span>是一般的 $N$，<span class="pill-lo">綠色</span>長條的 $N$ 是質數（$h=1$ 的候選），<span class="pill-anom">紅色</span>長條是 $N=p$ 的異常曲線。點一下長條可以看到是哪些 $b$。</p>
+<p><strong>要觀察什麼：</strong>（一）不論怎麼選 $p$ 與 $a$，所有長條都落在 Hasse 區間內，這是 [[ref:c3-thm-hasse]] 的實例；（二）點數散布在整個區間，但多數曲線（約六成以上）落在中間一半，也就是 $|t|\le\sqrt p$ 的範圍；（三）$N$ 為質數的曲線並不罕見，可以直接當 $h=1$ 的候選；（四）偶爾會出現 $N=p$ 的異常曲線，必須排除。</p>
+<p>固定 $p$ 與 $a$，讓 $b$ 跑過所有使曲線非奇異（$4a^3+27b^2\not\equiv0$）的值，逐條數出 $N=\#E(\mathbb F_p)$，畫成直方圖。淺色帶是 Hasse 區間 $[\,p+1-2\sqrt p,\ p+1+2\sqrt p\,]$。<span class="pill-hi">藍色</span>是一般的 $N$，<span class="pill-lo">綠色</span>長條的 $N$ 是質數，<span class="pill-anom">紅色</span>長條是 $N=p$ 的異常曲線。點一下長條可以看到是哪些 $b$。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">HASSE HISTOGRAM</div>

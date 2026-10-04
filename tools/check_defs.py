@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 import pages as P  # noqa: E402
 
-BOX = re.compile(r'<div class="box defn" id="([\w-]+)"([^>]*)>')
+BOX = re.compile(r'<div class="box defn" id="([\w-]+)"((?:\s+[\w-]+="[^"]*")*)\s*>')
 TERMS = re.compile(r'data-terms="([^"]*)"')
 
 
@@ -59,7 +59,7 @@ def main():
                 if di == ddi and "<section" not in t[m.start():dpos]:
                     continue                   # 同一節裡先在動機段提到，緊接著定義
                 ctx = t[max(0, m.start() - 120): m.end() + 120]
-                if "[[ref:" in ctx or re.search(r"(第 ?\d+ ?章|下一節|下一章)(定義|說明|會|再)", ctx) or "data-terms" in ctx:
+                if "[[ref:" in ctx or re.search(r"(第 ?\d+ ?章|下一節|下一章|§ ?\d+\.\d+ ?節?|\d+\.\d+ 節)(定義|說明|會|再|：)", ctx) or "data-terms" in ctx:
                     continue
                 line = t[:m.start()].count("\n") + 1
                 problems.append(f"{f}:{line}  「{term}」早於其定義 {dfile}#{bid}")

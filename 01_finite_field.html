@@ -146,7 +146,7 @@
 </table></div>
 <p>每一列等於「上上列 − $q$ × 上一列」。餘數到 1 時，5 的係數是 3，所以 $5^{-1}\equiv3\pmod 7$。驗算：$5\cdot3=15=2\cdot7+1$。</p>
 </div>
-<p>步數與 $\log p$ 成正比（HAC Fact 2.108），但<strong>每一步都要做一次多字組的除法</strong>，而且步數與商都隨輸入而變。這讓它在實作上不如看起來便宜，也不容易做成常數時間（執行時間與祕密資料無關）。</p>
+<p>步數與 $\log p$ 成正比（HAC Fact 2.108），但<strong>每一步都要做一次多字組的除法</strong>（一個大數在電腦裡佔好幾個 64 位元的「字組」，第 6 章定義），而且步數與商都隨輸入而變。這讓它在實作上不如看起來便宜，也不容易做成常數時間（執行時間與祕密資料無關；第 5 章定義）。</p>
 <details class="code-fold"><summary>Python 參考實作（選讀）：兩種求反元素的方法</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">egcd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;回傳 (g, s, t)，使 s*a + t*b = g = gcd(a, b)。&quot;&quot;&quot;</span>
     <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>

@@ -26,7 +26,7 @@
   <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
 </header>
 <div class="book">
-<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch on" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a><ul class="sb-secs"><li><a href="#why" data-target="why">6.1 動機</a></li><li><a href="#words" data-target="words">6.2 字組</a></li><li><a href="#schoolbook" data-target="schoolbook">6.3 Schoolbook</a></li><li><a href="#square" data-target="square">6.4 平方</a></li><li><a href="#karatsuba" data-target="karatsuba">6.5 Karatsuba</a></li><li><a href="#lab" data-target="lab">6.6 逐格演示</a></li></ul></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
+<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch on" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a><ul class="sb-secs"><li><a href="#why" data-target="why">6.1 動機</a></li><li><a href="#words" data-target="words">6.2 字組表示</a></li><li><a href="#schoolbook" data-target="schoolbook">6.3 Schoolbook</a></li><li><a href="#square" data-target="square">6.4 平方</a></li><li><a href="#karatsuba" data-target="karatsuba">6.5 Karatsuba</a></li><li><a href="#lab" data-target="lab">6.6 逐格演示</a></li><li><a href="#next" data-target="next">6.7 下一步</a></li></ul></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
 <main class="content" id="top">
 <div class="ch-head">
   <div class="eyebrow">第 6 章 · Multiprecision Multiplication</div>
@@ -37,55 +37,73 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">6.1</span>一個暫存器裝不下的數</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>P-256 的座標是 256 位元的整數，但處理器的一個暫存器只有 64 位元（嵌入式晶片常常只有 32 位元，甚至 8 位元）。硬體的乘法指令一次只能把兩個 $w$ 位元的數相乘，得到 $2w$ 位元的乘積。</p>
-<p>所以「在 $\mathbb F_p$ 裡乘兩個數」實際上分兩步：</p>
-<ol>
-<li><strong>整數乘法</strong>：把兩個多字組的整數相乘，得到兩倍長的乘積（本章）。</li>
-<li><strong>化簡</strong>：把乘積化簡到 $[0,p)$（第 7、8、9 章）。</li>
-</ol>
-<p>一次純量乘法需要幾千次這樣的乘法（第 5 章），所以第一步的每一個字組乘法都算數。成本鏈走到最底層，就是本章要數的「字組乘法」。</p>
+<p>第 5 章把一次純量乘法 $kP$ 的成本數成幾千個 $\mathbf M$ 與 $\mathbf S$（<a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）。$\mathbf M$ 是一次 $\mathbb F_p$ 乘法（<a class="xref" href="01_finite_field.html#def-fp">定義 1.11</a>）：先算整數乘積 $ab$，再把它化簡回 $[0,p)$。本章處理第一步，第 7–9 章處理第二步。</p>
+<p>困難在於大小。P-256 的 $p$ 有 256 位元，但處理器的一個暫存器只有 64 位元（嵌入式晶片常常只有 32 位元，甚至 8 位元），硬體的乘法指令一次只能把兩個暫存器大小的數相乘。所以一個 $\mathbb F_p$ 元素必須切成好幾段來存，整數乘積 $ab$ 也必須由許多次「小乘法」拼出來。$\mathbf M$ 的成本主要由這些小乘法的次數決定，本章要數的正是這個次數。</p>
 </div>
 </section>
 
-<section id="words" data-nav="字組">
-<h2><span class="secno">6.2</span>字組表示：以 $2^w$ 為基底</h2>
-<p>取基底 $b=2^w$，其中 $w$ 是字組（word）的位元數，實務上 $w=32$ 或 $64$。小於 $b^k$ 的非負整數 $x$ 可以唯一寫成</p>
-$$x=\sum_{i=0}^{k-1}x_i\,b^{\,i},\qquad 0\le x_i&lt;b .$$
-<p>這就是以 $b$ 為基底的進位表示，每個「位數」$x_i$ 正好放進一個暫存器。因為 $b$ 是 2 的冪，切出字組只是取出連續的位元，不用任何除法。需要的字組數是 $k=\lceil(\text{位元數})/w\rceil$：</p>
+<section id="words" data-nav="字組表示">
+<h2><span class="secno">6.2</span>字組與以 $\beta$ 為基底的表示</h2>
+<p>先把「切成好幾段」說精確：每一段放進一個暫存器，稱為一個字組；整個數就是以 $2^w$ 為基底的展開。</p>
+<div class="box defn" id="c6-def-radix"><div class="box-head"><span class="box-label">定義 6.1</span><span class="box-title">字組、字組大小、基底、以 β 為基底的表示</span><span class="box-ref">HAC §14.2；HMV §2.2.1</span></div>
+<p>設 $w\ge1$，稱 $w$ 為<strong>字組大小</strong>（word size），令<strong>基底</strong> $\beta=2^w$（實務上 $w=32$ 或 $64$；手算例子也會取 $\beta=4$ 或 $10$）。每個整數 $0\le x&lt;\beta^s$ 都可以唯一寫成</p>
+$$x=\sum_{i=0}^{s-1}x_i\,\beta^{\,i},\qquad 0\le x_i&lt;\beta ,$$
+<p>記作 $x=(x_{s-1}\cdots x_1x_0)_\beta$，稱為 $x$ <strong>以 $\beta$ 為基底的表示</strong>（radix-$\beta$ representation）。每個 $x_i$ 稱為一個<strong>字組</strong>（word），$s$ 是字組數。</p>
+</div>
+<p>因為 $\beta$ 是 2 的冪，求出 $x_i$ 只是取出 $x$ 的第 $iw$ 到第 $iw+w-1$ 個位元，不需要除法。一個 $L$ 位元的模數需要 $s=\lceil L/w\rceil$ 個字組：</p>
 <div class="tbl-wrap"><table class="cmp-table">
-<tr><th>模數</th><th>位元數</th><th>$w=64$</th><th>$w=32$</th></tr>
+<tr><th>模數</th><th>位元數 $L$</th><th>$s$（$w=64$）</th><th>$s$（$w=32$）</th></tr>
 <tr><td>P-256</td><td class="num">256</td><td class="num">4</td><td class="num">8</td></tr>
 <tr><td>P-384</td><td class="num">384</td><td class="num">6</td><td class="num">12</td></tr>
 <tr><td>P-521</td><td class="num">521</td><td class="num">9</td><td class="num">17</td></tr>
 </table></div>
-<p>P-521 的 521 位元比 8 個 64 位元字組多出 9 個位元，就得用上第 9 個字組；第 7 章的 P-521 折疊會用到跨字組移位，就是這個原因。</p>
+<p>P-521 的 521 位元比 8 個 64 位元字組多出 9 個位元，就得多用一個字組；第 7 章 P-521 的化簡要在字組中間切開，也是這個原因。</p>
+<div class="box defn" id="c6-def-wordmul"><div class="box-head"><span class="box-label">定義 6.2</span><span class="box-title">字組乘法、單精度乘法</span><span class="box-ref">HAC §14.2.3</span></div>
+<p>兩個字組 $x_j,y_i\in[0,\beta)$ 的乘積小於 $\beta^2$，可以寫成兩個字組 $(uv)_\beta=u\beta+v$（$u$ 可能是 0）。這個運算稱為一次<strong>字組乘法</strong>（single-precision multiplication），由硬體的一道乘法指令完成。第 6–9 章以字組乘法的次數作為成本單位；字組的加減法與移位相對便宜，計數時不算。</p>
+</div>
 </section>
 
 <section id="schoolbook" data-nav="Schoolbook">
-<h2><span class="secno">6.3</span>Schoolbook 乘法：小學直式乘法</h2>
-<p>兩個 $k$ 字組的數相乘：</p>
-$$x\cdot y=\sum_{i=0}^{k-1}\sum_{j=0}^{k-1}x_j\,y_i\,b^{\,i+j}.$$
-<p>每一項 $x_jy_i$ 是一次硬體乘法，結果要加到輸出的第 $i+j$ 個字組上。HAC 演算法 14.12 的做法和小學直式乘法完全相同：拿 $y$ 的一個字組 $y_i$，從低到高乘遍 $x$ 的每個字組，邊乘邊進位，再換下一個 $y_{i+1}$。內層的一步是</p>
-$$(u,v)\leftarrow w_{i+j}+x_j\,y_i+c,\qquad w_{i+j}\leftarrow v,\quad c\leftarrow u,$$
-<p>其中 $(u,v)$ 表示一個兩字組的數，$v$ 是低字組、$u$ 是高字組（新的進位）。</p>
-<div class="info-box green"><span class="info-label">為什麼兩個字組一定夠</span>
-<p>兩個單字組的加數 $w_{i+j}\le b-1$、$c\le b-1$，加上一個雙字組的乘積 $x_jy_i\le(b-1)^2$。所以</p>
-$$w_{i+j}+x_jy_i+c\ \le\ (b-1)^2+2(b-1)\ =\ b^2-1 .$$
-<p>結果剛好塞進兩個字組，不會溢位；進位 $u$ 也一定小於 $b$，下一步仍然成立。以 $w=8$ 為例，$255^2+2\cdot255=65535=2^{16}-1$。處理器的「乘法得雙字組結果」加上「帶進位的加法」指令，就是為這一步設計的。</p>
+<h2><span class="secno">6.3</span>Schoolbook 乘法</h2>
+<p>有了字組表示，兩個數的乘積就是展開式</p>
+$$x\cdot y=\sum_{i=0}^{s-1}\sum_{j=0}^{s-1}x_j\,y_i\,\beta^{\,i+j}.$$
+<p>每一項 $x_jy_i$ 是一次字組乘法，結果要加到輸出的第 $i+j$ 個字組上。加上去以後可能超過一個字組，超出的部分要帶到下一個字組，也就是<strong>進位</strong>（carry）。下面的演算法就是小學直式乘法：拿 $y$ 的一個字組 $y_i$ 乘遍 $x$ 的每個字組，邊乘邊進位。</p>
+<div class="box algo" id="c6-alg-schoolbook"><div class="box-head"><span class="box-label">演算法 6.3</span><span class="box-title">多精度乘法（schoolbook）</span><span class="box-ref">HAC Alg. 14.12</span></div>
+<div class="io"><b>輸入</b>$x=(x_{s-1}\cdots x_0)_\beta$，$y=(y_{s-1}\cdots y_0)_\beta$。</div>
+<div class="io"><b>輸出</b>$x\cdot y=(z_{2s-1}\cdots z_1z_0)_\beta$。</div>
+<ol class="steps">
+<li>對 $i=0,1,\dots,2s-1$：$z_i\leftarrow0$。</li>
+<li>對 $i=0,1,\dots,s-1$：
+  <ol>
+  <li>$c\leftarrow0$。</li>
+  <li>對 $j=0,1,\dots,s-1$：計算 $(uv)_\beta=z_{i+j}+x_j\,y_i+c$，令 $z_{i+j}\leftarrow v$，$c\leftarrow u$。</li>
+  <li>$z_{i+s}\leftarrow u$。</li>
+  </ol></li>
+<li>回傳 $(z_{2s-1}\cdots z_0)_\beta$。</li>
+</ol>
+<p>做完第 $i$ 列時，$(z_{i+s}\cdots z_0)_\beta=x\cdot(y_i\cdots y_0)_\beta$。內層每一步一次字組乘法，共 <strong>$s^2$ 次字組乘法</strong>。（HAC 的敘述允許兩個輸入長度不同，各有 $n+1$、$t+1$ 個字組，次數是 $(n+1)(t+1)$，HAC Note 14.15(ii)。HAC 把輸出字組記作 $w_i$；本站的 $w$ 已用來表示字組大小，所以改記為 $z_i$。）</p>
 </div>
-<div class="example"><div class="ex-label">手算小例：十進位，$b=10$，$87\times96$</div>
-<p>$x=(x_1,x_0)=(8,7)$，$y=(y_1,y_0)=(9,6)$。</p>
+<p>第 2(b) 步的 $z_{i+j}+x_jy_i+c$ 稱為<strong>內積運算</strong>（inner-product operation）。演算法能成立，關鍵是它的結果永遠放得進兩個字組：</p>
+<div class="box thm" id="c6-thm-inner"><div class="box-head"><span class="box-label">定理 6.4</span><span class="box-title">內積運算不會溢位</span><span class="box-ref">HAC Note 14.15(i)</span></div>
+<p>若 $z_{i+j},x_j,y_i,c\in[0,\beta)$，則</p>
+$$z_{i+j}+x_jy_i+c\ \le\ (\beta-1)+(\beta-1)^2+(\beta-1)\ =\ \beta^2-1 .$$
+<p>也就是兩個單字組的加數，加上一個雙字組的乘積，仍然小於 $\beta^2$。因此高字組 $u&lt;\beta$，下一步的進位 $c$ 仍是一個字組，論證可以一路重複。</p>
+</div>
+<p>以 $w=8$ 為例，$255+255^2+255=65535=2^{16}-1$，恰好是 16 位元能表示的最大數。處理器的「乘法得雙字組結果」與「帶進位的加法」指令，就是為這一步設計的。</p>
+<div class="example"><div class="ex-label">手算小例：$\beta=10$，$87\times96$</div>
+<p>$x=(x_1x_0)_{10}=(87)_{10}$，$y=(y_1y_0)_{10}=(96)_{10}$，$s=2$。</p>
 <ul>
-<li>$i=0$（乘 $y_0=6$）：$0+7\cdot6+0=42$，寫 2 進 4；$0+8\cdot6+4=52$，寫 2 進 5。這一列得到 $0522$。</li>
-<li>$i=1$（乘 $y_1=9$）：$2+7\cdot9+0=65$，寫 5 進 6；$5+8\cdot9+6=83$，寫 3 進 8。結果 $8352$。</li>
+<li>$i=0$（乘 $y_0=6$）：$0+7\cdot6+0=42$，寫 2、進位 4；$0+8\cdot6+4=52$，寫 2、進位 5，$z_2\leftarrow5$。此時 $(z_3z_2z_1z_0)_{10}=0522$。</li>
+<li>$i=1$（乘 $y_1=9$）：$2+7\cdot9+0=65$，寫 5、進位 6；$5+8\cdot9+6=83$，寫 3、進位 8，$z_3\leftarrow8$。結果 $8352$。</li>
 </ul>
-<p>每一步的值最多是 $9^2+2\cdot9=99$，兩位數放得下。驗算：$87\cdot96=8352$。</p>
+<p>每一步的值最多是 $9+9^2+9=99=10^2-1$，兩位數放得下。驗算：$87\cdot96=8352$。共 $s^2=4$ 次字組乘法。</p>
 </div>
-<p>兩個 $k$ 字組的數相乘，共做 $k^2$ 次字組乘法。P-256 在 64 位元機器上是 $4^2=16$ 次；P-521 是 $9^2=81$ 次。</p>
-<details class="code-fold"><summary>Python 參考實作（選讀）：字組表示與 schoolbook 乘法（HAC 演算法 14.12）</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">to_words</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;把 x 拆成 k 個 w 位元字組，由低到高：x = sum(words[i] * 2^(w*i))。&quot;&quot;&quot;</span>
+<p>P-256 在 64 位元機器上是 $4^2=16$ 次字組乘法；P-521 是 $9^2=81$ 次。</p>
+<p>下面的程式中，<code>s</code> 即本文的 $s$（字組數），<code>w</code> 是字組大小。</p>
+<details class="code-fold"><summary>Python 參考實作（選讀）：字組表示與 schoolbook 乘法（HAC 演算法 14.12）</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">to_words</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;把 x 拆成 s 個 w 位元字組，由低到高：x = sum(words[i] * 2^(w*i))。&quot;&quot;&quot;</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="p">[(</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">mask</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[(</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">mask</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">s</span><span class="p">)]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">from_words</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
@@ -109,21 +127,44 @@ $$w_{i+j}+x_jy_i+c\ \le\ (b-1)^2+2(b-1)\ =\ b^2-1 .$$
 </section>
 
 <section id="square" data-nav="平方">
-<h2><span class="secno">6.4</span>平方：對稱讓工作量減半</h2>
-<p>當 $x=y$ 時，交叉項成對出現：$x_ix_j$ 與 $x_jx_i$ 相同。所以</p>
-$$x^2=\sum_{i}x_i^2\,b^{\,2i}+2\sum_{i&lt;j}x_ix_j\,b^{\,i+j}.$$
-<p>不同的乘積只有 $k$ 個平方加上 $k(k-1)/2$ 個交叉項，共 $k(k+1)/2$ 個，而不是 $k^2$ 個。$k=4$ 時是 10 對 16；$k=9$ 時是 45 對 81。乘以 2 只是左移一位，幾乎不花時間（但 $2x_ix_j$ 可能比兩個字組多一個位元，實作要多留一個進位位元，見 HAC 演算法 14.16）。</p>
-<p>加法、進位與記憶體存取並沒有減半，所以實際的節省少於一半。估算成本時常用的假設是一次平方 $S\approx0.8M$（$M$ 為一次乘法）。這只是估算用的經驗值，實際比例依實作而定；平方演算法見 HMV §2.2.3。第 4 章的點運算公式會分開數 $M$ 和 $S$，就是這個原因。</p>
+<h2><span class="secno">6.4</span>平方：對稱讓字組乘法減半</h2>
+<p>第 4、5 章的點運算公式把 $\mathbf S$ 和 $\mathbf M$ 分開計算，並假設 $\mathbf S\approx0.8\,\mathbf M$（<a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）。理由在這一節：當 $x=y$ 時，交叉項成對出現，$x_ix_j=x_jx_i$，所以</p>
+$$x^2=\sum_{i}x_i^2\,\beta^{\,2i}+2\sum_{i&lt;j}x_ix_j\,\beta^{\,i+j}.$$
+<p>不同的乘積只有 $s$ 個平方加上 $s(s-1)/2$ 個交叉項。</p>
+<div class="box algo" id="c6-alg-square"><div class="box-head"><span class="box-label">演算法 6.5</span><span class="box-title">多精度平方</span><span class="box-ref">HAC Alg. 14.16</span></div>
+<div class="io"><b>輸入</b>$x=(x_{s-1}\cdots x_0)_\beta$。</div>
+<div class="io"><b>輸出</b>$x^2=(z_{2s-1}\cdots z_0)_\beta$。</div>
+<ol class="steps">
+<li>對 $i=0,1,\dots,2s-1$：$z_i\leftarrow0$。</li>
+<li>對 $i=0,1,\dots,s-1$：
+  <ol>
+  <li>$(uv)_\beta\leftarrow z_{2i}+x_i\cdot x_i$，令 $z_{2i}\leftarrow v$，$c\leftarrow u$。</li>
+  <li>對 $j=i+1,\dots,s-1$：$(uv)_\beta\leftarrow z_{i+j}+2x_jx_i+c$，令 $z_{i+j}\leftarrow v$，$c\leftarrow u$。</li>
+  <li>$z_{i+s}\leftarrow u$。</li>
+  </ol></li>
+<li>回傳 $(z_{2s-1}\cdots z_0)_\beta$。</li>
+</ol>
+<p>字組乘法共 $s+s(s-1)/2=s(s+1)/2$ 次（乘 2 只是左移一位，不計），約為 schoolbook 的一半。注意第 2(b) 步的值可達 $(\beta-1)(2\beta+1)$，所以這裡的高位 $u$ 最大到 $2(\beta-1)$，比一個字組多一個位元，實作必須多留這個位元（HAC Note 14.17）。</p>
+</div>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>$s$</th><th>乘法 $s^2$</th><th>平方 $s(s+1)/2$</th></tr>
+<tr><td>4（P-256，$w=64$）</td><td class="num">16</td><td class="num">10</td></tr>
+<tr><td>8（P-256，$w=32$）</td><td class="num">64</td><td class="num">36</td></tr>
+<tr><td>9（P-521，$w=64$）</td><td class="num">81</td><td class="num">45</td></tr>
+</table></div>
+<p>字組乘法少了將近一半，但加法、進位與化簡（第 7–9 章）並沒有減半，所以整個 $\mathbb F_p$ 平方的節省少於一半。$\mathbf S\approx0.8\,\mathbf M$ 是估算用的經驗值，實際比例依實作而定（HMV §2.2.3）。</p>
 </section>
 
 <section id="karatsuba" data-nav="Karatsuba">
-<h2><span class="secno">6.5</span>Karatsuba：少一次乘法</h2>
-<div class="info-box purple"><span class="info-label">三個半長乘積取代四個</span>
-<p>把 $x,y$ 各切成高低兩半：$x=x_1B+x_0$，$y=y_1B+y_0$。直接展開要四個半長乘積；Karatsuba（1962）注意到</p>
-$$x_1y_0+x_0y_1=(x_1+x_0)(y_1+y_0)-x_1y_1-x_0y_0,$$
-<p>所以只需要三個半長乘積 $x_1y_1$、$x_0y_0$、$(x_1+x_0)(y_1+y_0)$，代價是多幾次加減法。遞迴下去，字組乘法的次數是 $O(k^{\log_2 3})\approx O(k^{1.585})$，而不是 $k^2$。若忽略 $x_1+x_0$ 可能多出一個位元的問題，理想的遞迴計數是 $k=4$ 時 9 對 16、$k=32$ 時 243 對 1024；實作還要處理這個多出的位元。</p>
-<p>在 ECC 的大小（$k$ 只有 4 到 9），多出來的加減法、進位與分支往往把省下的乘法吃掉，所以常見的實作直接用 schoolbook，或只做一層 Karatsuba。RSA 這種上千位元的數才明顯受益（HMV §2.2.2）。</p>
+<h2><span class="secno">6.5</span>Karatsuba：用加減法換掉一次乘法</h2>
+<p>Schoolbook 的 $s^2$ 能不能再少？當 $s$ 很大（例如 RSA 的數有幾十個字組）時，字組乘法的次數主導一切，值得用更多的加減法去換更少的乘法。Karatsuba 的方法就是這樣的交換。</p>
+<div class="box thm" id="c6-thm-karatsuba"><div class="box-head"><span class="box-label">定理 6.6</span><span class="box-title">Karatsuba 恆等式</span><span class="box-ref">HMV §2.2.2；HAC §14.8</span></div>
+<p>設 $s$ 是偶數，$B=\beta^{s/2}$，把 $x,y$ 各切成高低兩半：$x=x_1B+x_0$，$y=y_1B+y_0$，其中 $0\le x_0,x_1,y_0,y_1&lt;B$。則</p>
+$$x\,y=x_1y_1\,B^2+\bigl[(x_1+x_0)(y_1+y_0)-x_1y_1-x_0y_0\bigr]B+x_0y_0 .$$
+<p>所以一個 $s$ 字組的乘法只需要三個半長的乘積 $x_1y_1$、$x_0y_0$、$(x_1+x_0)(y_1+y_0)$，再加上幾次加減法，而不是直接展開的四個。</p>
 </div>
+<p>把同一個恆等式遞迴用在三個半長乘積上，直到剩一個字組。在理想化的計數下（假設 $s$ 是 2 的冪，並忽略 $x_1+x_0$、$y_1+y_0$ 可能比 $B$ 多出的一個進位位元），字組乘法的次數是 $3^{\log_2 s}=s^{\log_2 3}\approx s^{1.585}$，而不是 $s^2$：$s=4$ 時 9 對 16，$s=32$ 時 243 對 1024。實作還要處理那個多出來的位元。</p>
+<p>在 ECC 的大小（$s$ 只有 4 到 9），多出來的加減法、進位處理與分支，往往把省下的幾次字組乘法吃掉，所以常見的實作直接用 schoolbook，或只做一層 Karatsuba（HMV §2.2.2）。上千位元的 RSA 才明顯受益。</p>
 <details class="code-fold"><summary>Python 參考實作（選讀）：Karatsuba 乘法（遞迴到 32 位元以下改用直接相乘）</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">karatsuba</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;x, y 都小於 2^n。三次半長乘法取代四次。&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="p">:</span>
@@ -140,13 +181,13 @@ $$x_1y_0+x_0y_1=(x_1+x_0)(y_1+y_0)-x_1y_1-x_0y_0,$$
 
 <section id="lab" data-nav="逐格演示">
 <h2><span class="secno">6.6</span>互動：schoolbook 乘法逐格演示</h2>
-<p>選字組大小 $w$ 與字組數 $k$，按「隨機 x, y」產生兩個 $k$ 字組的數。格子的第 $i$ 列、第 $j$ 行是部分積 $x_j\cdot y_i$，它加到輸出的第 $i+j$ 個字組。播放時目前的格子以<span class="pill-cur">橙色</span>標出，下方的輸出列同步更新；每一列結束時，最後的進位寫入第 $i+k$ 個字組。「全部取最大值」讓 $x=y=b^k-1$，可以看到每一步都逼近 $b^2-1$ 的上界。</p>
+<p>選字組大小 $w$ 與字組數 $s$，按「隨機 x, y」產生兩個 $s$ 字組的數。格子的第 $i$ 列、第 $j$ 行是部分積 $x_j\cdot y_i$，它加到輸出的第 $i+j$ 個字組 $z_{i+j}$。播放時目前的格子以<span class="pill-cur">橙色</span>標出，下方的輸出列同步更新；每一列結束時，最後的進位寫入第 $i+s$ 個字組。「全部取最大值」讓 $x=y=\beta^s-1$，可以看到內積運算逼近 <a class="xref" href="06_multiprecision.html#c6-thm-inner">定理 6.4</a> 的上界 $\beta^2-1$。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">SCHOOLBOOK</div>
     <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
       <label>w <select id="w06w"><option value="8">8 位元</option><option value="16">16 位元</option><option value="64">64 位元</option></select></label>
-      <label>k <select id="w06k"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select></label>
+      <label>s <select id="w06k"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select></label>
       <button class="btn btn-ghost" id="w06rand" type="button">隨機 x, y</button>
       <button class="btn btn-ghost" id="w06max" type="button">全部取最大值</button>
     </div>
@@ -162,21 +203,26 @@ $$x_1y_0+x_0y_1=(x_1+x_0)(y_1+y_0)-x_1y_1-x_0y_0,$$
   </div>
   <div class="side-panel">
     <div class="info-card"><div class="ic-title">計數</div><div id="w06count"></div>
-      <div class="ic-note" style="margin-top:.4rem">每一格恰好一次字組乘法，總數是 k²；進位的傳遞只用加法。</div></div>
+      <div class="ic-note" style="margin-top:.4rem">每一格恰好一次字組乘法，總數是 s²；進位的傳遞只用加法。</div></div>
     <div class="info-card"><div class="ic-title">驗算</div><div id="w06check"></div></div>
   </div>
 </div>
 </section>
 
+<section id="next" data-nav="下一步">
+<h2><span class="secno">6.7</span>乘完之後：$2s$ 個字組要變回 $s$ 個</h2>
+<p>不管用 schoolbook、平方或 Karatsuba，兩個 $\mathbb F_p$ 元素的整數乘積都有至多 $2s$ 個字組，落在 $[0,p^2)$。要讓它回到 $\mathbb F_p$ 的代表元 $[0,p)$，還得算 $ab\bmod p$（<a class="xref" href="01_finite_field.html#def-mod">定義 1.1</a>）。照字面做就是一次多字組的長除法：每一步都要估出商的一個字組，比本章的乘法還慢。接下來三章處理這個化簡：第 7 章利用 $p$ 本身的特殊形狀，第 8、9 章處理沒有特殊形狀的模數。</p>
+</section>
+
 <section id="refs" data-nav="本章文獻">
 <h2>本章文獻</h2>
-<ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.2：Alg. 14.12, 14.16；Karatsuba 見 §14.8</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §2.2.2–2.2.3：Alg. 2.9, 2.10, 2.13；S ≈ 0.8M 的假設見 §3.3</span></li></ul>
+<ul class="refs"><li>A. J. Menezes, P. C. van Oorschot, S. A. Vanstone, <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener"><cite>Handbook of Applied Cryptography</cite></a>, CRC Press, 1997. <span class="where">— §14.2：Alg. 14.12, 14.16，Notes 14.15, 14.17；Karatsuba 見 §14.8</span></li><li>D. Hankerson, A. Menezes, S. Vanstone, <cite>Guide to Elliptic Curve Cryptography</cite>, Springer, 2004. <span class="where">— §2.2.2–2.2.3：Alg. 2.9, 2.10, 2.13；S ≈ 0.8M 的假設見 §3.3</span></li></ul>
 <p class="where">完整書目見 <a href="references.html">參考文獻</a>；全部記號見 <a href="notation.html">記號與術語</a>。</p>
 </section>
 <nav class="chapter-nav"><a class="prev" href="05_scalar.html"><div class="nav-dir">← 上一章</div><div class="nav-title">5. 純量乘法</div></a><a class="home" href="index.html"><div class="nav-dir">導讀</div><div class="nav-title">全部章節</div></a><a class="next" href="07_special.html"><div class="nav-dir">下一章 →</div><div class="nav-title">7. 特殊形式的模數</div></a></nav>
 <footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">6.1 一個暫存器裝不下的數</a></li><li><a href="#words" data-target="words">6.2 字組表示：以 2^w 為基底</a></li><li><a href="#schoolbook" data-target="schoolbook">6.3 Schoolbook 乘法：小學直式乘法</a></li><li><a href="#square" data-target="square">6.4 平方：對稱讓工作量減半</a></li><li><a href="#karatsuba" data-target="karatsuba">6.5 Karatsuba：少一次乘法</a></li><li><a href="#lab" data-target="lab">6.6 互動：schoolbook 乘法逐格演示</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">6.1 一個暫存器裝不下的數</a></li><li><a href="#words" data-target="words">6.2 字組與以  為基底的表示</a></li><li><a href="#schoolbook" data-target="schoolbook">6.3 Schoolbook 乘法</a></li><li><a href="#square" data-target="square">6.4 平方：對稱讓字組乘法減半</a></li><li><a href="#karatsuba" data-target="karatsuba">6.5 Karatsuba：用加減法換掉一次乘法</a></li><li><a href="#lab" data-target="lab">6.6 互動：schoolbook 乘法逐格演示</a></li><li><a href="#next" data-target="next">6.7 乘完之後：2s 個字組要變回 s 個</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
 </div>
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <script src="assets/ecc-core.js?v=20261005"></script>

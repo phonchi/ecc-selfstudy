@@ -59,7 +59,7 @@ HC.ready(() => {
     const J1 = jac(P, L1), J2 = jac(P, L2);
     const back = J => ECC.fromJacobian(J, p);
     const fmtJ = J => `(${J[0]} : ${J[1]} : ${J[2]})`;
-    $('w04repr').innerHTML = [['仿射 P', HC.pt(P)], ['寫法一（λ₁）', fmtJ(J1)], ['寫法二（λ₂）', fmtJ(J2)],
+    $('w04repr').innerHTML = [['仿射 P', HC.pt(P)], ['寫法一（θ₁）', fmtJ(J1)], ['寫法二（θ₂）', fmtJ(J2)],
       ['寫法一轉回仿射', HC.pt(back(J1))], ['寫法二轉回仿射', HC.pt(back(J2))]]
       .map(([k, v]) => `<div class="frow"><div class="fl">${k}</div><div class="fv mono">${v}</div></div>`).join('');
     const [X1, Y1, Z1] = J1, [X2, Y2, Z2] = J2;

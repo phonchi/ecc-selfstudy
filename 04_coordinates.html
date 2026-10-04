@@ -25,7 +25,7 @@
   <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
 </header>
 <div class="book">
-<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch on" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a><ul class="sb-secs"><li><a href="#why" data-target="why">4.1 動機</a></li><li><a href="#jacobian" data-target="jacobian">4.2 Jacobian</a></li><li><a href="#formulas" data-target="formulas">4.3 公式與成本</a></li><li><a href="#lab" data-target="lab">4.4 成本比較</a></li><li><a href="#repr" data-target="repr">4.5 同一點多種寫法</a></li><li><a href="#summary" data-target="summary">4.6 小結</a></li></ul></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
+<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch on" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a><ul class="sb-secs"><li><a href="#why" data-target="why">4.1 動機</a></li><li><a href="#jacobian" data-target="jacobian">4.2 Jacobian</a></li><li><a href="#formulas" data-target="formulas">4.3 倍點與加點</a></li><li><a href="#cost" data-target="cost">4.4 成本表</a></li><li><a href="#lab" data-target="lab">4.5 成本比較</a></li><li><a href="#repr" data-target="repr">4.6 同一點多種寫法</a></li><li><a href="#summary" data-target="summary">4.7 小結</a></li></ul></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
 <main class="content" id="top">
 <div class="ch-head">
   <div class="eyebrow">第 4 章 · Coordinates and Cost</div>
@@ -36,41 +36,71 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">4.1</span>每一次加點都要付一次反元素</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 2 章的加法公式裡，$\lambda$ 是一個分數，所以每一次加點或倍點都要算一次 $\mathbb F_p$ 的反元素。第 1 章說過，一次反元素大約等於 80 到 100 次乘法。一次 256 位元的純量乘法要做約 255 次倍點與 128 次加點，光是反元素就要將近四萬次乘法。</p>
-<p>解法很像小學的分數運算：<strong>先不要約分</strong>。把分母另外存起來，一路只做乘法；等整個純量乘法做完，最後才做一次除法。代價是每一步要多做幾次乘法，但省下的反元素多得多。</p>
+<p>第 3 章回答了「怎樣的曲線才安全」：基點的階 $n$ 是大質數，約 256 位元。接下來的問題是成本。第 2 章的加點與倍點公式（<a class="xref" href="02_group_law.html#c2-alg-add">演算法 2.5</a>）裡，斜率 $\lambda$ 是一個分數，所以<strong>每一次</strong>加點或倍點都要算一次 $\mathbb F_p$ 的反元素。第 1 章說過，一次反元素 $\mathbf I$ 大約等於 80 到 100 次乘法 $\mathbf M$（<a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）。一次 256 位元的純量乘法 $kP$（<a class="xref" href="01_finite_field.html#rem-notation">注意 1.5</a>）要做約 255 次倍點與 128 次加點（第 5 章），光是反元素就要將近四萬次乘法。</p>
+<p>解法很像分數運算：<strong>先不要約分</strong>。把分母另外存成第三個座標，一路只做乘法；整個純量乘法做完，最後才做一次除法。第 2 章為了描述無窮遠點已經用過這個想法（射影座標，<a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）；本章把它換成對倍點更省的版本，並逐項計算成本。</p>
 </div>
 </section>
 
 <section id="jacobian" data-nav="Jacobian">
 <h2><span class="secno">4.2</span>Jacobian 座標</h2>
-<p>用三個數 $(X:Y:Z)$ 表示一個點，約定</p>
-$$(X:Y:Z)\ \longmapsto\ \left(\frac{X}{Z^2},\ \frac{Y}{Z^3}\right),\qquad Z\ne0 .$$
-<p>同一個點有很多種寫法：對任意 $\lambda\ne0$，$(\lambda^2X:\lambda^3Y:\lambda Z)$ 代表同一點。這是一個<strong>加權射影空間</strong>（權重 2, 3, 1），和第 2 章的普通射影座標 $(X:Y:Z)\mapsto(X/Z,Y/Z)$ 不同；兩種都可以用，Jacobian 的倍點公式比較省。$Z=0$ 的那一類（例如 $(1:1:0)$）就是無窮遠點 $\mathcal O$。代進曲線方程，Jacobian 座標滿足</p>
-$$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
+<p>第 2 章的射影座標用 $(X:Y:Z)$ 代表仿射點 $(X/Z,\ Y/Z)$。把分母的次方改成 $Z^2$ 與 $Z^3$，倍點公式會少幾次乘法（見 4.4 節的表）。這就是 Jacobian 座標。</p>
+<div class="box defn" id="c4-def-jac"><div class="box-head"><span class="box-label">定義 4.1</span><span class="box-title">Jacobian 座標、加權射影座標</span><span class="box-ref">HMV §3.2.2；Washington §2.6.2</span></div>
+<p>在 $\mathbb F_p^3\setminus\{(0,0,0)\}$ 上定義等價關係</p>
+$$(X,Y,Z)\sim(\theta^2X,\ \theta^3Y,\ \theta Z),\qquad\theta\in\mathbb F_p^* ,$$
+<p>$(X,Y,Z)$ 的等價類記作 $(X:Y:Z)$，稱為 <strong>Jacobian 座標</strong>（權重為 2, 3, 1 的加權射影座標）。曲線 $E:y^2=x^3+ax+b$ 在這個座標下寫成</p>
+$$Y^2=X^3+aXZ^4+bZ^6 .$$
 <ul>
-<li><strong>判斷相等不能直接比座標。</strong>$(X_1:Y_1:Z_1)$ 與 $(X_2:Y_2:Z_2)$ 是同一點，當且僅當 $X_1Z_2^2=X_2Z_1^2$ 且 $Y_1Z_2^3=Y_2Z_1^3$（交叉相乘）。</li>
-<li><strong>進入很便宜</strong>：$(x,y)\mapsto(x:y:1)$。<strong>離開要一次反元素</strong>：算 $Z^{-1}$，再算 $x=XZ^{-2}$、$y=YZ^{-3}$。</li>
+<li>$Z\ne0$ 的類 $(X:Y:Z)$ 對應仿射點 $(X/Z^2,\ Y/Z^3)$；反過來，仿射點 $(x,y)$ 對應 $(x:y:1)$。</li>
+<li>$Z=0$ 時方程式變成 $Y^2=X^3$。若 $X=0$ 則 $Y=0$，那是被排除的 $(0,0,0)$；若 $X\ne0$，令 $\theta=Y/X$，就有 $X=\theta^2$、$Y=\theta^3$。所以 $Z=0$ 的解恰好組成<strong>一個</strong>類 $(\theta^2:\theta^3:0)=(1:1:0)$，它就是無窮遠點 $\mathcal O$。（普通射影座標中 $\mathcal O=(0:1:0)$，見 <a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>；兩種座標的等價關係不同，代表元也就不同。）</li>
+<li>負點：$-(X:Y:Z)=(X:-Y:Z)$。</li>
+</ul>
+</div>
+<p>同一個點有 $p-1$ 種寫法（每個 $\theta$ 一種），所以不能直接比較座標來判斷相等。</p>
+<div class="box thm" id="c4-thm-eq"><div class="box-head"><span class="box-label">定理 4.2</span><span class="box-title">Jacobian 座標的相等判斷</span></div>
+<p>$(X_1:Y_1:Z_1)=(X_2:Y_2:Z_2)$，若且唯若</p>
+$$X_1Z_2^2=X_2Z_1^2\quad\text{且}\quad Y_1Z_2^3=Y_2Z_1^3 .$$
+<p>這個判斷不用除法，而且不必把 $Z=0$ 另外處理：兩個都是 $\mathcal O$ 時兩式都是 $0=0$；若 $Z_1=0\ne Z_2$，第一式變成 $X_1Z_2^2=0$，但 $\mathcal O$ 的 $X_1=\theta^2\ne0$，所以判為不相等。兩個 $Z$ 都不為 0 時，兩式除以 $Z_1^2Z_2^2$ 與 $Z_1^3Z_2^3$ 就是仿射座標相等。</p>
+</div>
+<ul>
+<li><strong>進入很便宜</strong>：$(x,y)\mapsto(x:y:1)$，不花任何乘法。</li>
+<li><strong>離開要一次反元素</strong>：算 $Z^{-1}$（$1\mathbf I$），再算 $Z^{-2}$（$1\mathbf S$）、$Z^{-3}$（$1\mathbf M$）、$x=XZ^{-2}$ 與 $y=YZ^{-3}$（$2\mathbf M$），共 $1\mathbf I+3\mathbf M+1\mathbf S$。</li>
 </ul>
 </section>
 
-<section id="formulas" data-nav="公式與成本">
-<h2><span class="secno">4.3</span>公式與成本</h2>
-<p>把仿射公式中的 $x_i=X_i/Z_i^2$、$y_i=Y_i/Z_i^3$ 代進去、通分，分母全部收進新的 $Z_3$，就得到只有乘法的公式。下表是 Explicit-Formulas Database（EFD）中常用的幾組，$\mathbf M$ 是乘法、$\mathbf S$ 是平方、$\mathbf I$ 是反元素，乘小常數與加減不計。</p>
-<div class="tbl-wrap"><table class="cmp-table">
-<tr><th>運算</th><th>仿射座標</th><th>Jacobian</th><th>EFD 公式名</th></tr>
-<tr><td>倍點，一般的 $a$</td><td class="num">1I + 2M + 2S</td><td class="num">1M + 8S + 一次乘 $a$</td><td class="num">dbl-2007-bl</td></tr>
-<tr><td>倍點，$a=-3$</td><td class="num">1I + 2M + 2S</td><td class="num">3M + 5S</td><td class="num">dbl-2001-b</td></tr>
-<tr><td>加點（兩點都是 Jacobian）</td><td class="num">1I + 2M + 1S</td><td class="num">11M + 5S</td><td class="num">add-2007-bl</td></tr>
-<tr><td>混合加點（另一點 $Z=1$）</td><td class="num">—</td><td class="num">7M + 4S</td><td class="num">madd-2007-bl</td></tr>
-<tr><td>轉回仿射</td><td class="num">—</td><td class="num">1I + 3M + 1S</td><td class="num">—</td></tr>
-</table></div>
-<p>兩個常見的技巧：</p>
-<ul>
-<li><strong>混合加法</strong>（mixed addition）：double-and-add 裡加上的永遠是同一個 $P$，它可以保持仿射形式（$Z=1$），省下好幾次乘法。</li>
-<li><strong>$a=-3$</strong>：倍點要算 $3X^2+aZ^4$。當 $a=-3$ 時，它等於 $3(X-Z^2)(X+Z^2)$，不必乘 $a$，也不必算 $Z^4$；倍點從 1M + 8S（再乘一次 $a$）變成 3M + 5S。這就是 NIST 曲線都取 $a=-3$ 的原因。</li>
-</ul>
-<p>Hankerson–Menezes–Vanstone 的表 3.3 列出的數字略有不同（$a=-3$ 時 Jacobian 倍點 4M + 4S、混合加點 8M + 3S），因為公式在乘法與平方之間有不同取捨，總量差不多。</p>
-<details class="code-fold"><summary>Python 參考實作（選讀）：Jacobian 座標的倍點與混合加點（為了清楚，不追求最少的乘法次數）</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="c1"># Jacobian 座標：(X : Y : Z) 代表仿射點 (X/Z^2, Y/Z^3)；Z = 0 代表 O。</span>
+<section id="formulas" data-nav="倍點與加點">
+<h2><span class="secno">4.3</span>只用乘法的倍點與加點</h2>
+<p>把第 2 章公式中的 $x_i=X_i/Z_i^2$、$y_i=Y_i/Z_i^3$ 代進去、通分，分母全部收進新的 $Z_3$，就得到只有乘法的公式。下面兩個演算法是 HMV 針對 $a=-3$ 的曲線（P-256 與 P-521 都是）寫出的版本。倍點的中間量 $A,B,C,D$ 沿用 HMV 註解中的名稱；加點的部分中間量改了名，避免與曲線 $E$、基點 $G$、成本 $\mathbf I$ 混淆。</p>
+<div class="box algo" id="c4-alg-dbl"><div class="box-head"><span class="box-label">演算法 4.3</span><span class="box-title">Jacobian 倍點（a = −3）</span><span class="box-ref">HMV Alg. 3.21</span></div>
+<div class="io"><b>輸入</b>$P=(X_1:Y_1:Z_1)$，在 $E:y^2=x^3-3x+b$ 上。</div>
+<div class="io"><b>輸出</b>$2P=(X_3:Y_3:Z_3)$。</div>
+<ol class="steps">
+<li>若 $P=\mathcal O$（$Z_1=0$），回傳 $\mathcal O$。</li>
+<li>$A\leftarrow3(X_1-Z_1^2)(X_1+Z_1^2)$。（這就是 $3X_1^2+aZ_1^4$，因為 $a=-3$。）</li>
+<li>$B\leftarrow2Y_1$，$Z_3\leftarrow B\cdot Z_1$。</li>
+<li>$C\leftarrow B^2$，$D\leftarrow C\cdot X_1$。</li>
+<li>$X_3\leftarrow A^2-2D$。</li>
+<li>$Y_3\leftarrow(D-X_3)\cdot A-C^2/2$。</li>
+<li>回傳 $(X_3:Y_3:Z_3)$。</li>
+</ol>
+<p>它對應仿射的切線斜率 $\lambda=A/(2Y_1Z_1)=A/Z_3$。成本：平方 $Z_1^2$、$B^2$、$A^2$、$C^2$，乘法 $(X_1-Z_1^2)(X_1+Z_1^2)$、$BZ_1$、$CX_1$、$(D-X_3)A$，共 $4\mathbf M+4\mathbf S$。「$/2$」是乘上 $2^{-1}\bmod p$，只要一次移位（必要時先加 $p$），不是一次反元素。$Y_1=0$ 時 $Z_3=0$，結果自動是 $\mathcal O$。</p>
+</div>
+<div class="box algo" id="c4-alg-madd"><div class="box-head"><span class="box-label">演算法 4.4</span><span class="box-title">仿射–Jacobian 混合加點（a = −3）</span><span class="box-ref">HMV Alg. 3.22</span></div>
+<div class="io"><b>輸入</b>Jacobian 點 $P=(X_1:Y_1:Z_1)$，仿射點 $Q=(x_2,y_2)$，在 $E:y^2=x^3-3x+b$ 上。</div>
+<div class="io"><b>輸出</b>$P+Q=(X_3:Y_3:Z_3)$。</div>
+<ol class="steps">
+<li>若 $Q=\mathcal O$，回傳 $P$；若 $P=\mathcal O$，回傳 $(x_2:y_2:1)$。</li>
+<li>$A\leftarrow Z_1^2$，$B\leftarrow Z_1\cdot A$，$C\leftarrow x_2\cdot A$，$D\leftarrow y_2\cdot B$。（把 $Q$ 寫成與 $P$ 同一個分母。）</li>
+<li>$H\leftarrow C-X_1$，$r\leftarrow D-Y_1$。</li>
+<li>若 $H=0$：$r=0$ 表示 $P=Q$，改用 <a class="xref" href="04_coordinates.html#c4-alg-dbl">演算法 4.3</a> 計算 $2(x_2:y_2:1)$ 並回傳；否則 $P=-Q$，回傳 $\mathcal O$。</li>
+<li>$Z_3\leftarrow Z_1\cdot H$。</li>
+<li>$H_2\leftarrow H^2$，$H_3\leftarrow H_2\cdot H$，$V\leftarrow X_1\cdot H_2$。</li>
+<li>$X_3\leftarrow r^2-(H_3+2V)$，$Y_3\leftarrow r\cdot(V-X_3)-Y_1\cdot H_3$。</li>
+<li>回傳 $(X_3:Y_3:Z_3)$。</li>
+</ol>
+<p>正確性的想法：記 $P$ 的仿射座標為 $(x_1,y_1)$，則 $H=Z_1^2(x_2-x_1)$、$r=Z_1^3(y_2-y_1)$，所以割線斜率 $\lambda=r/(Z_1H)=r/Z_3$，代回第 2 章的公式即得。成本：平方 $Z_1^2$、$H^2$、$r^2$，乘法 $Z_1A$、$x_2A$、$y_2B$、$Z_1H$、$H_2H$、$X_1H_2$、$r(V-X_3)$、$Y_1H_3$，共 $8\mathbf M+3\mathbf S$。（HMV 把 $H,r,H_2,H_3,V$ 依序記為 $E,F,G,H,I$。）</p>
+</div>
+<p>本站在 $E_B$（$\mathbb F_{97}$ 上 $a=-3$ 的玩具曲線）上，對所有點與多種 $\theta$ 檢查過兩個演算法的結果轉回仿射後與第 2 章的公式一致。下方收合的參考程式為了清楚，倍點用的是一般 $a$ 的公式，不是 HMV Alg. 3.21 的逐字版本。</p>
+<details class="code-fold"><summary>Python 參考實作（選讀）：Jacobian 座標的倍點（一般的 a）與混合加點（為了清楚，不追求最少的乘法次數）</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="c1"># Jacobian 座標：(X : Y : Z) 代表仿射點 (X/Z^2, Y/Z^3)；Z = 0 代表 O。</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_jacobian</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">P</span> <span class="ow">is</span> <span class="n">O</span> <span class="k">else</span> <span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 
@@ -130,9 +160,29 @@ $$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
 </code></pre></div></details>
 </section>
 
+<section id="cost" data-nav="成本表">
+<h2><span class="secno">4.4</span>成本表與兩個技巧</h2>
+<p>同樣的運算可以有許多種代數上等價的寫法，在乘法與平方之間做不同的取捨。下表左側是 Explicit-Formulas Database（EFD）中常用的幾組，右側是 HMV 表 3.3 的數字（只列 $a=-3$）。乘小常數與加減不計。</p>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>運算</th><th>仿射座標</th><th>Jacobian（EFD）</th><th>EFD 公式名</th><th>HMV 表 3.3</th></tr>
+<tr><td>倍點，一般的 $a$</td><td class="num">1I + 2M + 2S</td><td class="num">1M + 8S + 一次乘 $a$</td><td class="num">dbl-2007-bl</td><td class="num">—</td></tr>
+<tr><td>倍點，$a=-3$</td><td class="num">1I + 2M + 2S</td><td class="num">3M + 5S</td><td class="num">dbl-2001-b</td><td class="num">4M + 4S</td></tr>
+<tr><td>加點（兩點都是 Jacobian）</td><td class="num">1I + 2M + 1S</td><td class="num">11M + 5S</td><td class="num">add-2007-bl</td><td class="num">12M + 4S</td></tr>
+<tr><td>混合加點（另一點 $Z=1$）</td><td class="num">—</td><td class="num">7M + 4S</td><td class="num">madd-2007-bl</td><td class="num">8M + 3S</td></tr>
+<tr><td>轉回仿射</td><td class="num">—</td><td class="num">1I + 3M + 1S</td><td class="num">—</td><td class="num">1I + 3M + 1S</td></tr>
+</table></div>
+<p>作為對照，HMV 表 3.3 中普通射影座標（<a class="xref" href="02_group_law.html#c2-def-proj">定義 2.2</a>）的倍點是 $7\mathbf M+3\mathbf S$、加點 $12\mathbf M+2\mathbf S$；Jacobian 座標的倍點明顯較省，而純量乘法中倍點佔了大多數（第 5 章），這就是本站選 Jacobian 的原因。EFD 與 HMV 的數字略有不同，是因為公式在乘法與平方之間的取捨不同，總量差不多。</p>
+<p>兩個常見的技巧：</p>
+<ul>
+<li><strong>混合加點</strong>（mixed addition）：第 5 章的演算法裡，加上的永遠是同一個已知點 $P$，它可以一直保持仿射形式（$Z=1$）。<a class="xref" href="04_coordinates.html#c4-alg-madd">演算法 4.4</a> 中所有乘 $Z_2$ 的步驟因此消失，比兩點都是 Jacobian 的加點省約 $4\mathbf M+1\mathbf S$。</li>
+<li><strong>$a=-3$</strong>：倍點的分子是 $3X^2+aZ^4$。一般的 $a$ 要先算 $X^2$ 與 $Z^4=(Z^2)^2$ 兩次平方，再乘一次 $a$；dbl-2007-bl 的總成本是 $1\mathbf M+8\mathbf S+$（一次乘 $a$）。當 $a=-3$ 時，$3X^2-3Z^4=3(X-Z^2)(X+Z^2)$，用一次乘法取代這兩次平方與乘 $a$；連帶地，原本借用 $X^2$ 來省乘法的另一步也改成直接相乘，最後得到 dbl-2001-b 的 $3\mathbf M+5\mathbf S$（以 $\mathbf S=0.8\mathbf M$ 估算，約 $7\mathbf M$ 對 $7.4\mathbf M$ 再加乘 $a$）。HMV Alg. 3.21 用同一個恆等式，取捨不同，得到 $4\mathbf M+4\mathbf S$。這就是 NIST 曲線都取 $a=-3$ 的原因。</li>
+</ul>
+</section>
+
 <section id="lab" data-nav="成本比較">
-<h2><span class="secno">4.4</span>互動：反元素到底多貴才划算</h2>
-<p>假設 double-and-add 處理一個 $\ell$ 位元的 $k$：$\ell-1$ 次倍點，平均 $\ell/2$ 次加點（$a=-3$ 的曲線）。調整 $\mathbf I/\mathbf M$ 與 $\mathbf S/\mathbf M$，看三種做法的總成本（以 $\mathbf M$ 計）。</p>
+<h2><span class="secno">4.5</span>互動：反元素到底多貴才划算</h2>
+<p><strong>要觀察什麼：</strong>把 $\mathbf I/\mathbf M$ 拉到很小時，仿射座標才可能比較快；分界點大約只有個位數，而實際的 $\mathbf I/\mathbf M$ 遠大於它。所以除非平台上的反元素異常便宜，Jacobian 座標一定划算。</p>
+<p>設純量 $k$ 有 $\ell$ 位元。第 5 章的 double-and-add 做 $\ell-1$ 次倍點，平均約 $\ell/2$ 次加點；下面以 $a=-3$ 的 EFD 數字計算。調整 $\mathbf I/\mathbf M$ 與 $\mathbf S/\mathbf M$，看三種做法的總成本（以 $\mathbf M$ 計）。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">COST OF ONE kP</div>
@@ -151,13 +201,14 @@ $$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
 </section>
 
 <section id="repr" data-nav="同一點多種寫法">
-<h2><span class="secno">4.5</span>互動：同一個點，很多種寫法</h2>
-<p>在 $E: y^2=x^3-3x+6$（$\mathbb F_{97}$）上取一個點 $P$，用不同的 $\lambda$ 寫成 Jacobian 座標 $(\lambda^2x:\lambda^3y:\lambda)$。三個座標看起來毫無關係，但轉回仿射都是同一點；右邊用交叉相乘確認兩種寫法相等。</p>
+<h2><span class="secno">4.6</span>互動：同一個點，很多種寫法</h2>
+<p><strong>要觀察什麼：</strong>改變 $\theta_1,\theta_2$ 時，左邊三個座標看起來毫無關係，但轉回仿射永遠是同一點；右邊的交叉相乘（<a class="xref" href="04_coordinates.html#c4-thm-eq">定理 4.2</a>）兩兩相等，而且整個檢查沒有用到除法。</p>
+<p>在 $E_B: y^2=x^3-3x+6$（$\mathbb F_{97}$）上取一個點 $P=(x,y)$，用兩個不同的 $\theta$ 寫成 Jacobian 座標 $(\theta^2x:\theta^3y:\theta)$。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">ONE POINT, MANY COORDINATES</div>
-    <div class="slider-row"><span class="sl-label">λ₁</span><input type="range" id="w04l1" min="1" max="96" step="1" value="1"><span class="sl-val" id="w04l1v">1</span></div>
-    <div class="slider-row"><span class="sl-label">λ₂</span><input type="range" id="w04l2" min="1" max="96" step="1" value="5"><span class="sl-val" id="w04l2v">5</span></div>
+    <div class="slider-row"><span class="sl-label">θ₁</span><input type="range" id="w04l1" min="1" max="96" step="1" value="1"><span class="sl-val" id="w04l1v">1</span></div>
+    <div class="slider-row"><span class="sl-label">θ₂</span><input type="range" id="w04l2" min="1" max="96" step="1" value="5"><span class="sl-val" id="w04l2v">5</span></div>
     <div class="controls-bar"><button class="btn btn-ghost" id="w04next" type="button">換一個點 P</button></div>
     <div class="stage pad" id="w04repr"></div>
   </div>
@@ -168,8 +219,8 @@ $$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
 </section>
 
 <section id="summary" data-nav="小結">
-<h2><span class="secno">4.6</span>小結：成本鏈往下走一層</h2>
-<p>換成 Jacobian 座標之後，一次 256 位元的純量乘法大約只要三千多次 $\mathbb F_p$ 乘法，再加上最後一次反元素。只要反元素比大約 5 次乘法還貴（實際上一定是），Jacobian（加權射影）座標就划算。於是整個 ECC 的速度，幾乎完全取決於<strong>一次 $\mathbb F_p$ 乘法有多快</strong>：這就是第 6 到第 9 章的主題。第 5 章先把純量乘法本身的排程講清楚。</p>
+<h2><span class="secno">4.7</span>小結：成本鏈往下走一層</h2>
+<p>換成 Jacobian 座標之後，每次倍點約 $7\mathbf M$、每次混合加點約 $10\mathbf M$（以 $\mathbf S=0.8\mathbf M$ 估算），整個純量乘法（下一章定義）只在最後付一次反元素。只要反元素比大約 5 次乘法還貴（實際上一定是），Jacobian 座標就划算。剩下兩個問題：一次 $kP$ 到底要做幾次倍點、幾次加點，順序怎麼排才不洩漏 $k$？這是第 5 章的主題。之後整個 ECC 的速度，就幾乎完全取決於<strong>一次 $\mathbb F_p$ 乘法有多快</strong>，那是第 6 到第 9 章的主題。</p>
 </section>
 
 <section id="refs" data-nav="本章文獻">
@@ -180,7 +231,7 @@ $$Y^2 = X^3 + aXZ^4 + bZ^6 .$$
 <nav class="chapter-nav"><a class="prev" href="03_ecdlp.html"><div class="nav-dir">← 上一章</div><div class="nav-title">3. 群結構與 ECDLP</div></a><a class="home" href="index.html"><div class="nav-dir">導讀</div><div class="nav-title">全部章節</div></a><a class="next" href="05_scalar.html"><div class="nav-dir">下一章 →</div><div class="nav-title">5. 純量乘法</div></a></nav>
 <footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">4.1 每一次加點都要付一次反元素</a></li><li><a href="#jacobian" data-target="jacobian">4.2 Jacobian 座標</a></li><li><a href="#formulas" data-target="formulas">4.3 公式與成本</a></li><li><a href="#lab" data-target="lab">4.4 互動：反元素到底多貴才划算</a></li><li><a href="#repr" data-target="repr">4.5 互動：同一個點，很多種寫法</a></li><li><a href="#summary" data-target="summary">4.6 小結：成本鏈往下走一層</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">4.1 每一次加點都要付一次反元素</a></li><li><a href="#jacobian" data-target="jacobian">4.2 Jacobian 座標</a></li><li><a href="#formulas" data-target="formulas">4.3 只用乘法的倍點與加點</a></li><li><a href="#cost" data-target="cost">4.4 成本表與兩個技巧</a></li><li><a href="#lab" data-target="lab">4.5 互動：反元素到底多貴才划算</a></li><li><a href="#repr" data-target="repr">4.6 互動：同一個點，很多種寫法</a></li><li><a href="#summary" data-target="summary">4.7 小結：成本鏈往下走一層</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
 </div>
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <script src="assets/ecc-core.js?v=20261005"></script>

@@ -25,7 +25,7 @@
   <button class="theme-toggle" id="themeToggle" type="button">☾ 深色</button>
 </header>
 <div class="book">
-<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch on" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a><ul class="sb-secs"><li><a href="#why" data-target="why">9.1 動機</a></li><li><a href="#domain" data-target="domain">9.2 R 的世界</a></li><li><a href="#redc" data-target="redc">9.3 REDC</a></li><li><a href="#lab" data-target="lab">9.4 逐輪演示</a></li><li><a href="#flow" data-target="flow">9.5 完整流程</a></li><li><a href="#cost" data-target="cost">9.6 取捨</a></li></ul></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
+<aside class="sidebar" id="sidebar" aria-label="章節導覽"><a class="sb-site" href="index.html"><span class="sb-mark">∞</span>橢圓曲線密碼：從曲線到模乘法</a><a class="sb-home" href="index.html">導讀</a><div class="sb-part">序章</div><ul><li><a class="sb-ch" href="00_why_ecc.html"><span class="sb-num">0</span>為什麼是橢圓曲線</a></li></ul><div class="sb-part">第一部　數學基礎</div><ul><li><a class="sb-ch" href="01_finite_field.html"><span class="sb-num">1</span>群、體與 𝔽ₚ</a></li><li><a class="sb-ch" href="02_group_law.html"><span class="sb-num">2</span>曲線與群律</a></li><li><a class="sb-ch" href="03_ecdlp.html"><span class="sb-num">3</span>群結構與 ECDLP</a></li></ul><div class="sb-part">第二部　從曲線到運算成本</div><ul><li><a class="sb-ch" href="04_coordinates.html"><span class="sb-num">4</span>座標與運算成本</a></li><li><a class="sb-ch" href="05_scalar.html"><span class="sb-num">5</span>純量乘法</a></li></ul><div class="sb-part">第三部　模乘法</div><ul><li><a class="sb-ch" href="06_multiprecision.html"><span class="sb-num">6</span>大整數乘法</a></li><li><a class="sb-ch" href="07_special.html"><span class="sb-num">7</span>特殊形式的模數</a></li><li><a class="sb-ch" href="08_barrett.html"><span class="sb-num">8</span>Barrett 化簡</a></li><li><a class="sb-ch on" href="09_montgomery.html"><span class="sb-num">9</span>Montgomery 乘法</a><ul class="sb-secs"><li><a href="#why" data-target="why">9.1 動機</a></li><li><a href="#domain" data-target="domain">9.2 定義</a></li><li><a href="#redc" data-target="redc">9.3 REDC</a></li><li><a href="#montmul" data-target="montmul">9.4 Montgomery 乘法</a></li><li><a href="#lab" data-target="lab">9.5 逐輪演示</a></li><li><a href="#flow" data-target="flow">9.6 完整流程</a></li><li><a href="#cost" data-target="cost">9.7 取捨</a></li></ul></li></ul><div class="sb-part">總整</div><ul><li><a class="sb-ch" href="10_synthesis.html"><span class="sb-num">10</span>總整：何時用哪一種</a></li></ul><div class="sb-part">附錄</div><ul><li><a class="sb-ch" href="notation.html">記號與術語</a></li><li><a class="sb-ch" href="references.html">參考文獻</a></li></ul></aside>
 <main class="content" id="top">
 <div class="ch-head">
   <div class="eyebrow">第 9 章 · Montgomery Multiplication</div>
@@ -36,105 +36,164 @@
 <section id="why" data-nav="動機">
 <h2><span class="secno">9.1</span>反過來想：消掉低位，而不是估計高位</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>Barrett 化簡必須<em>估計商</em>：從 $x$ 的高位猜出要減掉幾個 $m$。Montgomery（1985）換了一個方向：不去碰高位，而是<strong>加上 $m$ 的適當倍數，讓低位全部變成 0，再整段右移</strong>。加上 $m$ 的倍數不改變模 $m$ 的同餘類；右移則等於除以 $R=b^k$，在二進位電腦上不用任何計算。</p>
-<p>代價是答案多了一個因子：得到的是 $xR^{-1}\bmod m$，而不是 $x\bmod m$。解法是換一套表示法，讓這個因子自動抵銷。只要整個純量乘法都在這套表示法裡做，進出各換一次的成本，由中間幾千次乘法分攤。</p>
+<p>第 8 章的 Barrett 化簡適用於任何模數，但它必須<em>估計商</em>：從 $x$ 的高位猜出要減掉幾個 $m$，猜得不準就事後修正 0 到 2 次。Montgomery（1985）換了一個方向：不碰高位，而是<strong>加上 $m$ 的適當倍數，讓低位字組全部變成 0，再整段右移</strong>。加上 $m$ 的倍數不改變模 $m$ 的同餘類；右移 $s$ 個字組等於除以 $\beta^s$，在電腦上不用任何計算。每一步該加多少是確定的，沒有猜測。</p>
+<p>代價是答案多了一個因子：得到的是 $x\beta^{-s}\bmod m$，而不是 $x\bmod m$。解法是換一套表示法，讓這個因子在每次乘法中自動抵銷。只要整個純量乘法都在這套表示法裡做，進出各換一次的成本，由中間幾千次乘法分攤。</p>
 </div>
-<p>這個方法有兩個前提：$\gcd(m,R)=1$（否則 $R^{-1}$ 不存在），以及輸入 $T&lt;mR$。$R$ 取 2 的冪時，第一個條件就是「$m$ 為奇數」；密碼學用的質數模數當然符合。</p>
-<div class="info-box red"><span class="info-label">三個同名的東西</span>
-<p>密碼學裡有三個都叫 Montgomery 的概念，它們是不同的東西：</p>
+<div class="box rem" id="c9-rem-names"><div class="box-head"><span class="box-label">注意 9.1</span><span class="box-title">三個都叫 Montgomery 的東西</span></div>
+<p>密碼學裡有三個以 Montgomery 命名的概念，它們是不同的東西：</p>
 <ul>
-<li><strong>Montgomery 乘法／REDC</strong>（本章）：一種模乘的化簡方法，用在任何奇數模數上。</li>
+<li><strong>Montgomery 乘法／REDC</strong>（本章 §9.2 定義）：一種模乘的化簡方法，用在任何與 $\beta$ 互質的模數上。</li>
 <li><strong>Montgomery 階梯</strong>（Montgomery ladder，第 5 章）：一種純量乘法的排程，每一位都做一次加點和一次倍點。</li>
-<li><strong>Montgomery 曲線</strong>：形如 $By^2=x^3+Ax^2+x$ 的曲線（例如 Curve25519）。</li>
+<li><strong>Montgomery 曲線</strong>：一種特殊形式的曲線，例如第 7 章提到的 Curve25519：$v^2=u^3+486662u^2+u$。</li>
 </ul>
-<p>它們可以一起用，也可以分開用。後兩者關係最近：Montgomery 曲線上的「差分加法」正好配合階梯，只需要 $x$ 座標。</p>
+<p>它們可以一起用，也可以分開用。後兩者關係最近：Montgomery 曲線上的「差分加法」正好配合階梯，只需要 $u$ 座標。</p>
 </div>
 </section>
 
-<section id="domain" data-nav="R 的世界">
-<h2><span class="secno">9.2</span>Montgomery 表示：住在「乘上 $R$」的世界</h2>
-<p>取 $R=b^k&gt;m$（$m$ 有 $k$ 個字組）。對 $x\in\mathbb Z_m$，定義它的 <strong>Montgomery 表示</strong></p>
-$$\tilde x = xR \bmod m .$$
-<p>再定義 $\mathrm{REDC}(T)=TR^{-1}\bmod m$（下一節說明怎麼不用除法算它）。那麼</p>
-$$\mathrm{REDC}(\tilde x\,\tilde y) = (xR)(yR)R^{-1} = (xy)R \equiv \widetilde{xy} \pmod m .$$
-<p>也就是說，<strong>在 $\tilde{\ }$ 的世界裡，「相乘再 REDC」就是乘法</strong>。加法和減法本來就相容：$\tilde x+\tilde y=\widetilde{x+y}$。所以整段計算可以全程留在這個世界裡：</p>
+<section id="domain" data-nav="定義">
+<h2><span class="secno">9.2</span>REDC 與 Montgomery 表示</h2>
+<p>先把「消掉低位再右移」算出來的東西定義清楚，再看怎麼利用它。以下沿用第 6 章的基底 $\beta=2^w$ 與字組數 $s$（<a class="xref" href="06_multiprecision.html#c6-def-radix">定義 6.1</a>）。</p>
+<div class="box defn" id="c9-def-redc"><div class="box-head"><span class="box-label">定義 9.2</span><span class="box-title">Montgomery 化簡、REDC</span><span class="box-ref">HAC §14.3.2</span></div>
+<p>設模數 $m$ 恰有 $s$ 個字組，且 $\gcd(m,\beta)=1$（$\beta$ 是 2 的冪時，就是 $m$ 為奇數）。令 $R=\beta^s$，則 $R&gt;m$ 且 $\gcd(m,R)=1$，所以 $R$ 在 $\mathbb Z/m\mathbb Z$ 中有反元素 $R^{-1}$（<a class="xref" href="01_finite_field.html#thm-zn-field">定理 1.10</a>）。對整數 $0\le T&lt;mR$，定義</p>
+$$\mathrm{REDC}(T)=TR^{-1}\bmod m ,$$
+<p>稱為 $T$ 對 $R$ 的 <strong>Montgomery 化簡</strong>（Montgomery reduction）。它是 $[0,m)$ 中的一個<em>數</em>。</p>
+</div>
+<div class="box defn" id="c9-def-mont"><div class="box-head"><span class="box-label">定義 9.3</span><span class="box-title">Montgomery 表示</span><span class="box-ref">HAC §14.3.2</span></div>
+<p>在 <a class="xref" href="09_montgomery.html#c9-def-redc">定義 9.2</a> 的條件下，對 $x\in[0,m)$，稱 $\tilde x=xR\bmod m$ 為 $x$ 的 <strong>Montgomery 表示</strong>。因為 $R$ 模 $m$ 可逆，$x\mapsto\tilde x$ 是 $[0,m)$ 上的一一對應。</p>
+</div>
+<p>這套表示法的用處在於乘法。對 $x,y\in[0,m)$，乘積 $\tilde x\tilde y&lt;m^2&lt;mR$ 符合 REDC 的輸入條件，而且</p>
+$$\tilde x\,\tilde y\,R^{-1}\equiv(xR)(yR)R^{-1}=xy\,R\pmod m .$$
+<p>左右兩邊同餘；把左邊取 $\bmod m$ 就得到兩個 $[0,m)$ 中的數之間的<strong>等式</strong>：</p>
+$$\mathrm{REDC}(\tilde x\,\tilde y)=(xy)R\bmod m=\tilde z,\qquad z=xy\bmod m .$$
+<p>也就是說，<strong>在 Montgomery 表示裡，「相乘再 REDC」就是乘法</strong>。加減法本來就相容：若 $z'=(x+y)\bmod m$，則 $(\tilde x+\tilde y)\bmod m=\tilde z'$。所以整段計算可以全程留在這套表示法裡：</p>
 <div class="tbl-wrap"><table class="cmp-table">
 <tr><th>步驟</th><th>計算</th><th>次數</th></tr>
-<tr><td>進入</td><td>$\tilde x=\mathrm{REDC}(x\cdot (R^2\bmod m))$</td><td>每個輸入一次</td></tr>
-<tr><td>運算</td><td>$\widetilde{xy}=\mathrm{REDC}(\tilde x\tilde y)$，加減照常</td><td>幾千次</td></tr>
+<tr><td>進入</td><td>$\tilde x=\mathrm{REDC}\bigl(x\cdot(R^2\bmod m)\bigr)$</td><td>每個輸入一次</td></tr>
+<tr><td>運算</td><td>$\tilde z=\mathrm{REDC}(\tilde x\tilde y)$（$z=xy\bmod m$），加減照常</td><td>幾千次</td></tr>
 <tr><td>離開</td><td>$x=\mathrm{REDC}(\tilde x)$</td><td>每個輸出一次</td></tr>
 </table></div>
-<p>$R^2\bmod m$ 只跟模數有關，事先算好一次即可。</p>
+<p>三種用法的輸入都小於 $m^2&lt;mR$。$R^2\bmod m$ 只跟模數有關，事先算好一次即可。剩下的問題是：怎麼不用除法算出 $\mathrm{REDC}(T)$？</p>
 </section>
 
 <section id="redc" data-nav="REDC">
-<h2><span class="secno">9.3</span>REDC：一次消掉一個字組</h2>
-<p>要算 $TR^{-1}\bmod m$，就要把 $T$ 加上 $m$ 的某個倍數，讓結果被 $R=b^k$ 整除。一次處理一個字組：第 $i$ 輪看目前的數的第 $i$ 個字組 $a_i$（更低的字組前幾輪已經消成 0），想找 $u_i$ 使</p>
-$$a_i + u_i m \equiv 0 \pmod b .$$
-<p>解是 $u_i = a_i\, m' \bmod b$，其中 $m' = -m^{-1}\bmod b$ 也是預先算好的常數。注意 $u_i$ 只需要<strong>模 $b$ 的乘法</strong>，也就是一個字組乘一個字組。把 $u_i m b^i$ 加上去，第 $i$ 個字組就變成 0，而且不影響更低的字組（它們已經是 0）。做完 $k$ 輪，低 $k$ 個字組全為 0，右移 $k$ 個字組就是除以 $R$。</p>
-<div class="example"><div class="ex-label">手算小例：十進位，$m=4567$，$b=10$，$R=10^4$</div>
-<p>$4567\equiv7\pmod{10}$，$7^{-1}\equiv3$，所以 $m'=-3\equiv7\pmod{10}$。對 $T=1234\cdot3211=3962374$：</p>
+<h2><span class="secno">9.3</span>Montgomery 化簡：一次消掉一個字組</h2>
+<p>要算 $TR^{-1}\bmod m$，就把 $T$ 加上 $m$ 的某個倍數 $Um$，使 $T+Um$ 被 $R=\beta^s$ 整除；那麼 $(T+Um)/R$ 是整數，而且與 $TR^{-1}$ 模 $m$ 同餘。$U$ 可以一個字組一個字組地決定：第 $i$ 輪看目前的數的第 $i$ 個字組 $a_i$（更低的字組前幾輪已經是 0），找 $u_i\in[0,\beta)$ 使</p>
+$$a_i+u_i\,m\equiv0\pmod\beta .$$
+<p>因為 $\gcd(m,\beta)=1$，解是 $u_i=a_i\,m'\bmod\beta$，其中 $m'=-m^{-1}\bmod\beta$ 只跟模數有關，預先算好。把 $u_i m\beta^i$ 加上去，第 $i$ 個字組就變成 0，而且不動更低的字組。</p>
+<div class="box algo" id="c9-alg-redc"><div class="box-head"><span class="box-label">演算法 9.4</span><span class="box-title">Montgomery 化簡（REDC）</span><span class="box-ref">HAC Alg. 14.32</span></div>
+<div class="io"><b>輸入</b>模數 $m=(m_{s-1}\cdots m_0)_\beta$，$\gcd(m,\beta)=1$；$R=\beta^s$；預先算好的 $m'=-m^{-1}\bmod\beta$；整數 $T=(t_{2s-1}\cdots t_0)_\beta$，$0\le T&lt;mR$。</div>
+<div class="io"><b>輸出</b>$TR^{-1}\bmod m$。</div>
+<ol class="steps">
+<li>$A\leftarrow T$（記 $A=(a_{2s}\cdots a_1a_0)_\beta$，隨 $A$ 更新）。</li>
+<li>對 $i=0,1,\dots,s-1$：
+  <ol>
+  <li>$u_i\leftarrow a_i\,m'\bmod\beta$。</li>
+  <li>$A\leftarrow A+u_i\,m\,\beta^i$。</li>
+  </ol></li>
+<li>$A\leftarrow A/\beta^s$。</li>
+<li>若 $A\ge m$，則 $A\leftarrow A-m$。</li>
+<li>回傳 $A$。</li>
+</ol>
+<p>第 2(a) 步只需要一次字組乘法（模 $\beta$ 只取低字組），第 2(b) 步是一個字組乘以 $s$ 個字組，共 $s$ 次。所以總共 $s(s+1)$ 次字組乘法，沒有任何除法（HAC Note 14.34）。</p>
+</div>
+<div class="box thm" id="c9-thm-redc"><div class="box-head"><span class="box-label">定理 9.5</span><span class="box-title">REDC 的輸出範圍</span><span class="box-ref">HAC Fact 14.29, Note 14.33</span></div>
+<p>在 <a class="xref" href="09_montgomery.html#c9-alg-redc">演算法 9.4</a> 中，進入第 3 步時 $A=T+Um$，其中 $U=\sum_{i&lt;s}u_i\beta^i&lt;R$，而且 $A$ 的低 $s$ 個字組全為 0。因此第 3 步之後</p>
+$$A=\frac{T+Um}{R}\ \text{是整數},\qquad A\equiv TR^{-1}\pmod m,\qquad 0\le A&lt;2m .$$
+<p>所以第 4 步至多減一次 $m$，結束時 $A=TR^{-1}\bmod m$。</p>
+</div>
+<p>範圍的理由只有一行：$T&lt;mR$ 且 $Um&lt;Rm$，所以 $(T+Um)/R&lt;2m$。這也是輸入必須滿足 $T&lt;mR$ 的原因。HAC Fact 14.29 用的是 $-m^{-1}\bmod R$；因為 $R=\beta^s$，逐字組處理時只需要 $m'=-m^{-1}\bmod\beta$（HAC Note 14.33(i)）。</p>
+<div class="example"><div class="ex-label">手算小例：$\beta=10$，$m=4567$，$R=10^4$</div>
+<p>$m$ 有 $s=4$ 位，$\gcd(4567,10)=1$。$4567\equiv7\pmod{10}$，$7^{-1}\equiv3$，所以 $m'=-3\bmod10=7$。對 $T=1234\cdot3211=3962374&lt;mR$：</p>
 <div class="tbl-wrap"><table class="cmp-table">
-<tr><th>輪 $i$</th><th>$a_i$</th><th>$u_i=7a_i\bmod 10$</th><th>加上 $u_i\cdot4567\cdot10^i$</th><th>結果（粗體是已消成 0 的位）</th></tr>
+<tr><th>輪 $i$</th><th>$a_i$</th><th>$u_i=7a_i\bmod 10$</th><th>加上 $u_i\cdot4567\cdot10^i$</th><th>$A$（粗體是已消成 0 的位）</th></tr>
 <tr><td>0</td><td class="num">4</td><td class="num">8</td><td class="num">36536</td><td class="num">399891<b>0</b></td></tr>
 <tr><td>1</td><td class="num">1</td><td class="num">7</td><td class="num">319690</td><td class="num">43186<b>00</b></td></tr>
 <tr><td>2</td><td class="num">6</td><td class="num">2</td><td class="num">913400</td><td class="num">5232<b>000</b></td></tr>
 <tr><td>3</td><td class="num">2</td><td class="num">4</td><td class="num">18268000</td><td class="num">2350<b>0000</b></td></tr>
 </table></div>
-<p>低 4 位全為 0，去掉後得 $2350$。它小於 $m$，不必再減。驗算：$2350\cdot 10^4 \equiv 3962374 \pmod{4567}$。</p>
+<p>低 4 位全為 0，除以 $10^4$ 得 $A=2350$。它小於 $m$，第 4 步不必減。所以 $\mathrm{REDC}(3962374)=2350$。驗算：$2350\cdot10^4-3962374=19537626$，而 $19537626=4278\cdot4567$，即 $2350\equiv TR^{-1}\pmod{4567}$。</p>
 </div>
-<div class="info-box green"><span class="info-label">為什麼最多減一次</span>
-<p>加上去的總量是 $Um$，其中 $U=\sum u_ib^i&lt;R$。所以右移後的數是 $(T+Um)/R &lt; (mR + Rm)/R = 2m$。只要再比較一次、必要時減一次 $m$，就落在 $[0,m)$。</p>
+</section>
+
+<section id="montmul" data-nav="Montgomery 乘法">
+<h2><span class="secno">9.4</span>Montgomery 乘法：乘法與化簡交錯</h2>
+<p><a class="xref" href="09_montgomery.html#c9-alg-redc">演算法 9.4</a> 的輸入是一個已經算好的 $2s$ 字組乘積。另一種做法是把第 6 章的 schoolbook 乘法和化簡交錯進行：每讀進 $x$ 的一個字組，就加上 $x_iy$，然後立刻消掉最低字組並右移一個字組。這樣中間結果始終只有約 $s+1$ 個字組，不必先存整個 $2s$ 字組的乘積。</p>
+<div class="box algo" id="c9-alg-montmul"><div class="box-head"><span class="box-label">演算法 9.6</span><span class="box-title">Montgomery 乘法</span><span class="box-ref">HAC Alg. 14.36</span></div>
+<div class="io"><b>輸入</b>模數 $m=(m_{s-1}\cdots m_0)_\beta$，$\gcd(m,\beta)=1$；$R=\beta^s$；$m'=-m^{-1}\bmod\beta$；$x=(x_{s-1}\cdots x_0)_\beta$、$y=(y_{s-1}\cdots y_0)_\beta$，$0\le x,y&lt;m$。</div>
+<div class="io"><b>輸出</b>$xyR^{-1}\bmod m$。</div>
+<ol class="steps">
+<li>$A\leftarrow0$（記 $A=(a_s\cdots a_1a_0)_\beta$）。</li>
+<li>對 $i=0,1,\dots,s-1$：
+  <ol>
+  <li>$u_i\leftarrow(a_0+x_iy_0)\,m'\bmod\beta$。</li>
+  <li>$A\leftarrow(A+x_iy+u_im)/\beta$。</li>
+  </ol></li>
+<li>若 $A\ge m$，則 $A\leftarrow A-m$。</li>
+<li>回傳 $A$。</li>
+</ol>
+<p>第 2(a) 步選的 $u_i$ 讓 $A+x_iy+u_im$ 的最低字組為 0，所以第 2(b) 步的除法只是右移一個字組。每一輪之後 $A&lt;2m-1$（HAC Note 14.37），所以第 3 步至多減一次。每輪 $2+2s$ 次字組乘法，共 $2s(s+1)$ 次（HAC Note 14.38），與「schoolbook 乘積 $s^2$ 加上 REDC $s(s+1)$」相當。</p>
 </div>
+<div class="example"><div class="ex-label">同一組數字：$x=1234$，$y=3211$，$m=4567$，$\beta=10$</div>
+<p>$y_0=1$，$m'=7$。</p>
+<div class="tbl-wrap"><table class="cmp-table">
+<tr><th>輪 $i$</th><th>$x_i$</th><th>$u_i=(a_0+x_i\cdot1)\cdot7\bmod10$</th><th>$A\leftarrow(A+x_i\cdot3211+u_i\cdot4567)/10$</th></tr>
+<tr><td>0</td><td class="num">4</td><td class="num">8</td><td class="num">4938</td></tr>
+<tr><td>1</td><td class="num">3</td><td class="num">7</td><td class="num">4654</td></tr>
+<tr><td>2</td><td class="num">2</td><td class="num">2</td><td class="num">2021</td></tr>
+<tr><td>3</td><td class="num">1</td><td class="num">4</td><td class="num">2350</td></tr>
+</table></div>
+<p>結果 $2350&lt;m$，與上面 $\mathrm{REDC}(1234\cdot3211)$ 相同。</p>
+</div>
+<p>兩種寫法各有用處：<a class="xref" href="09_montgomery.html#c9-alg-redc">演算法 9.4</a> 與乘法分開，可以先用第 6 章較快的平方（<a class="xref" href="06_multiprecision.html#c6-alg-square">演算法 6.5</a>）再化簡；<a class="xref" href="09_montgomery.html#c9-alg-montmul">演算法 9.6</a> 不必存兩倍長的乘積，適合硬體（HAC Remark 14.40）。</p>
+<p>下面的程式中，<code>beta</code>、<code>s</code> 即本文的 $\beta$、$s$，<code>w</code> 是字組大小；兩個函式依序對應 <a class="xref" href="09_montgomery.html#c9-alg-redc">演算法 9.4</a> 與 <a class="xref" href="09_montgomery.html#c9-alg-montmul">演算法 9.6</a>。</p>
 <details class="code-fold"><summary>Python 參考實作（選讀）：REDC 與交錯式 Montgomery 乘法（HAC 演算法 14.32、14.36）</summary><div class="code-block"><button class="copy" type="button">複製</button><pre class="hl"><code><span class="k">def</span><span class="w"> </span><span class="nf">mont_setup</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;m 必須是奇數；R = b^k &gt; m，m&#39; = -m^(-1) mod b。&quot;&quot;&quot;</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span> <span class="o">+</span> <span class="n">w</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">w</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">w</span>
-    <span class="n">m_prime</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">inv_euclid</span><span class="p">(</span><span class="n">m</span> <span class="o">%</span> <span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span> <span class="o">%</span> <span class="n">b</span>
-    <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">m_prime</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;m 必須是奇數；R = beta^s &gt; m，m&#39; = -m^(-1) mod betaeta。&quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span> <span class="o">+</span> <span class="n">w</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">w</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">w</span>
+    <span class="n">m_prime</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">inv_euclid</span><span class="p">(</span><span class="n">m</span> <span class="o">%</span> <span class="n">beta</span><span class="p">,</span> <span class="n">beta</span><span class="p">))</span> <span class="o">%</span> <span class="n">beta</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">m_prime</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">redc</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">redc</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HAC Alg. 14.32：輸入 0 &lt;= T &lt; mR，輸出 T * R^(-1) mod m。</span>
-<span class="sd">    每一輪把目前最低的字組變成 0，k 輪後整個數右移 k 個字組。&quot;&quot;&quot;</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">w</span>
+<span class="sd">    每一輪把目前最低的字組變成 0，s 輪後整個數右移 s 個字組。&quot;&quot;&quot;</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">w</span>
     <span class="n">A</span> <span class="o">=</span> <span class="n">T</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-        <span class="n">a_i</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">u_i</span> <span class="o">=</span> <span class="n">a_i</span> <span class="o">*</span> <span class="n">m_prime</span> <span class="o">%</span> <span class="n">b</span>          <span class="c1"># 只需要模 b 的乘法</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="n">a_i</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">beta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">u_i</span> <span class="o">=</span> <span class="n">a_i</span> <span class="o">*</span> <span class="n">m_prime</span> <span class="o">%</span> <span class="n">beta</span>          <span class="c1"># 只需要模 beta 的乘法</span>
         <span class="n">A</span> <span class="o">+=</span> <span class="n">u_i</span> <span class="o">*</span> <span class="n">m</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>          <span class="c1"># 這一步讓第 i 個字組歸零</span>
-    <span class="n">A</span> <span class="o">&gt;&gt;=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">k</span>                          <span class="c1"># 除以 R：只是丟掉低位字組</span>
+    <span class="n">A</span> <span class="o">&gt;&gt;=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">s</span>                          <span class="c1"># 除以 R：只是丟掉低位字組</span>
     <span class="k">return</span> <span class="n">A</span> <span class="o">-</span> <span class="n">m</span> <span class="k">if</span> <span class="n">A</span> <span class="o">&gt;=</span> <span class="n">m</span> <span class="k">else</span> <span class="n">A</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">mont_mul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mont_mul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HAC Alg. 14.36：乘法與化簡交錯，x, y &lt; m，回傳 x * y * R^(-1) mod m。&quot;&quot;&quot;</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">w</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">w</span>
     <span class="n">A</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-        <span class="n">x_i</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">a0</span> <span class="o">=</span> <span class="n">A</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">u_i</span> <span class="o">=</span> <span class="p">(</span><span class="n">a0</span> <span class="o">+</span> <span class="n">x_i</span> <span class="o">*</span> <span class="n">y0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m_prime</span> <span class="o">%</span> <span class="n">b</span>
+    <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">beta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="n">x_i</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">beta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">a0</span> <span class="o">=</span> <span class="n">A</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">beta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">u_i</span> <span class="o">=</span> <span class="p">(</span><span class="n">a0</span> <span class="o">+</span> <span class="n">x_i</span> <span class="o">*</span> <span class="n">y0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m_prime</span> <span class="o">%</span> <span class="n">beta</span>
         <span class="n">A</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">+</span> <span class="n">x_i</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">u_i</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">w</span>
     <span class="k">return</span> <span class="n">A</span> <span class="o">-</span> <span class="n">m</span> <span class="k">if</span> <span class="n">A</span> <span class="o">&gt;=</span> <span class="n">m</span> <span class="k">else</span> <span class="n">A</span>
 </code></pre></div></details>
-<p>上面第二個函式把乘法和化簡交錯進行（HAC 14.36）：每讀 $x$ 的一個字組，就加上 $x_iy$ 再立刻消掉最低字組。中間結果始終小於 $2m$，不必先存整個 $2k$ 字組的乘積。</p>
 </section>
 
 <section id="lab" data-nav="逐輪演示">
-<h2><span class="secno">9.4</span>互動：REDC 逐輪演示</h2>
+<h2><span class="secno">9.5</span>互動：REDC 逐輪演示</h2>
 <p>第 $i$ 輪把第 $i$ 個字組消成 0（灰色）；<span class="pill-cur">橙色</span>是下一輪要處理的字組。若某個字組本來就是 0，該輪的 $u_i=0$，什麼都不加。最後整段右移。選十進位可以對照上面的手算；選 P-256 或 P-521 則是實際的 64 位元字組。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">REDC</div>
     <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
       <label>模數 <select id="w09mod">
-        <option value="t4567">m = 4567，b = 10</option>
-        <option value="t241">m = 241，b = 16</option>
-        <option value="p256">P-256 的 p，b = 2^64</option>
-        <option value="n256">P-256 的基點階 n，b = 2^64</option>
-        <option value="p521">P-521 的 p，b = 2^64</option>
+        <option value="t4567">m = 4567，β = 10</option>
+        <option value="t241">m = 241，β = 16</option>
+        <option value="p256">P-256 的 p，β = 2^64</option>
+        <option value="n256">P-256 的基點階 n，β = 2^64</option>
+        <option value="p521">P-521 的 p，β = 2^64</option>
       </select></label>
       <button class="btn btn-ghost" id="w09rand" type="button">隨機 T = x·y</button>
     </div>
@@ -149,7 +208,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
   <div class="side-panel">
     <div class="info-card"><div class="ic-title">預先算好的常數</div><div id="w09pre"></div></div>
     <div class="info-card"><div class="ic-title">觀察</div><div class="ic-note">
-      每一輪只用到 $u_i$ 這一個字組的乘數，算 $u_i$ 只需要一次「字組×字組 mod $b$」。<br><br>
+      每一輪只用到 $u_i$ 這一個字組的乘數，算 $u_i$ 只需要一次「字組×字組 mod $\beta$」。<br><br>
       和 Barrett 不同，這裡完全沒有「估計」：每一輪該加多少是確定的。
     </div></div>
   </div>
@@ -157,17 +216,17 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 </section>
 
 <section id="flow" data-nav="完整流程">
-<h2><span class="secno">9.5</span>互動：進入、相乘、離開，再與 Barrett 對照</h2>
-<p>REDC 單獨看，答案「不對」：它給的是 $TR^{-1}$。這個元件把完整流程走一遍，並用同一組 $x,y$ 跑 Barrett，確認兩條路得到同一個 $xy\bmod m$。</p>
+<h2><span class="secno">9.6</span>互動：進入、相乘、離開，再與 Barrett 對照</h2>
+<p>REDC 單獨看，答案「不對」：它給的是 $TR^{-1}\bmod m$。這個元件把完整流程走一遍，並用同一組 $x,y$ 跑 Barrett（<a class="xref" href="08_barrett.html#c8-alg-barrett">演算法 8.2</a>），確認兩條路得到同一個 $xy\bmod m$。</p>
 <div class="viz-layout wide">
   <div class="viz-panel">
     <div class="viz-title">MONTGOMERY vs BARRETT</div>
     <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
       <label>模數 <select id="w09fmod">
-        <option value="t4567">m = 4567，b = 10</option>
-        <option value="p256">P-256 的 p，b = 2^64</option>
-        <option value="n256">P-256 的基點階 n，b = 2^64</option>
-        <option value="p521">P-521 的 p，b = 2^64</option>
+        <option value="t4567">m = 4567，β = 10</option>
+        <option value="p256">P-256 的 p，β = 2^64</option>
+        <option value="n256">P-256 的基點階 n，β = 2^64</option>
+        <option value="p521">P-521 的 p，β = 2^64</option>
       </select></label>
       <label>x <input type="text" id="w09x" value="1234" size="10"></label>
       <label>y <input type="text" id="w09y" value="3211" size="10"></label>
@@ -184,13 +243,17 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 </section>
 
 <section id="cost" data-nav="取捨">
-<h2><span class="secno">9.6</span>成本與取捨</h2>
+<h2><span class="secno">9.7</span>成本與取捨</h2>
 <ul>
-<li><strong>每次乘法的成本</strong>和 Barrett 同一個量級（約 $2k^2$ 次字組乘法），但流程完全規則：每一輪做的事一樣，沒有商的估計，進位也只往高位走。這讓它很適合硬體與 SIMD 實作。</li>
-<li><strong>適用任何奇數模數</strong>：換模數只要換 $m'$ 與 $R^2\bmod m$。許多函式庫用它處理 P-256 的 $p$ 與 $n$，以及 RSA。</li>
-<li><strong>需要轉換</strong>：只做一兩次乘法時，進出的成本不划算，這時 Barrett 或直接除法比較合適。ECC 的純量乘法有幾千次乘法，轉換成本可以忽略。</li>
-<li><strong>最後一次減法與資料有關</strong>：和 Barrett 一樣，常數時間的實作會固定做一次條件減法，用遮罩選結果。也有實作省略這次減法，讓輸出留在 $[0,2m)$ 直接進入下一次乘法；但這時兩個輸入的乘積可達 $4m^2$，要保證仍有 $T&lt;mR$，必須取 $R&gt;4m$（例如多留一兩個位元），不能直接拿本章的程式省略減法。</li>
+<li><strong>每次乘法的成本</strong>：<a class="xref" href="09_montgomery.html#c9-alg-montmul">演算法 9.6</a> 是 $2s(s+1)$ 次字組乘法，和 Barrett（第 8 章，約 $2s^2$ 次）同一量級，但流程完全規則：每一輪做的事一樣，沒有商的估計，進位也只往高位走。這讓它很適合硬體與 SIMD 實作。</li>
+<li><strong>適用任何與 $\beta$ 互質的模數</strong>：換模數只要換 $m'$ 與 $R^2\bmod m$。許多函式庫用它處理 P-256 的 $p$ 與基點階 $n$，以及 RSA。</li>
+<li><strong>需要轉換</strong>：只做一兩次乘法時，進出的成本不划算（HAC Note 14.39），這時 Barrett 比較合適。ECC 的純量乘法有幾千次乘法，轉換成本可以忽略。</li>
+<li><strong>最後一次減法與資料有關</strong>：和 Barrett 一樣，常數時間的實作會固定做一次條件減法，用遮罩選結果。</li>
 </ul>
+<div class="box rem" id="c9-rem-lazy"><div class="box-head"><span class="box-label">注意 9.7</span><span class="box-title">省略最後一次減法的條件</span></div>
+<p>有些實作省略 <a class="xref" href="09_montgomery.html#c9-alg-redc">演算法 9.4</a> 第 4 步的減法，讓輸出留在 $[0,2m)$，直接進入下一次乘法（lazy reduction）。這時兩個輸入的乘積可達 $(2m)^2=4m^2$；要保證仍有 $T&lt;mR$，必須 $4m^2\le mR$，也就是 $R\ge4m$；因為 $m$ 是奇數、$R$ 是 2 的冪，這等於 $R&gt;4m$（例如 $m$ 的位元數不超過 $sw-2$）。在這個條件下，<a class="xref" href="09_montgomery.html#c9-thm-redc">定理 9.5</a> 的論證給出 $(T+Um)/R&lt;4m^2/R+m\le2m$，輸出仍在 $[0,2m)$，可以一直省略下去。不滿足 $R&gt;4m$ 時，不能直接拿本章的演算法省略減法。</p>
+</div>
+<p>第 7、8、9 章給了三種化簡：特殊模數用折疊，一般模數用 Barrett 或 Montgomery。第 10 章把它們放回成本鏈，比較各自適用的情境。</p>
 </section>
 
 <section id="refs" data-nav="本章文獻">
@@ -201,7 +264,7 @@ $$a_i + u_i m \equiv 0 \pmod b .$$
 <nav class="chapter-nav"><a class="prev" href="08_barrett.html"><div class="nav-dir">← 上一章</div><div class="nav-title">8. Barrett 化簡</div></a><a class="home" href="index.html"><div class="nav-dir">導讀</div><div class="nav-title">全部章節</div></a><a class="next" href="10_synthesis.html"><div class="nav-dir">下一章 →</div><div class="nav-title">10. 總整：何時用哪一種</div></a></nav>
 <footer>橢圓曲線密碼：從曲線到模乘法・互動元件以 JavaScript BigInt 計算，僅供教學，不是常數時間實作</footer>
 </main>
-<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">9.1 反過來想：消掉低位，而不是估計高位</a></li><li><a href="#domain" data-target="domain">9.2 Montgomery 表示：住在「乘上 R」的世界</a></li><li><a href="#redc" data-target="redc">9.3 REDC：一次消掉一個字組</a></li><li><a href="#lab" data-target="lab">9.4 互動：REDC 逐輪演示</a></li><li><a href="#flow" data-target="flow">9.5 互動：進入、相乘、離開，再與 Barrett 對照</a></li><li><a href="#cost" data-target="cost">9.6 成本與取捨</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
+<nav class="pagetoc" id="pagetoc" aria-label="本頁目錄"><div class="pt-title">本頁目錄</div><ul><li><a href="#why" data-target="why">9.1 反過來想：消掉低位，而不是估計高位</a></li><li><a href="#domain" data-target="domain">9.2 REDC 與 Montgomery 表示</a></li><li><a href="#redc" data-target="redc">9.3 Montgomery 化簡：一次消掉一個字組</a></li><li><a href="#montmul" data-target="montmul">9.4 Montgomery 乘法：乘法與化簡交錯</a></li><li><a href="#lab" data-target="lab">9.5 互動：REDC 逐輪演示</a></li><li><a href="#flow" data-target="flow">9.6 互動：進入、相乘、離開，再與 Barrett 對照</a></li><li><a href="#cost" data-target="cost">9.7 成本與取捨</a></li><li><a href="#refs" data-target="refs">本章文獻</a></li></ul></nav>
 </div>
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <script src="assets/ecc-core.js?v=20261005"></script>

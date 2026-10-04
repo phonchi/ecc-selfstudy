@@ -1,52 +1,71 @@
 <section id="why" data-nav="動機">
 <h2>當模數沒有好看的形狀</h2>
 <div class="info-box why"><span class="info-label">動機</span>
-<p>第 7 章的折疊只對特殊的 $p$ 有效。可是很多模數是別人給的：ECDSA 簽章要在<strong>基點的階 $n$</strong> 下做運算，而 P-256 的 $n$ 是一串看不出規律的 256 位元數；RSA 的模數更是兩個隨機質數的乘積。這時我們仍然想避開長除法。</p>
-<p>Barrett（1986）的想法是：<strong>除法很貴，但「除以同一個數」可以預先準備。</strong>同一個模數 $m$ 會被用上幾千次，那就先花一次功夫算出 $1/m$ 的近似值，之後每一次化簡都只用乘法和移位。</p>
+<p>第 7 章的折疊只對設計者特別挑過的 $p$ 有效。可是有些模數不是我們能挑的。最直接的例子在 ECC 本身：ECDSA 簽章（[[ref:c0-rem-ecdsa]]）除了在 $\mathbb F_p$ 裡做點運算，還要在模<strong>基點的階 $n$</strong> 下做加法、乘法與反元素。$n$ 由曲線決定，P-256 的 $n$ 是一串看不出規律的 256 位元數，沒有任何可以折疊的結構。RSA 的模數更是兩個隨機質數的乘積。</p>
+<p>所以我們需要一個對<strong>一般模數 $m$</strong> 都有效、又不做長除法的化簡方法。本章與第 9 章各給一個。Barrett（1986）的想法是：<strong>除法很貴，但「除以同一個數」可以預先準備。</strong>同一個模數會被用上幾千次，那就先花一次功夫算出 $1/m$ 的近似值，之後每次化簡只用乘法和移位估出商。</p>
 </div>
-<p>先看實數的版本。$x \bmod m = x - m\lfloor x/m\rfloor$，問題只在商 $Q=\lfloor x/m\rfloor$。若事先知道 $1/m$ 的近似值，商就能用一次乘法估出來。在電腦上，「近似 $1/m$」要寫成整數：取基底 $b$（實作上 $b=2^{32}$ 或 $2^{64}$，手算用 $b=4$ 或 $10$），令 $m$ 有 $k$ 位（$b^{k-1}\le m&lt;b^k$），預先算</p>
-$$\mu = \left\lfloor \frac{b^{2k}}{m} \right\rfloor .$$
-<p>$\mu/b^{2k}$ 就是 $1/m$ 的定點近似。除以 $b^{j}$ 只是丟掉最低 $j$ 位（字組），不必真的做除法。</p>
+</section>
+
+<section id="idea" data-nav="想法">
+<h2>用預先算好的倒數估計商</h2>
+<p>由 [[ref:def-mod]]，$x\bmod m=x-m\lfloor x/m\rfloor$，困難只在商 $\lfloor x/m\rfloor$。若事先知道 $1/m$ 的近似值，商就能用一次乘法估出來。在電腦上，「近似 $1/m$」要寫成整數：以 $\beta$ 為基底（[[ref:c6-def-radix]]），預先算一個定點數 $\mu\approx\beta^{2s}/m$；之後「除以 $\beta^j$」只是丟掉最低 $j$ 個字組，不必真的做除法。</p>
+<div class="box defn" id="c8-def-mu" data-terms="Barrett 常數" data-sym="$\mu=\lfloor\beta^{2s}/m\rfloor$" data-gloss="$m$ 有 $s$ 個字組時，$1/m$ 的定點近似；每個模數預先算一次" data-ref="HAC §14.3.3">
+<p>設模數 $m$ 以 $\beta$ 為基底恰有 $s$ 個字組，即 $\beta^{s-1}\le m&lt;\beta^s$。稱</p>
+$$\mu=\left\lfloor\frac{\beta^{2s}}{m}\right\rfloor$$
+<p>為 $m$ 的 <strong>Barrett 常數</strong>。$\mu/\beta^{2s}$ 就是 $1/m$ 的定點近似。由 $\beta^{s-1}\le m&lt;\beta^s$ 得 $\beta^s&lt;\mu\le\beta^{s+1}$，所以 $\mu$ 大約有 $s+1$ 個字組。</p>
+</div>
+<p>估商的式子來自把 $x/m$ 拆成三個因子：</p>
+$$\frac{x}{m}=\frac{x}{\beta^{s-1}}\cdot\frac{\beta^{2s}}{m}\cdot\frac{1}{\beta^{s+1}} .$$
+<p>把第一個因子換成 $\lfloor x/\beta^{s-1}\rfloor$（丟掉 $x$ 的低 $s-1$ 個字組），第二個換成 $\mu$，整體再取整，就得到下面演算法的 $q_3$。</p>
 </section>
 
 <section id="algo" data-nav="演算法">
-<h2>估商、相減、修正</h2>
-<p>對 $0\le x&lt;b^{2k}$（兩個小於 $m$ 的數相乘一定符合），HAC 演算法 14.42 是：</p>
-<ol>
-<li><strong>估商</strong>：$q_1=\lfloor x/b^{k-1}\rfloor$，$q_2=q_1\mu$，$q_3=\lfloor q_2/b^{k+1}\rfloor$。</li>
-<li><strong>相減</strong>：$r = (x \bmod b^{k+1}) - (q_3 m \bmod b^{k+1})$；若 $r&lt;0$ 就加上 $b^{k+1}$。</li>
-<li><strong>修正</strong>：當 $r\ge m$ 時減去 $m$，重複。</li>
+<h2>Barrett 化簡：估商、相減、修正</h2>
+<div class="box algo" id="c8-alg-barrett" data-title="Barrett 化簡" data-ref="HAC Alg. 14.42">
+<div class="io"><b>輸入</b>基底 $\beta&gt;3$；模數 $m$，恰有 $s$ 個字組（$\beta^{s-1}\le m&lt;\beta^s$）；整數 $0\le x&lt;\beta^{2s}$；預先算好的 $\mu=\lfloor\beta^{2s}/m\rfloor$（[[ref:c8-def-mu]]）。</div>
+<div class="io"><b>輸出</b>$r=x\bmod m$。</div>
+<ol class="steps">
+<li>$q_1\leftarrow\lfloor x/\beta^{s-1}\rfloor$，$q_2\leftarrow q_1\cdot\mu$，$q_3\leftarrow\lfloor q_2/\beta^{s+1}\rfloor$。</li>
+<li>$r_1\leftarrow x\bmod\beta^{s+1}$，$r_2\leftarrow q_3\cdot m\bmod\beta^{s+1}$，$r\leftarrow r_1-r_2$。</li>
+<li>若 $r&lt;0$，則 $r\leftarrow r+\beta^{s+1}$。</li>
+<li>當 $r\ge m$：$r\leftarrow r-m$。</li>
+<li>回傳 $r$。</li>
 </ol>
-<p>第一步的兩個「除以 $b$ 的冪」都是丟掉低位字組，乘法 $q_1\mu$ 是一次 $(k+1)\times(k+1)$ 字組的乘法。第二步只需要低 $k+1$ 個字組。整個過程沒有除法。</p>
-<div class="info-box green"><span class="info-label">為什麼最多修正兩次</span>
-<p>$q_3$ 是 $Q=\lfloor x/m\rfloor$ 的估計值。它有兩個誤差來源：丟掉 $x$ 的低 $k-1$ 位，以及 $\mu$ 本身是取整過的。每個來源讓估計值少不到 1，所以</p>
-$$Q-2 \le q_3 \le Q \qquad\text{(HAC Fact 14.43)}.$$
-<p>於是 $x - q_3m$ 落在 $[0,3m)$，最多減兩次 $m$。真實大小的模數下，大多數情形一次都不必減（下面的互動元件有統計）。</p>
-<p>第二步只取低 $k+1$ 位的理由：真正的差 $x-q_3m$ 小於 $3m$，而 $3m&lt;b^{k+1}$（因為 $b&gt;3$），所以只看低 $k+1$ 位就能還原它。</p>
+<p>所有「除以 $\beta^j$」與「$\bmod\beta^j$」都只是丟掉或保留某些字組。整個過程沒有除法，只有兩次乘法 $q_1\mu$、$q_3m$ 與幾次減法。兩個 $[0,m)$ 中的數相乘，乘積小於 $m^2&lt;\beta^{2s}$，一定符合輸入條件。</p>
 </div>
-<div class="example"><div class="ex-label">手算小例：最多的兩次修正真的會發生</div>
-<p>取 $m=241$，基底 $b=4$。$241$ 在 4 進位有 $k=4$ 位（$4^3=64\le241&lt;256=4^4$），所以 $\mu=\lfloor 4^8/241\rfloor=\lfloor 65536/241\rfloor = 271$。對 $x=57855$：</p>
-$$q_1=\lfloor 57855/4^3\rfloor = 903,\quad q_2 = 903\cdot271=244713,\quad q_3=\lfloor 244713/4^5\rfloor = 238 .$$
-<p>真正的商是 $Q=\lfloor 57855/241\rfloor=240$，所以 $q_3=Q-2$。相減得 $r=57855-238\cdot241=497$，再減兩次 241：$497\to256\to15$。驗算：$57855=240\cdot241+15$。</p>
+<p>演算法的正確性取決於 $q_3$ 離真正的商有多遠。</p>
+<div class="box thm" id="c8-thm-q3" data-title="估計商的誤差" data-ref="HAC Fact 14.43">
+<p>由帶餘除法（[[ref:def-mod]]），存在整數 $Q,r$ 使 $x=Qm+r$、$0\le r&lt;m$。在 [[ref:c8-alg-barrett]] 第 1 步中，</p>
+$$Q-2\ \le\ q_3\ \le\ Q .$$
+<p>（HAC 把餘數記作 $R$；本站的 $R$ 留給第 9 章，所以這裡寫 $r$。）</p>
 </div>
+<p>直覺：$q_3$ 有兩個誤差來源，一是丟掉了 $x$ 的低 $s-1$ 個字組，二是 $\mu$ 本身取過整。兩者都只會讓估計值變小，而且各自讓它少不到 1，所以 $q_3$ 不會超過 $Q$，最多少 2。</p>
+<p>由此可以解釋第 2–4 步。真正的差 $x-q_3m=(Q-q_3)m+r$ 落在 $[0,3m)$。因為 $m&lt;\beta^s$ 且 $\beta&gt;3$，有 $3m&lt;\beta^{s+1}$，所以只要知道這個差的低 $s+1$ 個字組就能還原它：第 2 步只算低 $s+1$ 個字組，若相減為負，第 3 步加回 $\beta^{s+1}$。最後 $r&lt;3m$，第 4 步至多減兩次 $m$（HAC Note 14.44）。條件 $\beta&gt;3$ 就是為了這一步。</p>
+<div class="example"><div class="ex-label">手算小例：兩次修正真的會發生</div>
+<p>取 $m=241$，$\beta=4$。$4^3=64\le241&lt;256=4^4$，所以 $s=4$，$\mu=\lfloor 4^8/241\rfloor=\lfloor 65536/241\rfloor=271$。對 $x=57855&lt;4^8$：</p>
+$$q_1=\lfloor 57855/4^3\rfloor=903,\qquad q_2=903\cdot271=244713,$$
+$$q_3=\lfloor 244713/4^5\rfloor=238 .$$
+<p>真正的商是 $Q=\lfloor 57855/241\rfloor=240$，所以 $q_3=Q-2$，[[ref:c8-thm-q3]] 的下界取到等號。相減得 $r=57855-238\cdot241=497$（$497&lt;4^5$，第 3 步不必加回），再減兩次 241：$497\to256\to15$。驗算：$57855=240\cdot241+15$。</p>
+</div>
+<p>下面的程式中，<code>beta</code>、<code>s</code> 即本文的 $\beta$、$s$，<code>w</code> 是字組大小（$\beta=2^w$）。</p>
 <!-- code: barrett Barrett 化簡（HAC 演算法 14.42） -->
 </section>
 
 <section id="lab" data-nav="逐步演示">
 <h2>互動：Barrett 逐步演示</h2>
-<p>選一個模數與基底。上方是每一步的數值；下方的數線以 $m$ 為單位，標出 $q_3m$、真正的 $Qm$ 和 $x$：箭頭的長度就是 $r=x-q_3m$，它小於三格，所以至多減兩次 $m$。</p>
+<p>選一個模數與基底。上方是每一步的數值；下方的數線以 $m$ 為單位，標出 $q_3m$、真正的 $Qm$ 和 $x$：箭頭的長度就是 $x-q_3m$，它小於三格，所以至多減兩次 $m$。右側統計修正次數：小模數窮舉所有 $0\le x&lt;m^2$，大模數隨機抽樣。</p>
 <div class="viz-layout">
   <div class="viz-panel">
     <div class="viz-title">BARRETT</div>
     <div class="controls-bar" style="margin-top:0;padding-top:0;border-top:none">
       <label>模數 <select id="w08mod">
-        <option value="t241">m = 241，b = 4（兩次修正的例子）</option>
-        <option value="t4567">m = 4567，b = 10（十進位）</option>
-        <option value="n256">P-256 的基點階 n，b = 2^64</option>
-        <option value="p256">P-256 的 p，b = 2^64</option>
-        <option value="p521">P-521 的 p，b = 2^64</option>
+        <option value="t241">m = 241，β = 4（兩次修正的例子）</option>
+        <option value="t4567">m = 4567，β = 10（十進位）</option>
+        <option value="n256">P-256 的基點階 n，β = 2^64</option>
+        <option value="p256">P-256 的 p，β = 2^64</option>
+        <option value="p521">P-521 的 p，β = 2^64</option>
       </select></label>
-      <button class="btn btn-ghost" id="w08rand" type="button">隨機 x = a·b</button>
+      <button class="btn btn-ghost" id="w08rand" type="button">隨機乘積 x</button>
     </div>
     <div class="stage pad" id="w08steps"></div>
     <div class="stage" style="margin-top:.6rem"><svg id="w08line" role="img" aria-label="Barrett 數線"></svg></div>
@@ -67,10 +86,16 @@ $$q_1=\lfloor 57855/4^3\rfloor = 903,\quad q_2 = 903\cdot271=244713,\quad q_3=\l
 
 <section id="cost" data-nav="成本">
 <h2>成本與取捨</h2>
+<p>以字組乘法（[[ref:c6-def-wordmul]]）計數，HAC Note 14.45 指出兩次乘法都只需要算一部分的字組：</p>
 <ul>
-<li><strong>預計算</strong>：每個模數算一次 $\mu$（一次長除法）。之後幾千次化簡都共用它。</li>
-<li><strong>每次化簡</strong>：大約兩次 $k$ 字組等級的乘法（$q_1\mu$ 與 $q_3m$），其中有不少部分積可以省略（只需要高位或低位），再加上至多兩次減法。</li>
-<li><strong>輸出就是普通的 $x\bmod m$</strong>：不像第 9 章的 Montgomery 需要先換表示法。所以只做少數幾次乘法時，Barrett 比 Montgomery 划算。</li>
+<li><strong>$q_3$</strong>：$q_2$ 的低 $s+1$ 個字組最後會被丟掉，所以 $q_1\mu$ 只需部分乘積，至多 $(s+1)^2-\binom{s}{2}=(s^2+5s+2)/2$ 次字組乘法（在 $\beta$ 相對於 $s$ 夠大時，被省略的低位只影響一個可以準確算出的進位）。</li>
+<li><strong>$r_2$</strong>：只需要 $q_3m$ 的低 $s+1$ 個字組，至多 $\binom{s+1}{2}+s$ 次。</li>
+</ul>
+<p>合計約 $s^2+4s+1$ 次，與一次 $s\times s$ 的乘法同一量級。所以一次 $\mathbf M$（乘積 $s^2$ 次加上化簡）大約是 $2s^2$ 次字組乘法。其他取捨：</p>
+<ul>
+<li><strong>預計算</strong>：每個模數算一次 $\mu$（一次長除法），之後幾千次化簡共用。</li>
+<li><strong>輸出就是普通的 $x\bmod m$</strong>：不必像第 9 章那樣先換表示法，所以只做少數幾次乘法時很划算。</li>
 <li><strong>修正步驟與資料有關</strong>：減 0、1 或 2 次取決於輸入，會造成時間差。常數時間的實作會固定做兩次「條件減法」，用遮罩選結果而不是用分支。</li>
 </ul>
+<p>Barrett 的做法是從 $x$ 的<em>高位</em>猜商，猜得不準就事後修正。第 9 章換一個方向：不猜商，而是把 $x$ 的<em>低位</em>逐字組消成 0。</p>
 </section>

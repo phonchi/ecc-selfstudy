@@ -24,11 +24,11 @@ HC.ready(() => {
     const f = [];
     const rows = [];
     const add = (label, val, msg, line) => { rows.push([label, val]); f.push({ rows: rows.slice(), msg, line }); };
-    add('x', fmt(x, c), `輸入 x = ${fmt(x, c)}，小於 b^${2 * K}。`, null);
-    add('q₁ = ⌊x / b^{k−1}⌋', fmt(t.q1, c), `丟掉 x 最低的 ${K - 1} 位（以 ${bn} 為基底），不必做除法。`, null);
+    add('x', fmt(x, c), `輸入 x = ${fmt(x, c)}，小於 β^${2 * K}。`, null);
+    add('q₁ = ⌊x / β^{s−1}⌋', fmt(t.q1, c), `丟掉 x 最低的 ${K - 1} 個字組（以 β = ${bn} 為基底），不必做除法。`, null);
     add('q₂ = q₁·μ', fmt(t.q2, c), '一次乘法：q₁ 乘上預先算好的 μ。', null);
-    add('q₃ = ⌊q₂ / b^{k+1}⌋', fmt(t.q3, c), `再丟掉 ${K + 1} 位，得到商的估計值 q₃。真正的商 Q = ${fmt(t.Q, c)}，差 ${t.Q - t.q3}。`, 'q3');
-    add('r = x − q₃m', fmt(t.r0, c), `只用低 ${K + 1} 位相減${t.wrapped ? '（結果為負，加回 b^{k+1}）' : ''}；r 落在 [0, 3m)。`, 'r');
+    add('q₃ = ⌊q₂ / β^{s+1}⌋', fmt(t.q3, c), `再丟掉 ${K + 1} 個字組，得到商的估計值 q₃。真正的商 Q = ${fmt(t.Q, c)}，差 ${t.Q - t.q3}。`, 'q3');
+    add('r = x − q₃m', fmt(t.r0, c), `只用低 ${K + 1} 個字組相減${t.wrapped ? '（結果為負，加回 β^{s+1}）' : ''}；r 落在 [0, 3m)。`, 'r');
     t.subs.forEach((v, i) => add(`− m（第 ${i + 1} 次）`, fmt(v, c), `r ≥ m，減一次 m。`, 's' + (i + 1)));
     const ok = t.r === x % c.m;
     add('結果', fmt(t.r, c), `修正 ${t.fixes} 次後 r = ${fmt(t.r, c)}，與 x mod m 比對：<b>${ok ? '相同 ✓' : '不同 ✗'}</b>`, 'done');
@@ -74,8 +74,8 @@ HC.ready(() => {
     cur = frames(c, x);
     const S = ECC.barrettSetupB(c.m, c.b);
     $('w08pre').innerHTML = `<div class="ic-row"><span class="ic-label">m</span><span class="ic-value">${fmt(c.m, c)}</span></div>`
-      + `<div class="ic-row"><span class="ic-label">b</span><span class="ic-value">${baseName(c.b)}</span></div>`
-      + `<div class="ic-row"><span class="ic-label">k</span><span class="ic-value">${S.k}</span></div>`
+      + `<div class="ic-row"><span class="ic-label">β</span><span class="ic-value">${baseName(c.b)}</span></div>`
+      + `<div class="ic-row"><span class="ic-label">s</span><span class="ic-value">${S.k}</span></div>`
       + `<div class="ic-row"><span class="ic-label">μ</span><span class="ic-value">${fmt(S.mu, c)}</span></div>`;
     stats(c, S);
     if (!player) {

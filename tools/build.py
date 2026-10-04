@@ -37,7 +37,7 @@ VER = "20261005"
 SEC_RE = re.compile(r'<section id="([\w-]+)" data-nav="([^"]+)">')
 H2_RE = re.compile(r"<h2>(.*?)</h2>", re.S)
 CODE_RE = re.compile(r"<!-- code: ([\w-]+)(?: ([^>]*?))? -->")
-BOX_RE = re.compile(r'<div class="box (defn|thm|algo|rem)"([^>]*)>')
+BOX_RE = re.compile(r'<div class="box (defn|thm|algo|rem)"((?:\s+[\w-]+="[^"]*")*)\s*>')
 ATTR_RE = re.compile(r'([\w-]+)="([^"]*)"')
 REF_RE = re.compile(r"\[\[ref:([\w-]+)\]\]")
 NOTE_RE = re.compile(r"<!-- notation: (.*?) \|\| (.*?) -->")

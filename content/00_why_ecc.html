@@ -34,7 +34,7 @@
 <div class="box defn" id="c0-def-ecdlp" data-terms="ECDLP|基點" data-sym="ECDLP" data-gloss="已知 $G$ 與 $Q=kG$，求 $k$" data-ref="HMV §4.1">
 <p>設 $E$ 是 $\mathbb F_p$ 上的橢圓曲線，$G\in E(\mathbb F_p)$ 是一個階為 $n$ 的點，稱為<strong>基點</strong>（base point）。給定 $Q\in\langle G\rangle$，求 $k\in[0,n-1]$ 使 $Q=kG$，稱為<strong>橢圓曲線離散對數問題</strong>（ECDLP）。</p>
 </div>
-<p>對應地，橢圓曲線上的單向運算是純量乘法 $k\mapsto kG$。平方-乘在這裡變成 double-and-add：平方換成「點自己加自己」（倍點），乘以 $g$ 換成加上 $G$（第 5 章）。</p>
+<p>對應地，橢圓曲線上的單向運算是純量乘法 $k\mapsto kG$（第 5 章定義）。平方-乘在這裡變成 double-and-add：平方換成「點自己加自己」（倍點），乘以 $g$ 換成加上 $G$（第 5 章）。</p>
 <div class="box rem" id="c0-rem-empirical" data-title="「困難」是經驗事實">
 <p>「沒有已知的次指數攻擊」是經驗事實，不是定理。有些特殊曲線確實較弱，標準曲線的參數就是為了避開這些情形而選的（第 3 章列出條件）。另外，上面所有的難度估計都只針對<strong>古典電腦</strong>；大型量子電腦上的 Shor 演算法對 $\mathbb F_p^*$ 與橢圓曲線都能在多項式時間內解出離散對數。</p>
 </div>
@@ -124,7 +124,7 @@ $$23\,Q_B = 61\,Q_A = (72,49) = 12\,G ,$$
 <li><span class="lv">純量乘法</span><strong>$kP$</strong>：$k$ 有幾百位元，要做幾百次「點加點」；換算下來是<strong>幾千次 $\mathbb F_p$ 乘法</strong>。<span class="where"><a href="05_scalar.html">第 5 章</a>；為什麼難以倒推見 <a href="03_ecdlp.html">第 3 章</a></span></li>
 <li><span class="lv">點運算</span><strong>加點與倍點</strong>：每一次都是十幾次 $\mathbb F_p$ 的加減乘除；怎麼避開昂貴的除法是第 4 章的主題。<span class="where"><a href="02_group_law.html">第 2 章</a>、<a href="04_coordinates.html">第 4 章</a></span></li>
 <li><span class="lv">模乘</span><strong>$xy \bmod p$</strong>：先得到兩倍長的整數乘積，再化簡回 $[0,p)$。<span class="where"><a href="01_finite_field.html">第 1 章</a>、<a href="07_special.html">第 7–9 章</a></span></li>
-<li><span class="lv">字組乘法</span><strong>大整數相乘</strong>：電腦一次只能乘 64 位元，256 位元的數要拆成好幾段來乘。<span class="where"><a href="06_multiprecision.html">第 6 章</a></span></li>
+<li><span class="lv">字組乘法</span><strong>大整數相乘</strong>：電腦一次只能乘 64 位元，256 位元的數要拆成好幾段（字組，第 6 章定義）來乘。<span class="where"><a href="06_multiprecision.html">第 6 章</a></span></li>
 </ol>
 <p>讀法有兩種。<strong>由上往下</strong>是「為什麼」：協定需要 $kP$，$kP$ 需要點運算，點運算需要模乘。<strong>由下往上</strong>是「花多少」：字組乘法的次數乘上去，就得到一次 ECDH 的總成本。每章頁首的那條膠囊列就是這條鏈，亮起的那一格是該章所在的層。</p>
 <p>章節順序：第一部（第 1–3 章）打數學基礎，第二部（第 4–5 章）從曲線走到運算成本，第三部（第 6–9 章）處理最底層、也最常被執行的模乘法，最後在<a href="10_synthesis.html">第 10 章</a>把各層的選擇放在一起比較。</p>
