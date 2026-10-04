@@ -171,12 +171,12 @@ $$k_ik_{i+1}=0\qquad(0\le i&lt;L-1),$$
 <h2><span class="secno">5.5</span>一次 $kP$ 的成本帳</h2>
 <p>用第 4 章的 EFD 數字（$a=-3$ 倍點 $3\mathbf M+5\mathbf S$，混合加點 $7\mathbf M+4\mathbf S$，一般加點 $11\mathbf M+5\mathbf S$，最後轉回仿射 $1\mathbf I+3\mathbf M+1\mathbf S$），假設 $\mathbf S=0.8\,\mathbf M$、$\mathbf I=100\,\mathbf M$，256 位元的 $k$：</p>
 <div class="tbl-wrap"><table class="cmp-table">
-<tr><th>方法</th><th>倍點</th><th>加點</th><th>約略總成本</th></tr>
-<tr><td>double-and-add</td><td class="num">255</td><td class="num">約 128（混合）</td><td class="num">約 3 200 M</td></tr>
-<tr><td>NAF</td><td class="num">255</td><td class="num">約 86（混合）</td><td class="num">約 2 800 M</td></tr>
-<tr><td>Montgomery 階梯（下一節）</td><td class="num">256</td><td class="num">256（一般加點）</td><td class="num">約 5 700 M</td></tr>
+<tr><th>方法</th><th>倍點</th><th>加點</th><th>約略總成本（以 $\mathbf M$ 計，見 <a class="xref" href="01_finite_field.html#def-cost">定義 1.13</a>）</th></tr>
+<tr><td>double-and-add</td><td class="num">255</td><td class="num">約 128（混合）</td><td class="num">約 $3{,}200\,\mathbf M$</td></tr>
+<tr><td>NAF</td><td class="num">255</td><td class="num">約 86（混合）</td><td class="num">約 $2{,}800\,\mathbf M$</td></tr>
+<tr><td>Montgomery 階梯（下一節）</td><td class="num">256</td><td class="num">256（一般加點）</td><td class="num">約 $5{,}700\,\mathbf M$</td></tr>
 </table></div>
-<p>（逐項：$255\times7+128\times10.2+103.8\approx3\,194$；$255\times7+86\times10.2+103.8\approx2\,766$；$256\times7+256\times15+103.8\approx5\,736$。）所以<strong>一次純量乘法約等於三千到六千次 $\mathbb F_p$ 乘法</strong>。一次 ECDH 每一方要做一兩次純量乘法。把一次 $\mathbb F_p$ 乘法加快 20%，整個協定大約就快 20%。</p>
+<p>（逐項：$255\times7+128\times10.2+103.8\approx3194$；$255\times7+86\times10.2+103.8\approx2766$；$256\times7+256\times15+103.8\approx5736$。）所以<strong>一次純量乘法約等於三千到六千次 $\mathbb F_p$ 乘法</strong>。一次 ECDH 每一方要做一兩次純量乘法。把一次 $\mathbb F_p$ 乘法加快 20%，整個協定大約就快 20%。</p>
 </section>
 
 <section id="ladder" data-nav="旁通道與階梯">

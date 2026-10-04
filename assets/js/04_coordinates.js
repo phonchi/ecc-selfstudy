@@ -34,7 +34,7 @@ HC.ready(() => {
         x0 += w;
       }
       sv.txtPx(sv.pad.l - 8, y + bh / 2 + 4, ROWS[i][0], { anchor: 'end', cls: 'vlab' }, g);
-      sv.txtPx(x0 + 6, y + bh / 2 + 4, Math.round(tot[i]).toLocaleString() + ' M', { cls: 'vlab' }, g);
+      sv.txtPx(x0 + 6, y + bh / 2 + 4, '≈ ' + Math.round(tot[i]).toLocaleString() + ' M', { cls: 'vlab' }, g);
     });
     // 仿射與混合加點相等時的 I/M
     const D = l - 1, A = l / 2;
